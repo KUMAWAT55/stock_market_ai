@@ -1,0 +1,38 @@
+# Core Data
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Market Data
+yfinance>=0.2.36
+requests>=2.31.0
+
+# Database
+sqlalchemy>=2.0.0
+psycopg2-binary>=2.9.9
+
+# Logging
+loguru>=0.7.2
+
+# Config / Env (Future-proof)
+python-dotenv>=1.0.1
+
+# ML (Future Use)
+scikit-learn>=1.4.0
+xgboost>=2.0.0
+
+# Visualization (Later Dashboards)
+matplotlib>=3.8.0
+plotly>=5.19.0
+
+# API Layer (Later)
+fastapi>=0.110.0
+uvicorn>=0.27.0
+
+
+feedparser>=6.0.11
+
+streamlit
+newspaper3k
+lxml_html_clean
+beautifulsoup4
+lxml

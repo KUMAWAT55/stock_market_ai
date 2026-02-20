@@ -1,6 +1,6 @@
 from loguru import logger
-from storage.db.connection import SessionLocal
-from storage.db.models import News
+from src.storage.db.connection import SessionLocal
+from src.storage.db.models import News
 
 
 def save_news(news_list):

@@ -668,3 +668,564 @@
 2026-02-16 01:32:49.944 | WARNING  | ingestion.news.fetcher:fetch_news:173 - Empty article
 2026-02-16 01:32:49.944 | INFO     | ingestion.news.fetcher:fetch_news:152 - Processing: 20 Microns Consolidated December 2025 Net Sales at Rs 214.82 crore, up 0.08% Y-o-Y - Moneycontrol
 2026-02-16 01:32:50.786 | INFO     | ingestion.news.fetcher:fetch_news:167 - Resolved: https://news.google.com/rss/articles/CBMi3wFBVV95cUxOZmtUNVBnNFRFU1o0N2hMYXE1N3JZdzlyUGVuRC1PSndZYzlId18tUlhYTWdFYTBxaGREZlk2aXp2aHU1b09tTGFGWVAtQmJ2YzdnX3FqclBYSFN2dlVaTzF5SGhsWE16NVhiaGFuWmJPOGU4SnR4eUx1Z2VsLVhXNDZNSS0wbjZWWWhZWmp1aTZEZW15YlZmZjFqUG51Qjl1WGNERHdsaW16LTh5WUVvdk9WTWFNNnFpYXF2ZjlrQ1liaTYyeWItWVFHaVdtc3I5TXg0NENLNGlfNGo0Yjkw0gHkAUFVX3lxTE52YWJ3UWppR1E3OENkOE9BRFYtbFBYRU50TXFpRHE4anV1ZTQ0MUtJemFVTHNuRjdERU42WmZYbnlpLUd2YVJZVEYyeFFWMEl0OEdvZFhGbXZ0b1JCbUQ0b01ZRF8tQWlPUndCNDlzYjhfT1JUa1FXczFLSWFlRGNxMGMzUjV2OWRpbnVmdmZfSkNYOEp5VG9DZGV1SDhJUk1YS2JqbTFRbk9hSUFUemtLMExDLXB2ZkFHd29xT1dQYmUxOVVVcVlIdUd3c3czc2xIUHhrU3VGWkoyRG9POGNyYjFTNA?oc=5&hl=en-IN&gl=IN&ceid=IN:en
+2026-02-17 01:55:32.319 | INFO     | __main__:run:26 - Starting Stock Market AI Platform
+2026-02-17 01:55:32.319 | INFO     | ingestion.nse.symbols:fetch_nse_symbols:10 - Fetching NSE symbols
+2026-02-17 01:55:32.566 | INFO     | ingestion.nse.symbols:fetch_nse_symbols:32 - Fetched 2251 symbols
+2026-02-17 01:55:32.566 | INFO     | storage.db.writer:save_symbols:11 - Saving symbols master
+2026-02-17 01:55:33.333 | INFO     | __main__:run:38 - Active symbols: 2251
+2026-02-17 01:55:33.333 | INFO     | ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 20MICRONS.NS
+2026-02-17 01:55:34.367 | INFO     | pipelines.normalizer:normalize_yahoo:7 - Normalizing 20MICRONS.NS
+2026-02-17 01:55:34.370 | INFO     | storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-17 01:55:34.381 | WARNING  | storage.db.writer:save_market_data:56 - Duplicates skipped
+2026-02-17 01:55:34.381 | INFO     | ingestion.news.fetcher:fetch_news:136 - Fetching news for 20MICRONS
+2026-02-17 01:55:35.735 | INFO     | ingestion.news.fetcher:fetch_news:144 - RSS entries found: 50
+2026-02-17 01:55:35.735 | INFO     | ingestion.news.fetcher:fetch_news:152 - Processing: Here's Why 20 Microns (NSE:20MICRONS) Has Caught The Eye Of Investors - simplywall.st
+2026-02-17 01:55:36.539 | INFO     | ingestion.news.fetcher:fetch_news:167 - Resolved: https://news.google.com/rss/articles/CBMi1gFBVV95cUxOcmIyWUpuNDltQ3FFa3F1dTU5blVpNjVtZXp0MVh4UlV3UUdFUGNKM1dTWS16OE1JUkYzcTVLU0JheG1WZTR0REk4dWNXd1RZSWNGNkQtby1RUF9vdGlpRmtZMlZ5ZC03enRTUC1Uc2d5VjNjb3ZfMG9SYnBublRVdUNzOEJIeWlnYlJYSmxBZl9ndnp0dndWamc0aTl1blVuY1d2NGgxR0RIb3JSOWxFa1Z3SzJROHcwbFp3dlVaZUdCWGs3NEFRTzd4a1dhVTlTSklTVk53?oc=5&hl=en-IN&gl=IN&ceid=IN:en
+2026-02-17 01:55:37.983 | WARNING  | ingestion.news.fetcher:fetch_news:173 - Empty article
+2026-02-17 01:55:37.983 | INFO     | ingestion.news.fetcher:fetch_news:152 - Processing: 20 Microns Consolidated December 2025 Net Sales at Rs 214.82 crore, up 0.08% Y-o-Y - Moneycontrol
+2026-02-17 01:55:38.808 | INFO     | ingestion.news.fetcher:fetch_news:167 - Resolved: https://news.google.com/rss/articles/CBMi3wFBVV95cUxOZmtUNVBnNFRFU1o0N2hMYXE1N3JZdzlyUGVuRC1PSndZYzlId18tUlhYTWdFYTBxaGREZlk2aXp2aHU1b09tTGFGWVAtQmJ2YzdnX3FqclBYSFN2dlVaTzF5SGhsWE16NVhiaGFuWmJPOGU4SnR4eUx1Z2VsLVhXNDZNSS0wbjZWWWhZWmp1aTZEZW15YlZmZjFqUG51Qjl1WGNERHdsaW16LTh5WUVvdk9WTWFNNnFpYXF2ZjlrQ1liaTYyeWItWVFHaVdtc3I5TXg0NENLNGlfNGo0Yjkw0gHkAUFVX3lxTE52YWJ3UWppR1E3OENkOE9BRFYtbFBYRU50TXFpRHE4anV1ZTQ0MUtJemFVTHNuRjdERU42WmZYbnlpLUd2YVJZVEYyeFFWMEl0OEdvZFhGbXZ0b1JCbUQ0b01ZRF8tQWlPUndCNDlzYjhfT1JUa1FXczFLSWFlRGNxMGMzUjV2OWRpbnVmdmZfSkNYOEp5VG9DZGV1SDhJUk1YS2JqbTFRbk9hSUFUemtLMExDLXB2ZkFHd29xT1dQYmUxOVVVcVlIdUd3c3czc2xIUHhrU3VGWkoyRG9POGNyYjFTNA?oc=5&hl=en-IN&gl=IN&ceid=IN:en
+2026-02-17 01:55:40.266 | WARNING  | ingestion.news.fetcher:fetch_news:173 - Empty article
+2026-02-17 01:55:40.266 | INFO     | ingestion.news.fetcher:fetch_news:152 - Processing: 20 Microns Announces 1 Billion Rupees Expansion Plan - TradingView
+2026-02-17 01:55:41.097 | INFO     | ingestion.news.fetcher:fetch_news:167 - Resolved: https://news.google.com/rss/articles/CBMivwFBVV95cUxOTFBJR0Nub3hmY2FqaXdtbFN1dGFoN3BoRUc5cG5FY0Q1V2tIQkg1THZFdlF0a1Rxd25tZFRVZk80WGdraHkzSk01Wk9RcG9zLWpKNkhmcHo0dWVhSldiRkNaV3IwQmY5Y3NybWhyU1ZzZURLYWtsTW5oWG1zZkttcUtlUGdSd2dKUTlUMmRDUHdoZFZtRUtNeURpZHVWdURHZzZWYlU4TVBqRkg5cHFZMjIxdjAtaDVWLXNiYWdDZw?oc=5&hl=en-IN&gl=IN&ceid=IN:en
+2026-02-18 03:17:09.873 | INFO     | __main__:run:26 - Starting Stock Market AI Platform
+2026-02-18 03:17:09.874 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:10 - Fetching NSE symbols
+2026-02-18 03:17:10.119 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:32 - Fetched 2238 symbols
+2026-02-18 03:17:10.119 | INFO     | src.storage.db.writer:save_symbols:11 - Saving symbols master
+2026-02-18 03:17:11.015 | INFO     | __main__:run:40 - Active symbols: 4489
+2026-02-18 03:17:11.016 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 20MICRONS.NS
+2026-02-18 03:17:11.964 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 20MICRONS.NS
+2026-02-18 03:17:11.967 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:17:11.979 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:17:12.730 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:17:12.730 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 21STCENMGM.NS
+2026-02-18 03:17:13.183 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 21STCENMGM.NS
+2026-02-18 03:17:13.187 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:17:13.191 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:17:13.805 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 360ONE.NS
+2026-02-18 03:17:14.204 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 360ONE.NS
+2026-02-18 03:17:14.205 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:17:14.209 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:17:15.100 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:17:15.100 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 3IINFOLTD.NS
+2026-02-18 03:17:15.488 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 3IINFOLTD.NS
+2026-02-18 03:17:15.490 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:17:15.496 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:17:16.171 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 3 news records
+2026-02-18 03:17:16.171 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 3MINDIA.NS
+2026-02-18 03:17:16.555 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 3MINDIA.NS
+2026-02-18 03:17:16.557 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:17:16.561 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:17:17.385 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:17:17.386 | INFO     | __main__:run:59 - Pipeline finished
+2026-02-18 03:20:00.816 | INFO     | __main__:run:26 - Starting Stock Market AI Platform
+2026-02-18 03:20:00.817 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:10 - Fetching NSE symbols
+2026-02-18 03:20:00.995 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:32 - Fetched 2238 symbols
+2026-02-18 03:20:00.995 | INFO     | src.storage.db.writer:save_symbols:11 - Saving symbols master
+2026-02-18 03:20:01.852 | INFO     | __main__:run:40 - Active symbols: 2238
+2026-02-18 03:20:01.852 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 20MICRONS
+2026-02-18 03:20:04.134 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 20MICRONS
+2026-02-18 03:20:04.969 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:20:04.970 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 21STCENMGM
+2026-02-18 03:20:07.005 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 21STCENMGM
+2026-02-18 03:20:07.726 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 360ONE
+2026-02-18 03:20:09.364 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 360ONE
+2026-02-18 03:20:10.242 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:20:10.242 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 3IINFOLTD
+2026-02-18 03:20:11.898 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 3IINFOLTD
+2026-02-18 03:20:12.517 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 3 news records
+2026-02-18 03:20:12.517 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 3MINDIA
+2026-02-18 03:20:14.257 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 3MINDIA
+2026-02-18 03:20:15.093 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:20:15.094 | INFO     | __main__:run:59 - Pipeline finished
+2026-02-18 03:23:21.541 | INFO     | __main__:run:26 - Starting Stock Market AI Platform
+2026-02-18 03:23:21.541 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:10 - Fetching NSE symbols
+2026-02-18 03:23:21.782 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:32 - Fetched 2238 symbols
+2026-02-18 03:23:21.782 | INFO     | src.storage.db.writer:save_symbols:11 - Saving symbols master
+2026-02-18 03:23:22.524 | INFO     | __main__:run:40 - Active symbols: 2238
+2026-02-18 03:23:22.524 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 20MICRONS.NS
+2026-02-18 03:23:23.418 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 20MICRONS
+2026-02-18 03:23:23.422 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:23:23.433 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:23:24.108 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:23:24.108 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 21STCENMGM.NS
+2026-02-18 03:23:24.489 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 21STCENMGM
+2026-02-18 03:23:24.491 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:23:24.496 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:23:25.122 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 360ONE.NS
+2026-02-18 03:23:25.693 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 360ONE
+2026-02-18 03:23:25.696 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:23:25.702 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:23:26.492 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:23:26.493 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 3IINFOLTD.NS
+2026-02-18 03:23:26.935 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 3IINFOLTD
+2026-02-18 03:23:26.938 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:23:26.943 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:23:27.559 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 3 news records
+2026-02-18 03:23:27.559 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 3MINDIA.NS
+2026-02-18 03:23:27.928 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 3MINDIA
+2026-02-18 03:23:27.930 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:23:27.934 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:23:28.720 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:23:28.721 | INFO     | __main__:run:59 - Pipeline finished
+2026-02-18 03:24:30.646 | INFO     | __main__:run:26 - Starting Stock Market AI Platform
+2026-02-18 03:24:30.646 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:10 - Fetching NSE symbols
+2026-02-18 03:24:30.924 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:32 - Fetched 2238 symbols
+2026-02-18 03:24:30.924 | INFO     | src.storage.db.writer:save_symbols:11 - Saving symbols master
+2026-02-18 03:24:31.678 | INFO     | __main__:run:40 - Active symbols: 2238
+2026-02-18 03:24:31.678 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 20MICRONS.NS
+2026-02-18 03:24:32.598 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 20MICRONS
+2026-02-18 03:24:32.601 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:24:32.610 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:24:32.697 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:24:32.697 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 21STCENMGM.NS
+2026-02-18 03:24:33.088 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 21STCENMGM
+2026-02-18 03:24:33.089 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:24:33.094 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:24:33.176 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 360ONE.NS
+2026-02-18 03:24:33.568 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 360ONE
+2026-02-18 03:24:33.570 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:24:33.575 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:24:33.716 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:24:33.717 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 3IINFOLTD.NS
+2026-02-18 03:24:34.098 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 3IINFOLTD
+2026-02-18 03:24:34.100 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:24:34.105 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:24:34.184 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 3 news records
+2026-02-18 03:24:34.184 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 3MINDIA.NS
+2026-02-18 03:24:34.579 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 3MINDIA
+2026-02-18 03:24:34.581 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:24:34.585 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:24:34.703 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:24:34.703 | INFO     | __main__:run:59 - Pipeline finished
+2026-02-18 03:24:51.676 | INFO     | __main__:run:26 - Starting Stock Market AI Platform
+2026-02-18 03:24:51.676 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:10 - Fetching NSE symbols
+2026-02-18 03:24:52.312 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:32 - Fetched 2238 symbols
+2026-02-18 03:24:52.312 | INFO     | src.storage.db.writer:save_symbols:11 - Saving symbols master
+2026-02-18 03:24:53.104 | INFO     | __main__:run:40 - Active symbols: 2238
+2026-02-18 03:24:53.104 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 20MICRONS.NS
+2026-02-18 03:24:54.068 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 20MICRONS
+2026-02-18 03:24:54.071 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:24:54.080 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:24:54.172 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:24:54.172 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 21STCENMGM.NS
+2026-02-18 03:24:54.581 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 21STCENMGM
+2026-02-18 03:24:54.582 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:24:54.587 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:24:54.676 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 360ONE.NS
+2026-02-18 03:24:55.081 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 360ONE
+2026-02-18 03:24:55.084 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:24:55.088 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:24:55.219 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:24:55.219 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 3IINFOLTD.NS
+2026-02-18 03:24:55.630 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 3IINFOLTD
+2026-02-18 03:24:55.632 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:24:55.637 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:24:55.718 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 3 news records
+2026-02-18 03:24:55.718 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 3MINDIA.NS
+2026-02-18 03:24:56.130 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 3MINDIA
+2026-02-18 03:24:56.132 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:24:56.137 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:24:56.255 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:24:56.255 | INFO     | __main__:run:59 - Pipeline finished
+2026-02-18 03:25:04.829 | INFO     | __main__:run:26 - Starting Stock Market AI Platform
+2026-02-18 03:25:04.829 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:10 - Fetching NSE symbols
+2026-02-18 03:25:05.071 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:32 - Fetched 2238 symbols
+2026-02-18 03:25:05.071 | INFO     | src.storage.db.writer:save_symbols:11 - Saving symbols master
+2026-02-18 03:25:05.817 | INFO     | __main__:run:40 - Active symbols: 2238
+2026-02-18 03:25:05.817 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 20MICRONS.NS
+2026-02-18 03:25:06.962 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 20MICRONS
+2026-02-18 03:25:06.965 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:25:06.976 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:25:07.070 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:25:07.070 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 21STCENMGM.NS
+2026-02-18 03:25:07.467 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 21STCENMGM
+2026-02-18 03:25:07.470 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:25:07.476 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:25:07.563 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 360ONE.NS
+2026-02-18 03:25:08.190 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 360ONE
+2026-02-18 03:25:08.193 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:25:08.198 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:25:08.327 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:25:08.327 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 3IINFOLTD.NS
+2026-02-18 03:25:08.717 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 3IINFOLTD
+2026-02-18 03:25:08.718 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:25:08.723 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:25:08.790 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 3 news records
+2026-02-18 03:25:08.790 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 3MINDIA.NS
+2026-02-18 03:25:09.179 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 3MINDIA
+2026-02-18 03:25:09.182 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:25:09.186 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:25:09.309 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:25:09.309 | INFO     | __main__:run:59 - Pipeline finished
+2026-02-18 03:27:10.154 | INFO     | __main__:run:26 - Starting Stock Market AI Platform
+2026-02-18 03:27:10.154 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:10 - Fetching NSE symbols
+2026-02-18 03:27:10.347 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:32 - Fetched 2238 symbols
+2026-02-18 03:27:10.348 | INFO     | src.storage.db.writer:save_symbols:11 - Saving symbols master
+2026-02-18 03:27:11.082 | INFO     | __main__:run:40 - Active symbols: 2238
+2026-02-18 03:27:11.082 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 20MICRONS.NS
+2026-02-18 03:27:12.057 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 20MICRONS
+2026-02-18 03:27:12.060 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:27:12.072 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:27:12.829 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:27:12.829 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 21STCENMGM.NS
+2026-02-18 03:27:13.229 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 21STCENMGM
+2026-02-18 03:27:13.231 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:27:13.236 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:27:13.827 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 360ONE.NS
+2026-02-18 03:27:14.236 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 360ONE
+2026-02-18 03:27:14.240 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:27:14.247 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:27:14.715 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:27:14.715 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 3IINFOLTD.NS
+2026-02-18 03:27:15.121 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 3IINFOLTD
+2026-02-18 03:27:15.124 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:27:15.129 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:27:15.471 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 3 news records
+2026-02-18 03:27:15.471 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 3MINDIA.NS
+2026-02-18 03:27:15.880 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 3MINDIA
+2026-02-18 03:27:15.883 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:27:15.889 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:27:16.657 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:27:16.658 | INFO     | __main__:run:59 - Pipeline finished
+2026-02-18 03:28:41.580 | INFO     | __main__:run:26 - Starting Stock Market AI Platform
+2026-02-18 03:28:41.580 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:10 - Fetching NSE symbols
+2026-02-18 03:28:41.782 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:32 - Fetched 2238 symbols
+2026-02-18 03:28:41.783 | INFO     | src.storage.db.writer:save_symbols:11 - Saving symbols master
+2026-02-18 03:28:42.533 | INFO     | __main__:run:40 - Active symbols: 2238
+2026-02-18 03:28:42.533 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 20MICRONS.NS
+2026-02-18 03:28:43.529 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 20MICRONS
+2026-02-18 03:28:43.532 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:28:43.543 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:28:43.640 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:28:43.640 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 21STCENMGM.NS
+2026-02-18 03:28:44.033 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 21STCENMGM
+2026-02-18 03:28:44.037 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:28:44.042 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:28:44.111 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 360ONE.NS
+2026-02-18 03:28:44.492 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 360ONE
+2026-02-18 03:28:44.495 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:28:44.500 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:28:44.626 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:28:44.626 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 3IINFOLTD.NS
+2026-02-18 03:28:45.120 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 3IINFOLTD
+2026-02-18 03:28:45.121 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:28:45.125 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:28:45.203 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 3 news records
+2026-02-18 03:28:45.203 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 3MINDIA.NS
+2026-02-18 03:28:45.584 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 3MINDIA
+2026-02-18 03:28:45.586 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:28:45.591 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:28:45.698 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:28:45.698 | INFO     | __main__:run:59 - Pipeline finished
+2026-02-18 03:30:37.587 | INFO     | __main__:run:26 - Starting Stock Market AI Platform
+2026-02-18 03:30:37.587 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:10 - Fetching NSE symbols
+2026-02-18 03:30:37.811 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:32 - Fetched 2238 symbols
+2026-02-18 03:30:37.811 | INFO     | src.storage.db.writer:save_symbols:11 - Saving symbols master
+2026-02-18 03:30:38.575 | INFO     | __main__:run:40 - Active symbols: 2238
+2026-02-18 03:30:38.575 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 20MICRONS.NS
+2026-02-18 03:30:39.439 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 20MICRONS
+2026-02-18 03:30:39.442 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:30:39.452 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:30:40.298 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:30:40.298 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 21STCENMGM.NS
+2026-02-18 03:30:40.695 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 21STCENMGM
+2026-02-18 03:30:40.698 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:30:40.703 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:30:41.394 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 360ONE.NS
+2026-02-18 03:30:41.794 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 360ONE
+2026-02-18 03:30:41.797 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:30:41.801 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:30:42.619 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:30:42.620 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 3IINFOLTD.NS
+2026-02-18 03:30:43.008 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 3IINFOLTD
+2026-02-18 03:30:43.011 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:30:43.016 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:30:43.288 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 3 news records
+2026-02-18 03:30:43.288 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 3MINDIA.NS
+2026-02-18 03:30:43.719 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 3MINDIA
+2026-02-18 03:30:43.722 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:30:43.727 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:30:44.509 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:30:44.509 | INFO     | __main__:run:59 - Pipeline finished
+2026-02-18 03:34:35.811 | INFO     | __main__:run:26 - Starting Stock Market AI Platform
+2026-02-18 03:34:35.811 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:10 - Fetching NSE symbols
+2026-02-18 03:34:36.005 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:32 - Fetched 2238 symbols
+2026-02-18 03:34:36.006 | INFO     | src.storage.db.writer:save_symbols:11 - Saving symbols master
+2026-02-18 03:34:36.763 | INFO     | __main__:run:40 - Active symbols: 2238
+2026-02-18 03:34:36.763 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 20MICRONS.NS
+2026-02-18 03:34:37.594 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 20MICRONS
+2026-02-18 03:34:37.597 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:34:37.608 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:34:38.312 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:34:38.312 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 21STCENMGM.NS
+2026-02-18 03:34:38.719 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 21STCENMGM
+2026-02-18 03:34:38.722 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:34:38.726 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:34:39.345 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 360ONE.NS
+2026-02-18 03:34:39.841 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 360ONE
+2026-02-18 03:34:39.844 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:34:39.849 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:34:40.635 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:34:40.635 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 3IINFOLTD.NS
+2026-02-18 03:34:41.315 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 3IINFOLTD
+2026-02-18 03:34:41.316 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:34:41.321 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:34:42.129 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 3 news records
+2026-02-18 03:34:42.129 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 3MINDIA.NS
+2026-02-18 03:34:42.621 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 3MINDIA
+2026-02-18 03:34:42.624 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:34:42.630 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:34:43.501 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:34:43.501 | INFO     | __main__:run:59 - Pipeline finished
+2026-02-18 03:38:49.641 | INFO     | __main__:run:26 - Starting Stock Market AI Platform
+2026-02-18 03:38:49.641 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:10 - Fetching NSE symbols
+2026-02-18 03:38:49.986 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:32 - Fetched 2238 symbols
+2026-02-18 03:38:49.986 | INFO     | src.storage.db.writer:save_symbols:11 - Saving symbols master
+2026-02-18 03:38:50.759 | INFO     | __main__:run:40 - Active symbols: 2238
+2026-02-18 03:38:50.759 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 20MICRONS.NS
+2026-02-18 03:38:51.688 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 20MICRONS
+2026-02-18 03:38:51.691 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:38:51.702 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:38:52.114 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:38:52.114 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 21STCENMGM.NS
+2026-02-18 03:38:52.504 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 21STCENMGM
+2026-02-18 03:38:52.506 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:38:52.511 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:38:53.097 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 360ONE.NS
+2026-02-18 03:38:53.488 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 360ONE
+2026-02-18 03:38:53.490 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:38:53.495 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:38:54.004 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:38:54.004 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 3IINFOLTD.NS
+2026-02-18 03:38:54.470 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 3IINFOLTD
+2026-02-18 03:38:54.473 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:38:54.479 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:38:55.162 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 3 news records
+2026-02-18 03:38:55.162 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 3MINDIA.NS
+2026-02-18 03:38:55.549 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 3MINDIA
+2026-02-18 03:38:55.553 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:38:55.558 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:38:56.383 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:38:56.384 | INFO     | __main__:run:59 - Pipeline finished
+2026-02-18 03:39:56.964 | INFO     | __main__:run:26 - Starting Stock Market AI Platform
+2026-02-18 03:39:56.964 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:10 - Fetching NSE symbols
+2026-02-18 03:39:57.132 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:32 - Fetched 2238 symbols
+2026-02-18 03:39:57.132 | INFO     | src.storage.db.writer:save_symbols:11 - Saving symbols master
+2026-02-18 03:39:57.866 | INFO     | __main__:run:40 - Active symbols: 2238
+2026-02-18 03:39:57.866 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 20MICRONS.NS
+2026-02-18 03:39:58.722 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 20MICRONS
+2026-02-18 03:39:58.725 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:39:58.735 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:39:58.822 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:39:58.823 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 21STCENMGM.NS
+2026-02-18 03:39:59.218 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 21STCENMGM
+2026-02-18 03:39:59.221 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:39:59.226 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:39:59.297 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 360ONE.NS
+2026-02-18 03:39:59.693 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 360ONE
+2026-02-18 03:39:59.696 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:39:59.702 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:39:59.816 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:39:59.816 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 3IINFOLTD.NS
+2026-02-18 03:40:00.201 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 3IINFOLTD
+2026-02-18 03:40:00.204 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:40:00.208 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:40:00.291 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 3 news records
+2026-02-18 03:40:00.291 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 3MINDIA.NS
+2026-02-18 03:40:00.679 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 3MINDIA
+2026-02-18 03:40:00.682 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:40:00.688 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:40:00.822 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:40:00.822 | INFO     | __main__:run:59 - Pipeline finished
+2026-02-18 03:40:53.347 | INFO     | __main__:run:26 - Starting Stock Market AI Platform
+2026-02-18 03:40:53.347 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:10 - Fetching NSE symbols
+2026-02-18 03:40:53.533 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:32 - Fetched 2238 symbols
+2026-02-18 03:40:53.533 | INFO     | src.storage.db.writer:save_symbols:11 - Saving symbols master
+2026-02-18 03:40:54.297 | INFO     | __main__:run:40 - Active symbols: 2238
+2026-02-18 03:40:54.297 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 20MICRONS.NS
+2026-02-18 03:40:55.130 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 20MICRONS
+2026-02-18 03:40:55.133 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:40:55.143 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:40:55.817 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:40:55.817 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 21STCENMGM.NS
+2026-02-18 03:40:56.314 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 21STCENMGM
+2026-02-18 03:40:56.317 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:40:56.322 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:40:57.014 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 360ONE.NS
+2026-02-18 03:40:57.412 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 360ONE
+2026-02-18 03:40:57.415 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:40:57.422 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:40:57.983 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:40:57.983 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 3IINFOLTD.NS
+2026-02-18 03:40:58.359 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 3IINFOLTD
+2026-02-18 03:40:58.361 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:40:58.365 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:40:59.069 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 3 news records
+2026-02-18 03:40:59.069 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 3MINDIA.NS
+2026-02-18 03:40:59.456 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 3MINDIA
+2026-02-18 03:40:59.458 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:40:59.463 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:41:00.254 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:41:00.254 | INFO     | __main__:run:59 - Pipeline finished
+2026-02-18 03:44:23.592 | INFO     | __main__:run:26 - Starting Stock Market AI Platform
+2026-02-18 03:44:23.592 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:10 - Fetching NSE symbols
+2026-02-18 03:44:23.873 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:32 - Fetched 2238 symbols
+2026-02-18 03:44:23.873 | INFO     | src.storage.db.writer:save_symbols:11 - Saving symbols master
+2026-02-18 03:44:24.613 | INFO     | __main__:run:40 - Active symbols: 2238
+2026-02-18 03:44:24.613 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 20MICRONS.NS
+2026-02-18 03:44:25.830 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 20MICRONS
+2026-02-18 03:44:25.834 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:44:25.844 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:44:26.557 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:44:26.557 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 21STCENMGM.NS
+2026-02-18 03:44:26.960 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 21STCENMGM
+2026-02-18 03:44:26.962 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:44:26.967 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:44:27.759 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 360ONE.NS
+2026-02-18 03:44:28.301 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 360ONE
+2026-02-18 03:44:28.303 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:44:28.309 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:44:29.065 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:44:29.066 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 3IINFOLTD.NS
+2026-02-18 03:44:29.471 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 3IINFOLTD
+2026-02-18 03:44:29.474 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:44:29.478 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:44:30.115 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 3 news records
+2026-02-18 03:44:30.115 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 3MINDIA.NS
+2026-02-18 03:44:30.520 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 3MINDIA
+2026-02-18 03:44:30.522 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:44:30.527 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:44:31.390 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:44:31.390 | INFO     | __main__:run:59 - Pipeline finished
+2026-02-18 03:45:01.503 | INFO     | __main__:run:26 - Starting Stock Market AI Platform
+2026-02-18 03:45:01.503 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:10 - Fetching NSE symbols
+2026-02-18 03:45:01.704 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:32 - Fetched 2238 symbols
+2026-02-18 03:45:01.704 | INFO     | src.storage.db.writer:save_symbols:11 - Saving symbols master
+2026-02-18 03:45:02.452 | INFO     | __main__:run:40 - Active symbols: 2238
+2026-02-18 03:45:02.452 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 20MICRONS.NS
+2026-02-18 03:45:03.359 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 20MICRONS
+2026-02-18 03:45:03.361 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:45:03.371 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:45:03.468 | ERROR    | src.pipelines.news_loader:save_news:28 - News save failed: (psycopg2.ProgrammingError) can't adapt type 'FeedParserDict'
+[SQL: INSERT INTO market_news (symbol, title, summary, url, source, published_at, created_at) VALUES (%(symbol__0)s, %(title__0)s, %(summary__0)s, %(url__0)s, %(source__0)s, %(published_at__0)s, %(created_at__0)s), (%(symbol__1)s, %(title__1)s, %(summary__ ... 313 characters truncated ... )s, %(title__4)s, %(summary__4)s, %(url__4)s, %(source__4)s, %(published_at__4)s, %(created_at__4)s)]
+[parameters: {'url__0': 'https://news.google.com/rss/articles/CBMi2AFBVV95cUxNcEk3TXNnOGFzTFh4RHlrM0JxdTV4RGxJSGs3cV80NDNmMGJzaU1CdHlIUjJUX2tfT0Rycjk1RE4xajZMUVFWdENMRTBtdHFq ... (340 characters truncated) ... eXFmV2xTS3RvajZDRXZtckc0MHdCekRCSVlCOFFHRFFTaHN1bThpYzR6STNGQkVsMEVLQVMwSmI0eWlBTnE2RnNwb0NKVUo3QkdOSnpWb1MxZlBydU54Ty01cXNzNENlZHJaQWMxeUstOTN3?oc=5', 'summary__0': {'type': 'text/html', 'language': None, 'base': 'https://news.google.com/rss/search?q=20MICRONS%20NSE%20stock&hl=en-IN&gl=IN&ceid=IN:en', 'value': '<a ... (675 characters truncated) ... s Limited\'s (NSE:20MICRONS) Recent Stock Performance Tethered To Its Strong Fundamentals?</a>&nbsp;&nbsp;<font color="#6f6f6f">simplywall.st</font>'}, 'title__0': "Is 20 Microns Limited's (NSE:20MICRONS) Recent Stock Performance Tethered To Its Strong Fundamentals? - simplywall.st", 'symbol__0': '20MICRONS', 'source__0': 'simplywall.st', 'created_at__0': datetime.datetime(2026, 2, 17, 22, 15, 3, 468137), 'published_at__0': 'Sat, 27 Dec 2025 08:00:00 GMT', 'url__1': 'https://news.google.com/rss/articles/CBMi1gFBVV95cUxOcmIyWUpuNDltQ3FFa3F1dTU5blVpNjVtZXp0MVh4UlV3UUdFUGNKM1dTWS16OE1JUkYzcTVLU0JheG1WZTR0REk4dWNXd1RZ ... (36 characters truncated) ... UC1Uc2d5VjNjb3ZfMG9SYnBublRVdUNzOEJIeWlnYlJYSmxBZl9ndnp0dndWamc0aTl1blVuY1d2NGgxR0RIb3JSOWxFa1Z3SzJROHcwbFp3dlVaZUdCWGs3NEFRTzd4a1dhVTlTSklTVk53?oc=5', 'summary__1': {'type': 'text/html', 'language': None, 'base': 'https://news.google.com/rss/search?q=20MICRONS%20NSE%20stock&hl=en-IN&gl=IN&ceid=IN:en', 'value': '<a ... (339 characters truncated) ... =5" target="_blank">Here\'s Why 20 Microns (NSE:20MICRONS) Has Caught The Eye Of Investors</a>&nbsp;&nbsp;<font color="#6f6f6f">simplywall.st</font>'}, 'title__1': "Here's Why 20 Microns (NSE:20MICRONS) Has Caught The Eye Of Investors - simplywall.st", 'symbol__1': '20MICRONS', 'source__1': 'simplywall.st', 'created_at__1': datetime.datetime(2026, 2, 17, 22, 15, 3, 468141), 'published_at__1': 'Thu, 17 Jul 2025 07:00:00 GMT', 'url__2': 'https://news.google.com/rss/articles/CBMi3wFBVV95cUxOZmtUNVBnNFRFU1o0N2hMYXE1N3JZdzlyUGVuRC1PSndZYzlId18tUlhYTWdFYTBxaGREZlk2aXp2aHU1b09tTGFGWVAtQmJ2 ... (358 characters truncated) ... FLSWFlRGNxMGMzUjV2OWRpbnVmdmZfSkNYOEp5VG9DZGV1SDhJUk1YS2JqbTFRbk9hSUFUemtLMExDLXB2ZkFHd29xT1dQYmUxOVVVcVlIdUd3c3czc2xIUHhrU3VGWkoyRG9POGNyYjFTNA?oc=5', 'summary__2': {'type': 'text/html', 'language': None, 'base': 'https://news.google.com/rss/search?q=20MICRONS%20NSE%20stock&hl=en-IN&gl=IN&ceid=IN:en', 'value': '<a ... (672 characters truncated) ... "_blank">20 Microns Consolidated December 2025 Net Sales at Rs 214.82 crore, up 0.08% Y-o-Y</a>&nbsp;&nbsp;<font color="#6f6f6f">Moneycontrol</font>'}, 'title__2': '20 Microns Consolidated December 2025 Net Sales at Rs 214.82 crore, up 0.08% Y-o-Y - Moneycontrol', 'symbol__2': '20MICRONS', 'source__2': 'Moneycontrol', 'created_at__2': datetime.datetime(2026, 2, 17, 22, 15, 3, 468143), 'published_at__2': 'Tue, 27 Jan 2026 08:00:00 GMT', 'url__3': 'https://news.google.com/rss/articles/CBMi3AFBVV95cUxPNWV4Ml9MY01UdDV6UFNKYjV5ZldfTk1TdV9fSHo0MmRqQ1R2U09kMGVKSi1HNzBTMFRvVjJUOEFteGxlaTZ0TDhxUFZRWFp3 ... (351 characters truncated) ... 1TllNZGhCWUdCWXZORUpxT3N1UEUwcVVPWTAtQS1HRXdfSTRKNVV6ZkxaV0dsQ3V1ZmZpb280cmFpazJNZ3ZVNk42RnRhMFlMYzY2dHE5LWFwTzgzTE9mWC1rc29wcXFXOUd2Q3NOdTUyVUE?oc=5', 'summary__3': {'type': 'text/html', 'language': None, 'base': 'https://news.google.com/rss/search?q=20MICRONS%20NSE%20stock&hl=en-IN&gl=IN&ceid=IN:en', 'value': '<a ... (663 characters truncated) ... t="_blank">20 Microns Standalone December 2025 Net Sales at Rs 186.68 crore, up 0.38% Y-o-Y</a>&nbsp;&nbsp;<font color="#6f6f6f">Moneycontrol</font>'}, 'title__3': '20 Microns Standalone December 2025 Net Sales at Rs 186.68 crore, up 0.38% Y-o-Y - Moneycontrol', 'symbol__3': '20MICRONS', 'source__3': 'Moneycontrol', 'created_at__3': datetime.datetime(2026, 2, 17, 22, 15, 3, 468144), 'published_at__3': 'Tue, 27 Jan 2026 08:00:00 GMT', 'url__4': 'https://news.google.com/rss/articles/CBMizgFBVV95cUxOTi1NWDYtd3QzTTdkdjU4S1NkWjJFZFUyMndkTmZWWDFZM1BkNDdJTTRzS1U5Ym1aX1hkZGZMT3U0NV9PdGp3cE5iOTdZTFV3 ... (26 characters truncated) ... p0TENlZ2hfSFc4U00tYlVVbW9EYW1IV0ZveDJXbGlqZlVkd29ncVlBRngyc1gyX05hRU5ZUHFJSExxN1RZMTBhS0NCLW5GeVlQbE9BVERiaEp5Q3F5bHc3NjFaWnNUendSTUs2RFBhOXVqZw?oc=5', 'summary__4': {'type': 'text/html', 'language': None, 'base': 'https://news.google.com/rss/search?q=20MICRONS%20NSE%20stock&hl=en-IN&gl=IN&ceid=IN:en', 'value': '<a ... (321 characters truncated) ... XVqZw?oc=5" target="_blank">5 Fundamentally Strong Microcap Stocks to Watch Out for in 2025</a>&nbsp;&nbsp;<font color="#6f6f6f">Equitymaster</font>'}, 'title__4': '5 Fundamentally Strong Microcap Stocks to Watch Out for in 2025 - Equitymaster', 'symbol__4': '20MICRONS', 'source__4': 'Equitymaster', 'created_at__4': datetime.datetime(2026, 2, 17, 22, 15, 3, 468146), 'published_at__4': 'Sat, 31 May 2025 07:00:00 GMT'}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-02-18 03:45:03.468 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 21STCENMGM.NS
+2026-02-18 03:45:03.959 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 21STCENMGM
+2026-02-18 03:45:03.962 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:45:03.968 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:45:04.042 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 360ONE.NS
+2026-02-18 03:45:04.539 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 360ONE
+2026-02-18 03:45:04.542 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:45:04.548 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:45:04.674 | ERROR    | src.pipelines.news_loader:save_news:28 - News save failed: (psycopg2.ProgrammingError) can't adapt type 'FeedParserDict'
+[SQL: INSERT INTO market_news (symbol, title, summary, url, source, published_at, created_at) VALUES (%(symbol__0)s, %(title__0)s, %(summary__0)s, %(url__0)s, %(source__0)s, %(published_at__0)s, %(created_at__0)s), (%(symbol__1)s, %(title__1)s, %(summary__ ... 313 characters truncated ... )s, %(title__4)s, %(summary__4)s, %(url__4)s, %(source__4)s, %(published_at__4)s, %(created_at__4)s)]
+[parameters: {'url__0': 'https://news.google.com/rss/articles/CBMi5AFBVV95cUxOZFRGd2VhX1hoTFBKbW1sMmNndDhCVTJEdnYwV0NBRlhJSko3eHJ0Z1YzSHRsNFFKS2NTQTVTV0hTM1VvbVFPaTVDR0Q4U0JZ ... (55 characters truncated) ... sTzYtRm00cTZTQ1J0TEw1U0xYLTNxblpmdWNISDVZbXY5N3FHam4xN21uU0UxSlNtekdOVVpCMmVfSWV1dEJWZHRBSFlVVUpicDlnVWtsNnJPV2o5NlhOdUZKdWtYSGNsb0thV3p2bzk2SEw?oc=5', 'summary__0': {'type': 'text/html', 'language': None, 'base': 'https://news.google.com/rss/search?q=360ONE%20NSE%20stock&hl=en-IN&gl=IN&ceid=IN:en', 'value': '<a hr ... (358 characters truncated) ...  target="_blank">Those who invested in 360 One Wam (NSE:360ONE) five years ago are up 386%</a>&nbsp;&nbsp;<font color="#6f6f6f">simplywall.st</font>'}, 'title__0': 'Those who invested in 360 One Wam (NSE:360ONE) five years ago are up 386% - simplywall.st', 'symbol__0': '360ONE', 'source__0': 'simplywall.st', 'created_at__0': datetime.datetime(2026, 2, 17, 22, 15, 4, 673986), 'published_at__0': 'Wed, 28 Jan 2026 08:00:00 GMT', 'url__1': 'https://news.google.com/rss/articles/CBMiuAFBVV95cUxPcWRheXRKWHRzMHp3anFfUDExN0NPdnM2T1FSQU5LTWhXMnpNdWU3Um5PejRJN3EzVGZiYkloQjJRNjROdEtCNmlGYlZZSzgzWkZfUnBfcEQ1em5yS1ljZWF0aE9kaERFcWd3X1d2NVNvbDRaN01Kd2gyb05fUkxzX1c1YzhlSFYxdDZuaV9DalpjTUVIZDB5MUx1YnZHRV80c2hTSjVuTUJhT2tEUW1HZURuTDFfZGRO?oc=5', 'summary__1': {'type': 'text/html', 'language': None, 'base': 'https://news.google.com/rss/search?q=360ONE%20NSE%20stock&hl=en-IN&gl=IN&ceid=IN:en', 'value': '<a hr ... (283 characters truncated) ... RuTDFfZGRO?oc=5" target="_blank">360 ONE WAM Ltd. Records Rs. 30.66 Crore Block Trade on NSE</a>&nbsp;&nbsp;<font color="#6f6f6f">scanx.trade</font>'}, 'title__1': '360 ONE WAM Ltd. Records Rs. 30.66 Crore Block Trade on NSE - scanx.trade', 'symbol__1': '360ONE', 'source__1': 'scanx.trade', 'created_at__1': datetime.datetime(2026, 2, 17, 22, 15, 4, 673989), 'published_at__1': 'Wed, 28 Jan 2026 08:00:00 GMT', 'url__2': 'https://news.google.com/rss/articles/CBMi2gFBVV95cUxQcnF6SUMwc3pRRlA2dXR6cHhtOENFd212RDdiTkUwcUdUWnQ5cGpScUVVTDhGLXVhSGhDSkh1ZVhyaUJyRUJwbEZiOEV4TU41 ... (42 characters truncated) ... gyRGJOWm5TY2pvdmFEaExuTWZWMFExQzZUaWt6MVBrY0E1WEFzSDlZcGI5TXhjTjlScEl4ZTJmRFJhR3prM0VjWWhjcUZ2cTkyVGFkREFRUnZWLUlHVUNJekNiTUlGdlJiSkRSNFk0U1FCUQ?oc=5', 'summary__2': {'type': 'text/html', 'language': None, 'base': 'https://news.google.com/rss/search?q=360ONE%20NSE%20stock&hl=en-IN&gl=IN&ceid=IN:en', 'value': '<a hr ... (349 characters truncated) ... get="_blank">360 One Wam shares fall on heavy volumes; reports suggest Bain Capital likely seller</a>&nbsp;&nbsp;<font color="#6f6f6f">Upstox</font>'}, 'title__2': '360 One Wam shares fall on heavy volumes; reports suggest Bain Capital likely seller - Upstox', 'symbol__2': '360ONE', 'source__2': 'Upstox', 'created_at__2': datetime.datetime(2026, 2, 17, 22, 15, 4, 673990), 'published_at__2': 'Mon, 21 Jul 2025 07:00:00 GMT', 'url__3': 'https://news.google.com/rss/articles/CBMi2wFBVV95cUxQTDl1QzJfTlFjcmx2MEFGZDVCN2ZtTVlfMEM3WHljVGNNS3lGTGdGaEVLYnpVWFVRT1RGVDJPSGxYajBRZVJQdldMZWJaRjZh ... (347 characters truncated) ... tbXR2V0hBNjBzM1J5N0hJRHpsdGpENnVGRnVjbHRxWlhudU8tWXgxcVdYc25hckRvUHlWa25seklrS29LenVPWDM0Sk5MTllQZ190VHNBOFJTSGFMdjF1dG5QRWczNjZJMmxNM0xDTkVfaEU?oc=5', 'summary__3': {'type': 'text/html', 'language': None, 'base': 'https://news.google.com/rss/search?q=360ONE%20NSE%20stock&hl=en-IN&gl=IN&ceid=IN:en', 'value': '<a hr ... (656 characters truncated) ... t="_blank">360 ONE WAM block deal: Shares crash 5% as equity worth Rs 2,273 crore exchanged</a>&nbsp;&nbsp;<font color="#6f6f6f">Moneycontrol</font>'}, 'title__3': '360 ONE WAM block deal: Shares crash 5% as equity worth Rs 2,273 crore exchanged - Moneycontrol', 'symbol__3': '360ONE', 'source__3': 'Moneycontrol', 'created_at__3': datetime.datetime(2026, 2, 17, 22, 15, 4, 673991), 'published_at__3': 'Tue, 22 Jul 2025 07:00:00 GMT', 'url__4': 'https://news.google.com/rss/articles/CBMi5AFBVV95cUxPWEU0WkthMC11TVRBbW9qWWljdzM4NW8wU3JFOFpRY0N5M2VubnozMG1YQlNZbHdHcVFTVjZaU2xLNWJ1WXlpbklIa3hzMHp0 ... (372 characters truncated) ... SFdvWFFGcDNJOVBCcnlQem0tekk4ZXlrbGQzeEp4WV9BemxIMnB0ejdBYVlZNjhXbGhDWndJYlBaYzA2Ulh5ZmIxM09RdWtSVUtsM1VCX0FDUUdVSHBYQXZ5aFpsR2ZleWRuZW1pdU5NcHFn?oc=5', 'summary__4': {'type': 'text/html', 'language': None, 'base': 'https://news.google.com/rss/search?q=360ONE%20NSE%20stock&hl=en-IN&gl=IN&ceid=IN:en', 'value': '<a hr ... (724 characters truncated) ... m Limited\'s (NSE:360ONE) institutional owners who own 42% as one-year returns inch higher</a>&nbsp;&nbsp;<font color="#6f6f6f">simplywall.st</font>'}, 'title__4': "An excellent week for 360 One Wam Limited's (NSE:360ONE) institutional owners who own 42% as one-year returns inch higher - simplywall.st", 'symbol__4': '360ONE', 'source__4': 'simplywall.st', 'created_at__4': datetime.datetime(2026, 2, 17, 22, 15, 4, 673993), 'published_at__4': 'Tue, 25 Nov 2025 08:00:00 GMT'}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-02-18 03:45:04.674 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 3IINFOLTD.NS
+2026-02-18 03:45:05.459 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 3IINFOLTD
+2026-02-18 03:45:05.462 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:45:05.468 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:45:05.548 | ERROR    | src.pipelines.news_loader:save_news:28 - News save failed: (psycopg2.ProgrammingError) can't adapt type 'FeedParserDict'
+[SQL: INSERT INTO market_news (symbol, title, summary, url, source, published_at, created_at) VALUES (%(symbol__0)s, %(title__0)s, %(summary__0)s, %(url__0)s, %(source__0)s, %(published_at__0)s, %(created_at__0)s), (%(symbol__1)s, %(title__1)s, %(summary__1)s, %(url__1)s, %(source__1)s, %(published_at__1)s, %(created_at__1)s), (%(symbol__2)s, %(title__2)s, %(summary__2)s, %(url__2)s, %(source__2)s, %(published_at__2)s, %(created_at__2)s)]
+[parameters: {'url__0': 'https://news.google.com/rss/articles/CBMijwFBVV95cUxQaDcwVlU5T0pjWV9vSjBwSGtVbzdOZ3M4WG1zQmxGRFhMbVBOY3FGQXB5M1RKNkE5Tm9WNUJTLXpRcFJ4QWs4QjlKYTB0T0VQbEx5cFN3bVlYeTVIYkZtbWRmUEg3S0xCMnIyb3dqSjduUW9iR3VCVGhoNkd6QWk2Z0x6WUtIM2hHZ25XOUpxUQ?oc=5', 'summary__0': {'type': 'text/html', 'language': None, 'base': 'https://news.google.com/rss/search?q=3IINFOLTD%20NSE%20stock&hl=en-IN&gl=IN&ceid=IN:en', 'value': '<a ... (222 characters truncated) ... x6WUtIM2hHZ25XOUpxUQ?oc=5" target="_blank">3i Infotech Gains on NSE, BSE Nod for ₹100 Cr Rights</a>&nbsp;&nbsp;<font color="#6f6f6f">HDFC Sky</font>'}, 'title__0': '3i Infotech Gains on NSE, BSE Nod for ₹100 Cr Rights - HDFC Sky', 'symbol__0': '3IINFOLTD', 'source__0': 'HDFC Sky', 'created_at__0': datetime.datetime(2026, 2, 17, 22, 15, 5, 548061), 'published_at__0': 'Fri, 12 Sep 2025 07:00:00 GMT', 'url__1': 'https://news.google.com/rss/articles/CBMi_wFBVV95cUxOSjlTVFhOcWhjYlRpZkZrTDZjQ2p6V0FVR25QMFZBZ25tRzRDYzNZVlZPVFc4d3k3amluYTZwTWpFYVRtTEFTVkVnemJ5SnhM ... (91 characters truncated) ... pa2dFSEZ0djBZR3V6ZFVmQ0VfYjA2OHhXSFM5Ny1LNGZlNkxPVUMwVFp2SHV1UFBrb1FfTFdUUmRwMkhNR0YzOUZSV3h5NWZ0VWpQcVBScGwxRDFUc25VRmVVMzd2dEJlcHFrS1BNZ3oyaGM?oc=5', 'summary__1': {'type': 'text/html', 'language': None, 'base': 'https://news.google.com/rss/search?q=3IINFOLTD%20NSE%20stock&hl=en-IN&gl=IN&ceid=IN:en', 'value': '<a ... (413 characters truncated) ... >A Sliding Share Price Has Us Looking At 3i Infotech Limited\'s (NSE:3IINFOTECH) P/E Ratio</a>&nbsp;&nbsp;<font color="#6f6f6f">simplywall.st</font>'}, 'title__1': "A Sliding Share Price Has Us Looking At 3i Infotech Limited's (NSE:3IINFOTECH) P/E Ratio - simplywall.st", 'symbol__1': '3IINFOLTD', 'source__1': 'simplywall.st', 'created_at__1': datetime.datetime(2026, 2, 17, 22, 15, 5, 548066), 'published_at__1': 'Mon, 23 Mar 2020 07:00:00 GMT', 'url__2': 'https://news.google.com/rss/articles/CBMifkFVX3lxTFA4b2VVcHdYdFJwbWdKYVQ2YnJkZ1lnazQyVWZzczhaN1lLR2tMaHg1SENzX19ZdjRFWXM4ZC01bzNYQ0FSMVlyU2dIZEVmSi1nMjBBUlQ0Q29KUDJibUpxUGlLWnY5T2lYRERwVlU2QnFRRVFsa05iYjRxVUVzQQ?oc=5', 'summary__2': {'type': 'text/html', 'language': None, 'base': 'https://news.google.com/rss/search?q=3IINFOLTD%20NSE%20stock&hl=en-IN&gl=IN&ceid=IN:en', 'value': '<a ... (195 characters truncated) ... 2QnFRRVFsa05iYjRxVUVzQQ?oc=5" target="_blank">3i Infotech appoints Mr. Raj Ahuja as the new CEO</a>&nbsp;&nbsp;<font color="#6f6f6f">APN News</font>'}, 'title__2': '3i Infotech appoints Mr. Raj Ahuja as the new CEO - APN News', 'symbol__2': '3IINFOLTD', 'source__2': 'APN News', 'created_at__2': datetime.datetime(2026, 2, 17, 22, 15, 5, 548067), 'published_at__2': 'Thu, 29 Aug 2024 07:00:00 GMT'}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-02-18 03:45:05.548 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 3MINDIA.NS
+2026-02-18 03:45:05.922 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 3MINDIA
+2026-02-18 03:45:05.923 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:45:05.928 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:45:06.036 | ERROR    | src.pipelines.news_loader:save_news:28 - News save failed: (psycopg2.ProgrammingError) can't adapt type 'FeedParserDict'
+[SQL: INSERT INTO market_news (symbol, title, summary, url, source, published_at, created_at) VALUES (%(symbol__0)s, %(title__0)s, %(summary__0)s, %(url__0)s, %(source__0)s, %(published_at__0)s, %(created_at__0)s), (%(symbol__1)s, %(title__1)s, %(summary__ ... 313 characters truncated ... )s, %(title__4)s, %(summary__4)s, %(url__4)s, %(source__4)s, %(published_at__4)s, %(created_at__4)s)]
+[parameters: {'url__0': 'https://news.google.com/rss/articles/CBMi4AFBVV95cUxObngzOXN2cHZ5a25yengwUExDeUZYTTRCajZqVXpnWmxKVDAwLU9yOU14MUZ4OC11TzFqSUdXUWNvX3Y0YmpBQ1JyNTc4djF4 ... (362 characters truncated) ... lKaS04TWI5V1pSTEdnVHp3QjJIamIzNWE1X3BSeEdqTjdJbVVNYU1MOVNtczhUdUZDTnpNTUVaWlljXzdCRW96Y0tVQW8zaTJzOEw1X3JCWUNwbDhseEFiVjVnd0hmZTFzQXlpMnVsT1pmUQ?oc=5', 'summary__0': {'type': 'text/html', 'language': None, 'base': 'https://news.google.com/rss/search?q=3MINDIA%20NSE%20stock&hl=en-IN&gl=IN&ceid=IN:en', 'value': '<a h ... (663 characters truncated) ... =5" target="_blank">3M India shares rise 2.04%; stock among top gainers on Nifty Midcap 150</a>&nbsp;&nbsp;<font color="#6f6f6f">Moneycontrol</font>'}, 'title__0': '3M India shares rise 2.04%; stock among top gainers on Nifty Midcap 150 - Moneycontrol', 'symbol__0': '3MINDIA', 'source__0': 'Moneycontrol', 'created_at__0': datetime.datetime(2026, 2, 17, 22, 15, 6, 36438), 'published_at__0': 'Mon, 16 Feb 2026 07:33:14 GMT', 'url__1': 'https://news.google.com/rss/articles/CBMi8AFBVV95cUxPdzhOV0Z4SW12aDZwNk8tbmFqVGpveEdmMi1ncnRIS0NWV3ZUTVhLc1Byd0swTks3N2lfTVNpQ2VoMHhpWHRvakdLOUlwOEs0 ... (71 characters truncated) ... vc195ZjlLRGlCOUZOVnZZLW85bWZVX2VCelpjZFpCTWhweFZKazBBaWxrZjhhTW5fT29oUEdqbjJ1SEdNODN2UkdldXFqN1I2QWNzWU5wVy1MZWtodTZhQzYtb3dnc082Q09YQ1NxYTRza0E?oc=5', 'summary__1': {'type': 'text/html', 'language': None, 'base': 'https://news.google.com/rss/search?q=3MINDIA%20NSE%20stock&hl=en-IN&gl=IN&ceid=IN:en', 'value': '<a h ... (386 characters truncated) ... lank">3M India shares post best day in over 10 years; here is why the stock is surging on Tuesday</a>&nbsp;&nbsp;<font color="#6f6f6f">Upstox</font>'}, 'title__1': '3M India shares post best day in over 10 years; here is why the stock is surging on Tuesday - Upstox', 'symbol__1': '3MINDIA', 'source__1': 'Upstox', 'created_at__1': datetime.datetime(2026, 2, 17, 22, 15, 6, 36441), 'published_at__1': 'Mon, 03 Nov 2025 08:00:00 GMT', 'url__2': 'https://news.google.com/rss/articles/CBMi1gFBVV95cUxQMTBCN0gyVWs3S0tXZkhmcnNxNGE2c2RDUWdObzNualVaWW5IX0d2clhnUkpLUmZBRDAzQjZMSVNheXo3WFMyNmlCSll0b1hj ... (36 characters truncated) ... UGdkNUJrRko1dWxwc0ZGVFR3X2d6eG5nS3pleXVzbENHZWNsNjV5TVRwdE44a3VzNnFmTU1CUkJNcjVvQk5INkVuNEJvTTI2cEdDTDJCUjN6bkF2YnJpbk9HT3g5WllKc3NGZGZkYVlJMFFR?oc=5', 'summary__2': {'type': 'text/html', 'language': None, 'base': 'https://news.google.com/rss/search?q=3MINDIA%20NSE%20stock&hl=en-IN&gl=IN&ceid=IN:en', 'value': '<a h ... (366 characters truncated) ... ia Limited\'s (NSE:3MINDIA) Latest Stock Performance A Reflection Of Its Financial Health?</a>&nbsp;&nbsp;<font color="#6f6f6f">simplywall.st</font>'}, 'title__2': "Is 3M India Limited's (NSE:3MINDIA) Latest Stock Performance A Reflection Of Its Financial Health? - simplywall.st", 'symbol__2': '3MINDIA', 'source__2': 'simplywall.st', 'created_at__2': datetime.datetime(2026, 2, 17, 22, 15, 6, 36442), 'published_at__2': 'Thu, 25 Dec 2025 08:00:00 GMT', 'url__3': 'https://news.google.com/rss/articles/CBMi2gFBVV95cUxQN1VlUXJMTGJJY21BU3o3MEV4Q2VNOFVKVVNvdVdrLVNCY25VOHBHZ1U5d29NQmZiXzZlMGR2Y2d1UmIwRVVwVTFsUHd2a1Bu ... (42 characters truncated) ... E0YWUtTUtxUWxZQ0NKNms0R3o2TWEyVmF1UDFHQUJQdTFUTHVSZ093Z1BYRHE5Mll0MXhjNG9XV3hROTEzUE5VT3FsRHBGUzhQZHpjTWNwT3hCNUstdFdwMUFpakZUa1EzalhKbkF0T3UwZw?oc=5', 'summary__3': {'type': 'text/html', 'language': None, 'base': 'https://news.google.com/rss/search?q=3MINDIA%20NSE%20stock&hl=en-IN&gl=IN&ceid=IN:en', 'value': '<a h ... (330 characters truncated) ... bkF0T3UwZw?oc=5" target="_blank">3M India Board Addresses Exchange Fine for Disclosure Delay</a>&nbsp;&nbsp;<font color="#6f6f6f">scanx.trade</font>'}, 'title__3': '3M India Board Addresses Exchange Fine for Disclosure Delay - scanx.trade', 'symbol__3': '3MINDIA', 'source__3': 'scanx.trade', 'created_at__3': datetime.datetime(2026, 2, 17, 22, 15, 6, 36444), 'published_at__3': 'Tue, 23 Dec 2025 08:00:00 GMT', 'url__4': 'https://news.google.com/rss/articles/CBMigwJBVV95cUxPNnB1clpHT0NNYWlXRm94U0ZzVHdQY2wxcnIxLTJ0RTB6ZzRKQjV5SWNET0pYYW9ZZXpnUFhOUWhncEszNlU0T2xlcWE3MFBF ... (454 characters truncated) ... MwZEJPSmhrRkJLa3VpNVNFaG44WlpUUkk2SkVOZk5aSlk1UFBKbUpzTkptN3BXNHFHbERqZFU0MjRITzFsZXhBN2VMUGc2SU1QLV9zUTJEMjZyNXVCWG55RUVlVXRVOTFLdHRGc2VVNzBWYQ?oc=5', 'summary__4': {'type': 'text/html', 'language': None, 'base': 'https://news.google.com/rss/search?q=3MINDIA%20NSE%20stock&hl=en-IN&gl=IN&ceid=IN:en', 'value': '<a h ... (792 characters truncated) ... oom 13% after reporting 43% YoY surge in Q2 PAT, ICICI Securities raises target price</a>&nbsp;&nbsp;<font color="#6f6f6f">The Economic Times</font>'}, 'title__4': '3M India shares zoom 13% after reporting 43% YoY surge in Q2 PAT, ICICI Securities raises target price - The Economic Times', 'symbol__4': '3MINDIA', 'source__4': 'The Economic Times', 'created_at__4': datetime.datetime(2026, 2, 17, 22, 15, 6, 36445), 'published_at__4': 'Tue, 04 Nov 2025 08:00:00 GMT'}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-02-18 03:45:06.037 | INFO     | __main__:run:59 - Pipeline finished
+2026-02-18 03:46:23.796 | INFO     | __main__:run:26 - Starting Stock Market AI Platform
+2026-02-18 03:46:23.797 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:10 - Fetching NSE symbols
+2026-02-18 03:46:24.005 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:32 - Fetched 2238 symbols
+2026-02-18 03:46:24.005 | INFO     | src.storage.db.writer:save_symbols:11 - Saving symbols master
+2026-02-18 03:46:24.759 | INFO     | __main__:run:40 - Active symbols: 2238
+2026-02-18 03:46:24.759 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 20MICRONS.NS
+2026-02-18 03:46:25.802 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 20MICRONS
+2026-02-18 03:46:25.805 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:46:25.816 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:46:25.902 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:46:25.902 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 21STCENMGM.NS
+2026-02-18 03:46:26.275 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 21STCENMGM
+2026-02-18 03:46:26.278 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:46:26.282 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:46:26.368 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 360ONE.NS
+2026-02-18 03:46:26.749 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 360ONE
+2026-02-18 03:46:26.751 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:46:26.756 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:46:26.859 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:46:26.859 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 3IINFOLTD.NS
+2026-02-18 03:46:27.237 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 3IINFOLTD
+2026-02-18 03:46:27.238 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:46:27.242 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:46:27.350 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 3 news records
+2026-02-18 03:46:27.350 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 3MINDIA.NS
+2026-02-18 03:46:27.726 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 3MINDIA
+2026-02-18 03:46:27.727 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:46:27.731 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:46:27.837 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:46:27.837 | INFO     | __main__:run:59 - Pipeline finished
+2026-02-18 03:48:21.313 | INFO     | __main__:run:26 - Starting Stock Market AI Platform
+2026-02-18 03:48:21.313 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:10 - Fetching NSE symbols
+2026-02-18 03:48:21.651 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:32 - Fetched 2238 symbols
+2026-02-18 03:48:21.651 | INFO     | src.storage.db.writer:save_symbols:11 - Saving symbols master
+2026-02-18 03:48:22.421 | INFO     | __main__:run:40 - Active symbols: 2238
+2026-02-18 03:48:22.422 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 20MICRONS.NS
+2026-02-18 03:48:23.310 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 20MICRONS
+2026-02-18 03:48:23.312 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:48:23.322 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:48:24.023 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:48:24.023 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 21STCENMGM.NS
+2026-02-18 03:48:24.405 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 21STCENMGM
+2026-02-18 03:48:24.407 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:48:24.413 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:48:25.085 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 360ONE.NS
+2026-02-18 03:48:25.469 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 360ONE
+2026-02-18 03:48:25.472 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:48:25.476 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:48:25.953 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:48:25.954 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 3IINFOLTD.NS
+2026-02-18 03:48:26.327 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 3IINFOLTD
+2026-02-18 03:48:26.328 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:48:26.333 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:48:26.621 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 3 news records
+2026-02-18 03:48:26.621 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 3MINDIA.NS
+2026-02-18 03:48:26.991 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 3MINDIA
+2026-02-18 03:48:26.994 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:48:26.999 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:48:27.819 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:48:27.819 | INFO     | __main__:run:59 - Pipeline finished
+2026-02-18 03:53:13.632 | INFO     | __main__:run:26 - Starting Stock Market AI Platform
+2026-02-18 03:53:13.632 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:10 - Fetching NSE symbols
+2026-02-18 03:53:13.877 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:32 - Fetched 2238 symbols
+2026-02-18 03:53:13.878 | INFO     | src.storage.db.writer:save_symbols:11 - Saving symbols master
+2026-02-18 03:53:14.703 | INFO     | __main__:run:40 - Active symbols: 2238
+2026-02-18 03:53:14.703 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 20MICRONS.NS
+2026-02-18 03:53:15.534 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 20MICRONS
+2026-02-18 03:53:15.537 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:53:15.547 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:53:16.252 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:53:16.252 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 21STCENMGM.NS
+2026-02-18 03:53:16.647 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 21STCENMGM
+2026-02-18 03:53:16.649 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:53:16.653 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:53:17.349 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 360ONE.NS
+2026-02-18 03:53:17.748 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 360ONE
+2026-02-18 03:53:17.749 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:53:17.754 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:53:18.577 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:53:18.577 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 3IINFOLTD.NS
+2026-02-18 03:53:19.072 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 3IINFOLTD
+2026-02-18 03:53:19.076 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:53:19.080 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:53:19.813 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 3 news records
+2026-02-18 03:53:19.813 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: 3MINDIA.NS
+2026-02-18 03:53:20.196 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing 3MINDIA
+2026-02-18 03:53:20.197 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2 rows
+2026-02-18 03:53:20.202 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-18 03:53:20.941 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-18 03:53:20.941 | INFO     | __main__:run:59 - Pipeline finished

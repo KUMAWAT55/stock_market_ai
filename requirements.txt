@@ -1,38 +1,42 @@
-# Core Data
-pandas>=2.0.0
-numpy>=1.24.0
+# Core Data Libraries
+pandas>=2.0.0            # Data manipulation and analysis library
+numpy>=1.24.0            # Fundamental package for numerical computations
 
-# Market Data
-yfinance>=0.2.36
-requests>=2.31.0
+# Market Data Libraries
+yfinance>=0.2.36         # Yahoo Finance API for financial data
+requests>=2.31.0         # HTTP library for making requests to web services
 
-# Database
-sqlalchemy>=2.0.0
-psycopg2-binary>=2.9.9
+# Database Libraries
+sqlalchemy>=2.0.0        # SQL toolkit and Object-Relational Mapping (ORM) library
+psycopg2-binary>=2.9.9   # PostgreSQL database adapter for Python
 
-# Logging
-loguru>=0.7.2
+# Logging Library
+loguru>=0.7.2            # Simplified logging library
 
-# Config / Env (Future-proof)
-python-dotenv>=1.0.1
+# Configuration and Environment Management
+python-dotenv>=1.0.1     # Loads environment variables from a .env file
 
-# ML (Future Use)
-scikit-learn>=1.4.0
-xgboost>=2.0.0
+# Machine Learning Libraries (For Future Use)
+scikit-learn>=1.4.0      # Machine learning library for data mining and data analysis
+xgboost>=2.0.0           # Optimized gradient boosting library
 
-# Visualization (Later Dashboards)
-matplotlib>=3.8.0
-plotly>=5.19.0
+# Visualization Libraries (For Future Dashboards)
+matplotlib>=3.8.0        # Plotting library for creating static, animated, and interactive visualizations
+plotly>=5.19.0           # Interactive graphing library
 
-# API Layer (Later)
-fastapi>=0.110.0
-uvicorn>=0.27.0
+# API Layer Libraries (For Future Development)
+fastapi>=0.110.0         # Web framework for building APIs with Python 3.6+ based on standard Python type hints
+uvicorn>=0.27.0          # ASGI server for serving FastAPI applications
 
-
-feedparser>=6.0.11
-
-streamlit
-newspaper3k
-lxml_html_clean
-beautifulsoup4
-lxml
+# Additional Libraries
+feedparser>=6.0.11       # Parses RSS feeds
+streamlit                # Framework for creating web apps from Python scripts
+newspaper3k              # Article scraping and curation
+lxml_html_clean          # HTML cleaning library
+beautifulsoup4           # Library for parsing HTML and XML documents
+lxml                     # XML and HTML processing library
+newsapi
+newsapi-python
+GoogleNews
+pygooglenews
+GNews

@@ -17,7 +17,7 @@ def fetch_nse_symbols():
     for _, row in df.iterrows():
 
         symbols.append({
-            "symbol": row["SYMBOL"] + ".NS",
+            "symbol": row["SYMBOL"] ,
             "name": row["NAME OF COMPANY"],
             "exchange": "NSE",
             "series" : row[" SERIES"],

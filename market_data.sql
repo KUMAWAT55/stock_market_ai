@@ -75,6 +75,8 @@ CREATE TABLE IF NOT EXISTS market_news (
     source VARCHAR(50),                    -- News source/publisher
 
     published_at TIMESTAMP WITHOUT TIME ZONE, -- When the news was published
+    sentiment_score FLOAT DEFAULT 0.0,     -- Sentiment score in range [-1, 1]
+    sentiment_label VARCHAR(20) DEFAULT 'neutral', -- Sentiment class
 
     created_at TIMESTAMP WITHOUT TIME ZONE     -- Record creation timestamp
         DEFAULT CURRENT_TIMESTAMP,

@@ -40,7 +40,7 @@ def run():
     logger.info(f"Active symbols: {len(active_symbols)}")
 
     # Safety limit first run
-    active_symbols = active_symbols[:5]
+    active_symbols = active_symbols[:10]
 
     # 3. Ingestion loop
     for sym in active_symbols:

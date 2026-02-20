@@ -88,6 +88,8 @@ class News(Base):
     source = Column(String)
 
     published_at = Column(DateTime)
+    sentiment_score = Column(Float, default=0.0)
+    sentiment_label = Column(String, default="neutral")
 
     created_at = Column(
         DateTime,

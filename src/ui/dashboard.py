@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 from sqlalchemy import create_engine
 import plotly.graph_objects as go
-import re
 
 
 # DB Connection
@@ -22,12 +21,31 @@ st.title("📈 AI Trading System")
 # Sidebar
 # ----------------------------------
 
-stocks = ["20MICRONS", "360ONE", "3IINFOLTD"]
+@st.cache_data
+def load_symbols():
+    symbols_df = pd.read_sql(
+        """
+        SELECT symbol, name
+        FROM symbols_master
+        WHERE active = true
+        ORDER BY symbol
+        """,
+        engine,
+    )
 
-symbol = st.sidebar.selectbox(
-    "Select Stock",
-    stocks
-)
+    if not symbols_df.empty:
+        return symbols_df
+
+    fallback_df = pd.read_sql(
+        """
+        SELECT DISTINCT symbol, NULL AS name
+        FROM market_data
+        ORDER BY symbol
+        """,
+        engine,
+    )
+    return fallback_df
+
 
 # ----------------------------------
 # Load Data
@@ -54,6 +72,29 @@ def load_news(sym):
         ORDER BY published_at DESC
         LIMIT 5
     """, engine)
+
+
+# ----------------------------------
+# Sidebar
+# ----------------------------------
+
+symbols_df = load_symbols()
+
+if symbols_df.empty:
+    st.warning("No symbols found in symbols_master or market_data.")
+    st.stop()
+
+symbol_labels = symbols_df.apply(
+    lambda row: f"{row['symbol']} - {row['name']}" if pd.notna(row["name"]) and row["name"] else row["symbol"],
+    axis=1,
+).tolist()
+label_to_symbol = dict(zip(symbol_labels, symbols_df["symbol"]))
+
+selected_label = st.sidebar.selectbox(
+    "Select Stock",
+    symbol_labels,
+)
+symbol = label_to_symbol[selected_label]
 
 
 # ----------------------------------
@@ -103,13 +144,21 @@ if not news.empty:
 
     for _, row in news.iterrows():
 
-        color = "green" if re.search("Fund",row["title"])  else "red"
+        sentiment = (row.get("sentiment_label") or "neutral").lower()
+        score = row.get("sentiment_score")
+        color_map = {
+            "positive": "green",
+            "negative": "red",
+            "neutral": "gray",
+        }
+        color = color_map.get(sentiment, "gray")
+        score_text = f"{float(score):.2f}" if pd.notna(score) else "0.00"
 
         st.markdown(
             f"""
             **{row['title']}**  
             Source: {row['source']}  
-            Sentiment: :{color}[{row["title"]}]  
+            Sentiment: :{color}[{sentiment.title()} ({score_text})]  
             [Read More]({row['url']})
             """
         )

@@ -1,42 +1,9 @@
-# Core Data Libraries
-pandas>=2.0.0            # Data manipulation and analysis library
-numpy>=1.24.0            # Fundamental package for numerical computations
-
-# Market Data Libraries
-yfinance>=0.2.36         # Yahoo Finance API for financial data
-requests>=2.31.0         # HTTP library for making requests to web services
-
-# Database Libraries
-sqlalchemy>=2.0.0        # SQL toolkit and Object-Relational Mapping (ORM) library
-psycopg2-binary>=2.9.9   # PostgreSQL database adapter for Python
-
-# Logging Library
-loguru>=0.7.2            # Simplified logging library
-
-# Configuration and Environment Management
-python-dotenv>=1.0.1     # Loads environment variables from a .env file
-
-# Machine Learning Libraries (For Future Use)
-scikit-learn>=1.4.0      # Machine learning library for data mining and data analysis
-xgboost>=2.0.0           # Optimized gradient boosting library
-
-# Visualization Libraries (For Future Dashboards)
-matplotlib>=3.8.0        # Plotting library for creating static, animated, and interactive visualizations
-plotly>=5.19.0           # Interactive graphing library
-
-# API Layer Libraries (For Future Development)
-fastapi>=0.110.0         # Web framework for building APIs with Python 3.6+ based on standard Python type hints
-uvicorn>=0.27.0          # ASGI server for serving FastAPI applications
-
-# Additional Libraries
-feedparser>=6.0.11       # Parses RSS feeds
-streamlit                # Framework for creating web apps from Python scripts
-newspaper3k              # Article scraping and curation
-lxml_html_clean          # HTML cleaning library
-beautifulsoup4           # Library for parsing HTML and XML documents
-lxml                     # XML and HTML processing library
-newsapi
-newsapi-python
-GoogleNews
-pygooglenews
-GNews
+pandas>=2.0.0
+yfinance>=0.2.36
+requests>=2.31.0
+sqlalchemy>=2.0.0
+psycopg2-binary>=2.9.9
+loguru>=0.7.2
+plotly>=5.19.0
+feedparser>=6.0.11
+streamlit>=1.0.0

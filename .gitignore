@@ -36,6 +36,7 @@ logs/
 # IDE/editor
 .idea/
 .vscode/
+.slingshot/
 
 # Environment and local config
 .env

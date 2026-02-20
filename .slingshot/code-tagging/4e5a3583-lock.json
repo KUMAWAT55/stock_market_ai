@@ -1,0 +1,111 @@
+{
+  "src/storage/db/connection.py": {
+    "filename": "connection.py",
+    "path": "src/storage/db/connection.py",
+    "version": "1.1",
+    "chunks": {
+      "b852e5": {
+        "user": "Rohit Kumawat",
+        "model": "gpt-4.1",
+        "timestamp": 1771273915,
+        "platform": "VisualStudioCode",
+        "product": "AIPP",
+        "productVersion": "2.1.2",
+        "source": "chat",
+        "type": "insertCode",
+        "hash": "ccd8d68a",
+        "messageId": "system_80f43310-0b76-11f1-b0d1-d73ce0bac4a0",
+        "codeBlockId": "system_80f43310-0b76-11f1-b0d1-d73ce0bac4a0-Codeblock-1",
+        "isActive": false
+      },
+      "b93340": {
+        "user": "Rohit Kumawat",
+        "model": "gpt-4.1",
+        "timestamp": 1771273920,
+        "platform": "VisualStudioCode",
+        "product": "AIPP",
+        "productVersion": "2.1.2",
+        "source": "chat",
+        "type": "insertCode",
+        "hash": "ccd8d68a",
+        "messageId": "system_80f43310-0b76-11f1-b0d1-d73ce0bac4a0",
+        "codeBlockId": "system_80f43310-0b76-11f1-b0d1-d73ce0bac4a0-Codeblock-1",
+        "isActive": true
+      }
+    },
+    "lines": {
+      "8": {
+        "chunkId": "b93340",
+        "hash": "48aecdd3",
+        "encoded": "#%20Create%20a%20SQLAlchemy%20engine%20instance%20using%20the%20database%20URL.",
+        "prevChunkIds": []
+      },
+      "9": {
+        "chunkId": "b93340",
+        "hash": "e0265995",
+        "encoded": "#%20pool_pre_ping=True%20checks%20connections%20before%20using%20them,%20helping%20avoid%20stale%20connections.",
+        "prevChunkIds": []
+      },
+      "10": {
+        "chunkId": "b93340",
+        "hash": "901f63e6",
+        "encoded": "engine%20=%20create_engine(DB_URL,%20pool_pre_ping=True)",
+        "prevChunkIds": []
+      },
+      "12": {
+        "chunkId": "b93340",
+        "hash": "9fc00bba",
+        "encoded": "#%20Create%20a%20session%20factory%20bound%20to%20the%20engine.",
+        "prevChunkIds": []
+      },
+      "13": {
+        "chunkId": "b93340",
+        "hash": "efc3c993",
+        "encoded": "#%20autocommit=False:%20Transactions%20are%20not%20committed%20automatically.",
+        "prevChunkIds": []
+      },
+      "14": {
+        "chunkId": "b93340",
+        "hash": "4132bf59",
+        "encoded": "#%20autoflush=False:%20Changes%20are%20not%20flushed%20to%20the%20database%20automatically.",
+        "prevChunkIds": []
+      },
+      "15": {
+        "chunkId": "b93340",
+        "hash": "3ab4c220",
+        "encoded": "#%20bind=engine:%20Sessions%20will%20use%20the%20above%20engine%20for%20DB%20operations.",
+        "prevChunkIds": []
+      },
+      "16": {
+        "chunkId": "b93340",
+        "hash": "7ef0ed7f",
+        "encoded": "SessionLocal%20=%20sessionmaker(",
+        "prevChunkIds": []
+      },
+      "17": {
+        "chunkId": "b93340",
+        "hash": "6f5610ab",
+        "encoded": "autocommit=False,",
+        "prevChunkIds": []
+      },
+      "18": {
+        "chunkId": "b93340",
+        "hash": "913d20e5",
+        "encoded": "autoflush=False,",
+        "prevChunkIds": []
+      },
+      "19": {
+        "chunkId": "b93340",
+        "hash": "7cbd4f75",
+        "encoded": "bind=engine",
+        "prevChunkIds": []
+      },
+      "20": {
+        "chunkId": "b93340",
+        "hash": "35725881",
+        "encoded": ")",
+        "prevChunkIds": []
+      }
+    }
+  }
+}

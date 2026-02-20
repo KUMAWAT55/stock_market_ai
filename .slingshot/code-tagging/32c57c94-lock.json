@@ -1,0 +1,61 @@
+{
+  "src/storage/db/create_tables.py": {
+    "filename": "create_tables.py",
+    "path": "src/storage/db/create_tables.py",
+    "version": "1.1",
+    "chunks": {
+      "ffd654": {
+        "user": "Rohit Kumawat",
+        "model": "gpt-4.1",
+        "timestamp": 1771272858,
+        "platform": "VisualStudioCode",
+        "product": "AIPP",
+        "productVersion": "2.1.2",
+        "source": "chat",
+        "type": "pasteCode",
+        "hash": "cd87679c",
+        "messageId": "system_07f89700-0b74-11f1-b0d1-d73ce0bac4a0",
+        "codeBlockId": "system_07f89700-0b74-11f1-b0d1-d73ce0bac4a0-Codeblock-1",
+        "isActive": true
+      }
+    },
+    "lines": {
+      "11": {
+        "chunkId": "ffd654",
+        "hash": "5fb00d42",
+        "encoded": "from%20src.storage.db.connection%20import%20engine%20%20#%20Use%20the%20shared%20engine%20from%20connection.py",
+        "prevChunkIds": []
+      },
+      "12": {
+        "chunkId": "ffd654",
+        "hash": "d81388e1",
+        "encoded": "from%20src.storage.db.models%20import%20Base%20%20%20%20%20%20%20%20#%20Import%20Base%20with%20all%20ORM%20models",
+        "prevChunkIds": []
+      },
+      "14": {
+        "chunkId": "ffd654",
+        "hash": "dc07347e",
+        "encoded": "if%20__name__%20==%20%22__main__%22:",
+        "prevChunkIds": []
+      },
+      "15": {
+        "chunkId": "ffd654",
+        "hash": "b1c73214",
+        "encoded": "#%20Create%20all%20tables%20defined%20in%20models.py%20using%20the%20shared%20engine",
+        "prevChunkIds": []
+      },
+      "16": {
+        "chunkId": "ffd654",
+        "hash": "278d64fb",
+        "encoded": "Base.metadata.create_all(engine)",
+        "prevChunkIds": []
+      },
+      "17": {
+        "chunkId": "ffd654",
+        "hash": "79421a65",
+        "encoded": "print(%22All%20tables%20created%20successfully.%22)",
+        "prevChunkIds": []
+      }
+    }
+  }
+}

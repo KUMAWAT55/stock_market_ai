@@ -1,0 +1,227 @@
+{
+  "requirements.txt": {
+    "filename": "requirements.txt",
+    "path": "requirements.txt",
+    "version": "1.1",
+    "chunks": {
+      "3128b3": {
+        "user": "Rohit Kumawat",
+        "model": "gpt-4.1",
+        "timestamp": 1771271802,
+        "platform": "VisualStudioCode",
+        "product": "AIPP",
+        "productVersion": "2.1.2",
+        "source": "chat",
+        "type": "compareCode",
+        "hash": "cf3650ea",
+        "messageId": "system_90719990-0b71-11f1-b0d1-d73ce0bac4a0",
+        "codeBlockId": "system_90719990-0b71-11f1-b0d1-d73ce0bac4a0-Codeblock-1",
+        "isActive": false
+      },
+      "b6dcfd": {
+        "user": "Rohit Kumawat",
+        "model": "gpt-4.1",
+        "timestamp": 1771271816,
+        "platform": "VisualStudioCode",
+        "product": "AIPP",
+        "productVersion": "2.1.2",
+        "source": "chat",
+        "type": "insertCode",
+        "hash": "cf3650ea",
+        "messageId": "system_90719990-0b71-11f1-b0d1-d73ce0bac4a0",
+        "codeBlockId": "system_90719990-0b71-11f1-b0d1-d73ce0bac4a0-Codeblock-1",
+        "isActive": false
+      },
+      "05fc95": {
+        "user": "Rohit Kumawat",
+        "model": "gpt-4.1",
+        "timestamp": 1771271826,
+        "platform": "VisualStudioCode",
+        "product": "AIPP",
+        "productVersion": "2.1.2",
+        "source": "chat",
+        "type": "toggleView",
+        "hash": "cf3650ea",
+        "messageId": "system_90719990-0b71-11f1-b0d1-d73ce0bac4a0",
+        "codeBlockId": "system_90719990-0b71-11f1-b0d1-d73ce0bac4a0-Codeblock-1",
+        "isActive": true
+      }
+    },
+    "lines": {
+      "0": {
+        "chunkId": "05fc95",
+        "hash": "b164a916",
+        "encoded": "#%20Core%20Data%20Libraries",
+        "prevChunkIds": []
+      },
+      "1": {
+        "chunkId": "05fc95",
+        "hash": "7dff05c5",
+        "encoded": "pandas%3E=2.0.0%20%20%20%20%20%20%20%20%20%20%20%20#%20Data%20manipulation%20and%20analysis%20library",
+        "prevChunkIds": []
+      },
+      "2": {
+        "chunkId": "05fc95",
+        "hash": "59db7131",
+        "encoded": "numpy%3E=1.24.0%20%20%20%20%20%20%20%20%20%20%20%20#%20Fundamental%20package%20for%20numerical%20computations",
+        "prevChunkIds": []
+      },
+      "4": {
+        "chunkId": "05fc95",
+        "hash": "bb000f9d",
+        "encoded": "#%20Market%20Data%20Libraries",
+        "prevChunkIds": []
+      },
+      "5": {
+        "chunkId": "05fc95",
+        "hash": "f121b5c3",
+        "encoded": "yfinance%3E=0.2.36%20%20%20%20%20%20%20%20%20#%20Yahoo%20Finance%20API%20for%20financial%20data",
+        "prevChunkIds": []
+      },
+      "6": {
+        "chunkId": "05fc95",
+        "hash": "697e8ad4",
+        "encoded": "requests%3E=2.31.0%20%20%20%20%20%20%20%20%20#%20HTTP%20library%20for%20making%20requests%20to%20web%20services",
+        "prevChunkIds": []
+      },
+      "8": {
+        "chunkId": "05fc95",
+        "hash": "cb3d43cd",
+        "encoded": "#%20Database%20Libraries",
+        "prevChunkIds": []
+      },
+      "9": {
+        "chunkId": "05fc95",
+        "hash": "e293aab2",
+        "encoded": "sqlalchemy%3E=2.0.0%20%20%20%20%20%20%20%20#%20SQL%20toolkit%20and%20Object-Relational%20Mapping%20(ORM)%20library",
+        "prevChunkIds": []
+      },
+      "10": {
+        "chunkId": "05fc95",
+        "hash": "75c6bdaf",
+        "encoded": "psycopg2-binary%3E=2.9.9%20%20%20#%20PostgreSQL%20database%20adapter%20for%20Python",
+        "prevChunkIds": []
+      },
+      "12": {
+        "chunkId": "05fc95",
+        "hash": "4b41f38e",
+        "encoded": "#%20Logging%20Library",
+        "prevChunkIds": []
+      },
+      "13": {
+        "chunkId": "05fc95",
+        "hash": "eb1d5d60",
+        "encoded": "loguru%3E=0.7.2%20%20%20%20%20%20%20%20%20%20%20%20#%20Simplified%20logging%20library",
+        "prevChunkIds": []
+      },
+      "15": {
+        "chunkId": "05fc95",
+        "hash": "5b2c9527",
+        "encoded": "#%20Configuration%20and%20Environment%20Management",
+        "prevChunkIds": []
+      },
+      "16": {
+        "chunkId": "05fc95",
+        "hash": "c6220e2d",
+        "encoded": "python-dotenv%3E=1.0.1%20%20%20%20%20#%20Loads%20environment%20variables%20from%20a%20.env%20file",
+        "prevChunkIds": []
+      },
+      "18": {
+        "chunkId": "05fc95",
+        "hash": "a7431717",
+        "encoded": "#%20Machine%20Learning%20Libraries%20(For%20Future%20Use)",
+        "prevChunkIds": []
+      },
+      "19": {
+        "chunkId": "05fc95",
+        "hash": "15500ca8",
+        "encoded": "scikit-learn%3E=1.4.0%20%20%20%20%20%20#%20Machine%20learning%20library%20for%20data%20mining%20and%20data%20analysis",
+        "prevChunkIds": []
+      },
+      "20": {
+        "chunkId": "05fc95",
+        "hash": "e0c173ae",
+        "encoded": "xgboost%3E=2.0.0%20%20%20%20%20%20%20%20%20%20%20#%20Optimized%20gradient%20boosting%20library",
+        "prevChunkIds": []
+      },
+      "22": {
+        "chunkId": "05fc95",
+        "hash": "e824c9f8",
+        "encoded": "#%20Visualization%20Libraries%20(For%20Future%20Dashboards)",
+        "prevChunkIds": []
+      },
+      "23": {
+        "chunkId": "05fc95",
+        "hash": "37ac61d4",
+        "encoded": "matplotlib%3E=3.8.0%20%20%20%20%20%20%20%20#%20Plotting%20library%20for%20creating%20static,%20animated,%20and%20interactive%20visualizations",
+        "prevChunkIds": []
+      },
+      "24": {
+        "chunkId": "05fc95",
+        "hash": "f1033692",
+        "encoded": "plotly%3E=5.19.0%20%20%20%20%20%20%20%20%20%20%20#%20Interactive%20graphing%20library",
+        "prevChunkIds": []
+      },
+      "26": {
+        "chunkId": "05fc95",
+        "hash": "30fc87c7",
+        "encoded": "#%20API%20Layer%20Libraries%20(For%20Future%20Development)",
+        "prevChunkIds": []
+      },
+      "27": {
+        "chunkId": "05fc95",
+        "hash": "1226ff23",
+        "encoded": "fastapi%3E=0.110.0%20%20%20%20%20%20%20%20%20#%20Web%20framework%20for%20building%20APIs%20with%20Python%203.6+%20based%20on%20standard%20Python%20type%20hints",
+        "prevChunkIds": []
+      },
+      "28": {
+        "chunkId": "05fc95",
+        "hash": "8090bc68",
+        "encoded": "uvicorn%3E=0.27.0%20%20%20%20%20%20%20%20%20%20#%20ASGI%20server%20for%20serving%20FastAPI%20applications",
+        "prevChunkIds": []
+      },
+      "30": {
+        "chunkId": "05fc95",
+        "hash": "14fae6c9",
+        "encoded": "#%20Additional%20Libraries",
+        "prevChunkIds": []
+      },
+      "31": {
+        "chunkId": "05fc95",
+        "hash": "8566720b",
+        "encoded": "feedparser%3E=6.0.11%20%20%20%20%20%20%20#%20Parses%20RSS%20feeds",
+        "prevChunkIds": []
+      },
+      "32": {
+        "chunkId": "05fc95",
+        "hash": "db835284",
+        "encoded": "streamlit%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20#%20Framework%20for%20creating%20web%20apps%20from%20Python%20scripts",
+        "prevChunkIds": []
+      },
+      "33": {
+        "chunkId": "05fc95",
+        "hash": "59629207",
+        "encoded": "newspaper3k%20%20%20%20%20%20%20%20%20%20%20%20%20%20#%20Article%20scraping%20and%20curation",
+        "prevChunkIds": []
+      },
+      "34": {
+        "chunkId": "05fc95",
+        "hash": "946434d5",
+        "encoded": "lxml_html_clean%20%20%20%20%20%20%20%20%20%20#%20HTML%20cleaning%20library",
+        "prevChunkIds": []
+      },
+      "35": {
+        "chunkId": "05fc95",
+        "hash": "a8faffaf",
+        "encoded": "beautifulsoup4%20%20%20%20%20%20%20%20%20%20%20#%20Library%20for%20parsing%20HTML%20and%20XML%20documents",
+        "prevChunkIds": []
+      },
+      "36": {
+        "chunkId": "05fc95",
+        "hash": "276b7081",
+        "encoded": "lxml%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20#%20XML%20and%20HTML%20processing%20library",
+        "prevChunkIds": []
+      }
+    }
+  }
+}

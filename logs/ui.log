@@ -1813,3 +1813,202 @@ Error message(s): ["dlopen(/Users/rohkumaw/Documents/stock_market_ai/.venv/lib/p
 2026-02-21 17:55:51.470 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for TCS (2026-02-23)
 2026-02-21 17:55:51.471 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for TCS (2026-02-23)
 2026-02-21 17:55:51.471 | INFO     | __main__:run:69 - Pipeline finished
+2026-02-22 01:07:08.801 | INFO     | __main__:run:32 - Starting Stock Market AI Platform
+2026-02-22 01:07:08.801 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:10 - Fetching NSE symbols
+2026-02-22 01:07:09.052 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:32 - Fetched 9 symbols
+2026-02-22 01:07:09.052 | INFO     | src.storage.db.writer:save_symbols:11 - Saving symbols master
+2026-02-22 01:07:09.139 | INFO     | __main__:run:46 - Active symbols: 9
+2026-02-22 01:07:09.139 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: MRF.NS
+2026-02-22 01:07:10.194 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing MRF
+2026-02-22 01:07:10.287 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2470 rows
+2026-02-22 01:07:10.528 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-22 01:07:11.091 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-22 01:07:14.345 | WARNING  | src.pipelines.predictor:train_and_predict_next_day:196 - XGBoost model skipped for MRF: 
+XGBoost Library (libxgboost.dylib) could not be loaded.
+Likely causes:
+  * OpenMP runtime is not installed
+    - vcomp140.dll or libgomp-1.dll for Windows
+    - libomp.dylib for Mac OSX
+    - libgomp.so for Linux and other UNIX-like OSes
+    Mac OSX users: Run `brew install libomp` to install OpenMP runtime.
+
+  * You are running 32-bit Python on a 64-bit OS
+
+Error message(s): ["dlopen(/Users/rohkumaw/Documents/stock_market_ai/.venv/lib/python3.14/site-packages/xgboost/lib/libxgboost.dylib, 0x0006): Library not loaded: @rpath/libomp.dylib\n  Referenced from: <1A0D8152-BF46-3BE0-B651-EE965C187777> /Users/rohkumaw/Documents/stock_market_ai/.venv/lib/python3.14/site-packages/xgboost/lib/libxgboost.dylib\n  Reason: tried: '/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file), '/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file)"]
+
+2026-02-22 01:07:14.351 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for MRF (2026-02-23)
+2026-02-22 01:07:14.353 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for MRF (2026-02-23)
+2026-02-22 01:07:14.354 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for MRF (2026-02-23)
+2026-02-22 01:07:14.366 | WARNING  | src.pipelines.backtester:run_backtest_models:99 - XGBoost backtest disabled for MRF: 
+XGBoost Library (libxgboost.dylib) could not be loaded.
+Likely causes:
+  * OpenMP runtime is not installed
+    - vcomp140.dll or libgomp-1.dll for Windows
+    - libomp.dylib for Mac OSX
+    - libgomp.so for Linux and other UNIX-like OSes
+    Mac OSX users: Run `brew install libomp` to install OpenMP runtime.
+
+  * You are running 32-bit Python on a 64-bit OS
+
+Error message(s): ["dlopen(/Users/rohkumaw/Documents/stock_market_ai/.venv/lib/python3.14/site-packages/xgboost/lib/libxgboost.dylib, 0x0006): Library not loaded: @rpath/libomp.dylib\n  Referenced from: <1A0D8152-BF46-3BE0-B651-EE965C187777> /Users/rohkumaw/Documents/stock_market_ai/.venv/lib/python3.14/site-packages/xgboost/lib/libxgboost.dylib\n  Reason: tried: '/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file), '/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file)"]
+
+2026-02-22 01:08:56.591 | INFO     | __main__:run:32 - Starting Stock Market AI Platform
+2026-02-22 01:08:56.592 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:10 - Fetching NSE symbols
+2026-02-22 01:08:56.925 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:32 - Fetched 9 symbols
+2026-02-22 01:08:56.925 | INFO     | src.storage.db.writer:save_symbols:11 - Saving symbols master
+2026-02-22 01:08:57.013 | INFO     | __main__:run:46 - Active symbols: 9
+2026-02-22 01:08:57.014 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: MRF.NS
+2026-02-22 01:08:57.991 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing MRF
+2026-02-22 01:08:58.083 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2470 rows
+2026-02-22 01:08:58.331 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-22 01:08:58.446 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-22 01:09:02.965 | WARNING  | src.pipelines.predictor:train_and_predict_next_day:196 - XGBoost model skipped for MRF: DataFrame.dtypes for data must be int, float, bool or category. When categorical type is supplied, the experimental DMatrix parameter`enable_categorical` must be set to `True`.  Invalid columns:ret_1d: object, ret_3d: object, hl_spread: object, oc_change: object, volume_chg: object, ma5_ratio: object, ma10_ratio: object, volatility_10d: object, sentiment_score: object
+2026-02-22 01:09:02.970 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for MRF (2026-02-23)
+2026-02-22 01:09:02.972 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for MRF (2026-02-23)
+2026-02-22 01:09:02.974 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for MRF (2026-02-23)
+2026-02-22 01:10:18.424 | INFO     | __main__:run:32 - Starting Stock Market AI Platform
+2026-02-22 01:10:18.424 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:10 - Fetching NSE symbols
+2026-02-22 01:10:19.176 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:32 - Fetched 9 symbols
+2026-02-22 01:10:19.177 | INFO     | src.storage.db.writer:save_symbols:11 - Saving symbols master
+2026-02-22 01:10:19.267 | INFO     | __main__:run:46 - Active symbols: 9
+2026-02-22 01:10:19.267 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: MRF.NS
+2026-02-22 01:10:20.356 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing MRF
+2026-02-22 01:10:20.445 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2470 rows
+2026-02-22 01:10:20.690 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-22 01:10:21.508 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-22 01:10:26.728 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for MRF (2026-02-23)
+2026-02-22 01:10:26.729 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for MRF (2026-02-23)
+2026-02-22 01:10:26.731 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for MRF (2026-02-23)
+2026-02-22 01:10:26.732 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for MRF (2026-02-23)
+2026-02-22 01:13:38.198 | INFO     | __main__:run:39 - Starting Stock Market AI Platform
+2026-02-22 01:13:38.198 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:10 - Fetching NSE symbols
+2026-02-22 01:13:38.456 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:32 - Fetched 9 symbols
+2026-02-22 01:13:38.456 | INFO     | src.storage.db.writer:save_symbols:11 - Saving symbols master
+2026-02-22 01:13:38.545 | INFO     | __main__:run:53 - Active symbols: 9
+2026-02-22 01:13:38.545 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: MRF.NS
+2026-02-22 01:13:39.552 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing MRF
+2026-02-22 01:13:39.644 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2470 rows
+2026-02-22 01:13:39.899 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-22 01:13:40.714 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-22 01:13:46.943 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for MRF (2026-02-23)
+2026-02-22 01:13:46.945 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for MRF (2026-02-23)
+2026-02-22 01:13:46.947 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for MRF (2026-02-23)
+2026-02-22 01:13:46.948 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for MRF (2026-02-23)
+2026-02-22 01:13:51.612 | INFO     | src.pipelines.backtester:run_backtest_models:187 - Backtest finished for MRF: 80 eval points in 4.66s
+2026-02-22 01:13:51.620 | INFO     | src.storage.db.writer:save_model_backtest_result:178 - Saved backtest for MRF (random_forest_v1)
+2026-02-22 01:13:51.622 | INFO     | src.storage.db.writer:save_model_backtest_result:178 - Saved backtest for MRF (logistic_v1)
+2026-02-22 01:13:51.624 | INFO     | src.storage.db.writer:save_model_backtest_result:178 - Saved backtest for MRF (xgboost_v1)
+2026-02-22 01:13:51.625 | INFO     | src.storage.db.writer:save_model_backtest_result:178 - Saved backtest for MRF (ensemble_v1)
+2026-02-22 01:13:51.625 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: RELIANCE.NS
+2026-02-22 01:13:52.439 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing RELIANCE
+2026-02-22 01:13:52.531 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2471 rows
+2026-02-22 01:13:52.754 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-22 01:13:53.610 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-22 01:13:56.540 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for RELIANCE (2026-02-23)
+2026-02-22 01:13:56.542 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for RELIANCE (2026-02-23)
+2026-02-22 01:13:56.544 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for RELIANCE (2026-02-23)
+2026-02-22 01:13:56.545 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for RELIANCE (2026-02-23)
+2026-02-22 01:14:02.941 | INFO     | src.pipelines.backtester:run_backtest_models:187 - Backtest finished for RELIANCE: 80 eval points in 6.40s
+2026-02-22 01:14:02.945 | INFO     | src.storage.db.writer:save_model_backtest_result:178 - Saved backtest for RELIANCE (random_forest_v1)
+2026-02-22 01:14:02.946 | INFO     | src.storage.db.writer:save_model_backtest_result:178 - Saved backtest for RELIANCE (logistic_v1)
+2026-02-22 01:14:02.948 | INFO     | src.storage.db.writer:save_model_backtest_result:178 - Saved backtest for RELIANCE (xgboost_v1)
+2026-02-22 01:14:02.949 | INFO     | src.storage.db.writer:save_model_backtest_result:178 - Saved backtest for RELIANCE (ensemble_v1)
+2026-02-22 01:14:02.949 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: TATACAP.NS
+2026-02-22 01:14:03.346 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing TATACAP
+2026-02-22 01:14:03.353 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 91 rows
+2026-02-22 01:14:03.371 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-22 01:14:04.235 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-22 01:14:04.537 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for TATACAP (2026-02-23)
+2026-02-22 01:14:04.538 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for TATACAP (2026-02-23)
+2026-02-22 01:14:04.540 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for TATACAP (2026-02-23)
+2026-02-22 01:14:04.541 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for TATACAP (2026-02-23)
+2026-02-22 01:14:10.875 | INFO     | src.pipelines.backtester:run_backtest_models:187 - Backtest finished for TATACAP: 80 eval points in 6.33s
+2026-02-22 01:14:10.878 | INFO     | src.storage.db.writer:save_model_backtest_result:178 - Saved backtest for TATACAP (random_forest_v1)
+2026-02-22 01:14:10.880 | INFO     | src.storage.db.writer:save_model_backtest_result:178 - Saved backtest for TATACAP (logistic_v1)
+2026-02-22 01:14:10.881 | INFO     | src.storage.db.writer:save_model_backtest_result:178 - Saved backtest for TATACAP (xgboost_v1)
+2026-02-22 01:14:10.883 | INFO     | src.storage.db.writer:save_model_backtest_result:178 - Saved backtest for TATACAP (ensemble_v1)
+2026-02-22 01:14:10.883 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: TATAELXSI.NS
+2026-02-22 01:14:11.487 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing TATAELXSI
+2026-02-22 01:14:11.575 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2471 rows
+2026-02-22 01:14:11.814 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-22 01:14:12.664 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-22 01:14:15.558 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for TATAELXSI (2026-02-23)
+2026-02-22 01:14:15.559 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for TATAELXSI (2026-02-23)
+2026-02-22 01:14:15.561 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for TATAELXSI (2026-02-23)
+2026-02-22 01:14:15.562 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for TATAELXSI (2026-02-23)
+2026-02-22 01:14:21.877 | INFO     | src.pipelines.backtester:run_backtest_models:187 - Backtest finished for TATAELXSI: 80 eval points in 6.31s
+2026-02-22 01:14:21.880 | INFO     | src.storage.db.writer:save_model_backtest_result:178 - Saved backtest for TATAELXSI (random_forest_v1)
+2026-02-22 01:14:21.881 | INFO     | src.storage.db.writer:save_model_backtest_result:178 - Saved backtest for TATAELXSI (logistic_v1)
+2026-02-22 01:14:21.882 | INFO     | src.storage.db.writer:save_model_backtest_result:178 - Saved backtest for TATAELXSI (xgboost_v1)
+2026-02-22 01:14:21.884 | INFO     | src.storage.db.writer:save_model_backtest_result:178 - Saved backtest for TATAELXSI (ensemble_v1)
+2026-02-22 01:14:21.884 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: BHARTIARTL.NS
+2026-02-22 01:14:22.448 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing BHARTIARTL
+2026-02-22 01:14:22.540 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2471 rows
+2026-02-22 01:14:22.721 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-22 01:14:23.591 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-22 01:14:25.764 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for BHARTIARTL (2026-02-23)
+2026-02-22 01:14:25.766 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for BHARTIARTL (2026-02-23)
+2026-02-22 01:14:25.767 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for BHARTIARTL (2026-02-23)
+2026-02-22 01:14:25.769 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for BHARTIARTL (2026-02-23)
+2026-02-22 01:14:32.909 | INFO     | src.pipelines.backtester:run_backtest_models:187 - Backtest finished for BHARTIARTL: 80 eval points in 7.14s
+2026-02-22 01:14:32.913 | INFO     | src.storage.db.writer:save_model_backtest_result:178 - Saved backtest for BHARTIARTL (random_forest_v1)
+2026-02-22 01:14:32.915 | INFO     | src.storage.db.writer:save_model_backtest_result:178 - Saved backtest for BHARTIARTL (logistic_v1)
+2026-02-22 01:14:32.916 | INFO     | src.storage.db.writer:save_model_backtest_result:178 - Saved backtest for BHARTIARTL (xgboost_v1)
+2026-02-22 01:14:32.917 | INFO     | src.storage.db.writer:save_model_backtest_result:178 - Saved backtest for BHARTIARTL (ensemble_v1)
+2026-02-22 01:14:32.917 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: HDFCBANK.NS
+2026-02-22 01:14:33.493 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing HDFCBANK
+2026-02-22 01:14:33.585 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2471 rows
+2026-02-22 01:14:33.802 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-22 01:14:34.770 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-22 01:14:36.964 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for HDFCBANK (2026-02-23)
+2026-02-22 01:14:36.966 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for HDFCBANK (2026-02-23)
+2026-02-22 01:14:36.968 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for HDFCBANK (2026-02-23)
+2026-02-22 01:14:36.969 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for HDFCBANK (2026-02-23)
+2026-02-22 01:14:44.293 | INFO     | src.pipelines.backtester:run_backtest_models:187 - Backtest finished for HDFCBANK: 80 eval points in 7.32s
+2026-02-22 01:14:44.297 | INFO     | src.storage.db.writer:save_model_backtest_result:178 - Saved backtest for HDFCBANK (random_forest_v1)
+2026-02-22 01:14:44.298 | INFO     | src.storage.db.writer:save_model_backtest_result:178 - Saved backtest for HDFCBANK (logistic_v1)
+2026-02-22 01:14:44.299 | INFO     | src.storage.db.writer:save_model_backtest_result:178 - Saved backtest for HDFCBANK (xgboost_v1)
+2026-02-22 01:14:44.300 | INFO     | src.storage.db.writer:save_model_backtest_result:178 - Saved backtest for HDFCBANK (ensemble_v1)
+2026-02-22 01:14:44.300 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: ICICIBANK.NS
+2026-02-22 01:14:44.900 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing ICICIBANK
+2026-02-22 01:14:44.991 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2471 rows
+2026-02-22 01:14:45.241 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-22 01:14:45.710 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-22 01:14:47.880 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for ICICIBANK (2026-02-23)
+2026-02-22 01:14:47.881 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for ICICIBANK (2026-02-23)
+2026-02-22 01:14:47.883 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for ICICIBANK (2026-02-23)
+2026-02-22 01:14:47.884 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for ICICIBANK (2026-02-23)
+2026-02-22 01:14:55.015 | INFO     | src.pipelines.backtester:run_backtest_models:187 - Backtest finished for ICICIBANK: 80 eval points in 7.13s
+2026-02-22 01:14:55.018 | INFO     | src.storage.db.writer:save_model_backtest_result:178 - Saved backtest for ICICIBANK (random_forest_v1)
+2026-02-22 01:14:55.020 | INFO     | src.storage.db.writer:save_model_backtest_result:178 - Saved backtest for ICICIBANK (logistic_v1)
+2026-02-22 01:14:55.022 | INFO     | src.storage.db.writer:save_model_backtest_result:178 - Saved backtest for ICICIBANK (xgboost_v1)
+2026-02-22 01:14:55.024 | INFO     | src.storage.db.writer:save_model_backtest_result:178 - Saved backtest for ICICIBANK (ensemble_v1)
+2026-02-22 01:14:55.024 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: SBIN.NS
+2026-02-22 01:14:55.618 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing SBIN
+2026-02-22 01:14:55.708 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2471 rows
+2026-02-22 01:14:55.937 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-22 01:14:56.693 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-22 01:14:58.889 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for SBIN (2026-02-23)
+2026-02-22 01:14:58.891 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for SBIN (2026-02-23)
+2026-02-22 01:14:58.893 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for SBIN (2026-02-23)
+2026-02-22 01:14:58.894 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for SBIN (2026-02-23)
+2026-02-22 01:15:06.109 | INFO     | src.pipelines.backtester:run_backtest_models:187 - Backtest finished for SBIN: 80 eval points in 7.21s
+2026-02-22 01:15:06.112 | INFO     | src.storage.db.writer:save_model_backtest_result:178 - Saved backtest for SBIN (random_forest_v1)
+2026-02-22 01:15:06.114 | INFO     | src.storage.db.writer:save_model_backtest_result:178 - Saved backtest for SBIN (logistic_v1)
+2026-02-22 01:15:06.116 | INFO     | src.storage.db.writer:save_model_backtest_result:178 - Saved backtest for SBIN (xgboost_v1)
+2026-02-22 01:15:06.117 | INFO     | src.storage.db.writer:save_model_backtest_result:178 - Saved backtest for SBIN (ensemble_v1)
+2026-02-22 01:15:06.117 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: TCS.NS
+2026-02-22 01:15:06.673 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing TCS
+2026-02-22 01:15:06.762 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 2471 rows
+2026-02-22 01:15:07.007 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-22 01:15:08.017 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-22 01:15:10.246 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for TCS (2026-02-23)
+2026-02-22 01:15:10.248 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for TCS (2026-02-23)
+2026-02-22 01:15:10.249 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for TCS (2026-02-23)
+2026-02-22 01:15:10.251 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for TCS (2026-02-23)
+2026-02-22 01:15:17.459 | INFO     | src.pipelines.backtester:run_backtest_models:187 - Backtest finished for TCS: 80 eval points in 7.21s
+2026-02-22 01:15:17.463 | INFO     | src.storage.db.writer:save_model_backtest_result:178 - Saved backtest for TCS (random_forest_v1)
+2026-02-22 01:15:17.464 | INFO     | src.storage.db.writer:save_model_backtest_result:178 - Saved backtest for TCS (logistic_v1)
+2026-02-22 01:15:17.466 | INFO     | src.storage.db.writer:save_model_backtest_result:178 - Saved backtest for TCS (xgboost_v1)
+2026-02-22 01:15:17.467 | INFO     | src.storage.db.writer:save_model_backtest_result:178 - Saved backtest for TCS (ensemble_v1)
+2026-02-22 01:15:17.467 | INFO     | __main__:run:90 - Pipeline finished

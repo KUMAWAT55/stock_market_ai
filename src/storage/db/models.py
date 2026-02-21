@@ -95,3 +95,24 @@ class News(Base):
         DateTime,
         default=datetime.utcnow
     )
+
+
+class StockPrediction(Base):
+
+    __tablename__ = "stock_predictions"
+
+    id = Column(Integer, primary_key=True)
+
+    symbol = Column(String, index=True, nullable=False)
+    prediction_date = Column(Date, nullable=False)
+    target_date = Column(Date, nullable=False)
+
+    predicted_return = Column(Float)
+    predicted_close = Column(Float)
+    direction = Column(String)
+
+    model_name = Column(String, nullable=False, default="random_forest_v1")
+    train_rows = Column(Integer)
+    r2_score = Column(Float)
+
+    created_at = Column(DateTime, default=datetime.utcnow)

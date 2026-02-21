@@ -84,3 +84,22 @@ CREATE TABLE IF NOT EXISTS market_news (
     -- Prevent duplicate news articles by URL
     CONSTRAINT uq_market_news_url UNIQUE (url)
 );
+
+-- STOCK PREDICTIONS TABLE: Stores ML model predictions per symbol/date
+CREATE TABLE IF NOT EXISTS stock_predictions (
+    id BIGSERIAL PRIMARY KEY,
+
+    symbol VARCHAR(30) NOT NULL,
+    prediction_date DATE NOT NULL,
+    target_date DATE NOT NULL,
+
+    predicted_return FLOAT,
+    predicted_close FLOAT,
+    direction VARCHAR(20),
+
+    model_name VARCHAR(50) NOT NULL DEFAULT 'random_forest_v1',
+    train_rows INT,
+    r2_score FLOAT,
+
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);

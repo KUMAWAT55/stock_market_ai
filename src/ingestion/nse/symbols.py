@@ -10,8 +10,8 @@ def fetch_nse_symbols():
     logger.info("Fetching NSE symbols")
 
     df = pd.read_csv(NSE_URL)
-    print(df.columns)
-
+    symbols_to_filter = ["TATACAP", "TATAELXSI", "MRF", "RELIANCE" , "ICICIBANK" , "HDFCBANK" , "BHARTIARTL","SBIN","TCS"]
+    df = df[df["SYMBOL"].isin(symbols_to_filter)]
     symbols = []
 
     for _, row in df.iterrows():

@@ -1337,3 +1337,479 @@ LINE 1: ...ymbol, title, summary, url, source, published_at, sentiment_...
 2026-02-21 01:26:55.396 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
 2026-02-21 01:26:56.111 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
 2026-02-21 01:26:56.112 | INFO     | __main__:run:59 - Pipeline finished
+2026-02-21 02:56:32.571 | INFO     | __main__:run:43 - Starting Stock Market AI Platform
+2026-02-21 02:56:32.572 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:10 - Fetching NSE symbols
+2026-02-21 02:56:32.789 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:32 - Fetched 2240 symbols
+2026-02-21 02:56:32.789 | INFO     | src.storage.db.writer:save_symbols:11 - Saving symbols master
+2026-02-21 02:56:32.836 | CRITICAL | __main__:<module>:87 - Fatal error: (psycopg2.errors.UndefinedTable) relation "symbols_master" does not exist
+LINE 1: INSERT INTO symbols_master (symbol, name, exchange, series, ...
+                    ^
+
+[SQL: INSERT INTO symbols_master (symbol, name, exchange, series, date_of_listing, paid_up_value, market_lot, isin_number, face_value, active) VALUES (%(symbol)s, %(name)s, %(exchange)s, %(series)s, %(date_of_listing)s, %(paid_up_value)s, %(market_lot)s, %(isin_number)s, %(face_value)s, %(active)s) RETURNING symbols_master.id, symbols_master.created_at]
+[parameters: {'symbol': '20MICRONS', 'name': '20 Microns Limited', 'exchange': 'NSE', 'series': 'EQ', 'date_of_listing': '06-OCT-2008', 'paid_up_value': 5, 'market_lot': 1, 'isin_number': 'INE144J01027', 'face_value': 5, 'active': True}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-02-21 02:56:51.373 | INFO     | __main__:run:43 - Starting Stock Market AI Platform
+2026-02-21 02:56:51.373 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:10 - Fetching NSE symbols
+2026-02-21 02:56:51.582 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:32 - Fetched 2240 symbols
+2026-02-21 02:56:51.582 | INFO     | src.storage.db.writer:save_symbols:11 - Saving symbols master
+2026-02-21 02:56:52.432 | INFO     | __main__:run:57 - Active symbols: 2240
+2026-02-21 02:56:52.432 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: 20MICRONS.NS
+2026-02-21 02:56:53.617 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: 21STCENMGM.NS
+2026-02-21 02:56:53.974 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: 360ONE.NS
+2026-02-21 02:56:54.267 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: 3IINFOLTD.NS
+2026-02-21 02:56:54.565 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: 3MINDIA.NS
+2026-02-21 02:56:54.926 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: 3PLAND.NS
+2026-02-21 02:56:55.219 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: 5PAISA.NS
+2026-02-21 02:56:55.511 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: 63MOONS.NS
+2026-02-21 02:56:55.853 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: A2ZINFRA.NS
+2026-02-21 02:56:56.143 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: AAATECH.NS
+2026-02-21 02:56:56.435 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: AADHARHFC.NS
+2026-02-21 02:56:56.726 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: AAKASH.NS
+2026-02-21 02:56:57.013 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: AAREYDRUGS.NS
+2026-02-21 02:56:57.307 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: AARON.NS
+2026-02-21 02:56:57.597 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: AARTECH.NS
+2026-02-21 02:56:57.956 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: AARTIDRUGS.NS
+2026-02-21 02:56:58.243 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: AARTIIND.NS
+2026-02-21 02:56:58.675 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: AARTIPHARM.NS
+2026-02-21 02:56:59.202 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: AARTISURF.NS
+2026-02-21 02:56:59.496 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: AARVI.NS
+2026-02-21 02:56:59.837 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: AAVAS.NS
+2026-02-21 02:57:00.185 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: ABAN.NS
+2026-02-21 02:57:00.476 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: ABB.NS
+2026-02-21 02:57:00.764 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: ABBOTINDIA.NS
+2026-02-21 02:57:01.055 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: ABCAPITAL.NS
+2026-02-21 02:57:01.349 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: ABCOTS.NS
+2026-02-21 02:57:01.639 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: ABDL.NS
+2026-02-21 02:57:01.942 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: ABFRL.NS
+2026-02-21 02:57:02.230 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: ABINFRA.NS
+2026-02-21 02:57:02.526 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: ABLBL.NS
+2026-02-21 02:57:02.822 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: ABMINTLLTD.NS
+2026-02-21 02:57:03.106 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: ABREL.NS
+2026-02-21 02:57:03.397 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: ABSLAMC.NS
+2026-02-21 02:57:03.679 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: ACC.NS
+2026-02-21 02:57:03.976 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: ACCELYA.NS
+2026-02-21 02:57:04.263 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: ACCURACY.NS
+2026-02-21 02:57:04.552 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: ACE.NS
+2026-02-21 02:57:04.844 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: ACEINTEG.NS
+2026-02-21 02:57:05.156 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: ACI.NS
+2026-02-21 02:57:05.489 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: ACL.NS
+2026-02-21 02:57:05.781 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: ACMESOLAR.NS
+2026-02-21 02:57:06.072 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: ACUTAAS.NS
+2026-02-21 02:57:06.360 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: ADANIENSOL.NS
+2026-02-21 02:57:06.647 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: ADANIENT.NS
+2026-02-21 02:57:06.937 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: ADANIGREEN.NS
+2026-02-21 02:57:07.229 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: ADANIPORTS.NS
+2026-02-21 02:57:07.516 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: ADANIPOWER.NS
+2026-02-21 02:57:07.806 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: ADFFOODS.NS
+2026-02-21 02:57:08.101 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: ADL.NS
+2026-02-21 02:57:08.392 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: ADOR.NS
+2026-02-21 02:57:08.698 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: ADROITINFO.NS
+2026-02-21 02:57:08.988 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: ADSL.NS
+2026-02-21 02:57:09.279 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: ADVAIT.NS
+2026-02-21 02:57:09.574 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: ADVANCE.NS
+2026-02-21 02:57:09.864 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: ADVANIHOTR.NS
+2026-02-21 02:57:10.156 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: ADVENTHTL.NS
+2026-02-21 02:57:10.450 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: ADVENZYMES.NS
+2026-02-21 02:57:10.744 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: AEGISLOG.NS
+2026-02-21 02:57:11.033 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: AEGISVOPAK.NS
+2026-02-21 02:57:11.320 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: AEQUS.NS
+2026-02-21 02:57:11.611 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: AEROENTER.NS
+2026-02-21 02:57:11.903 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: AEROFLEX.NS
+2026-02-21 02:57:12.186 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: AERONEU.NS
+2026-02-21 02:57:12.479 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: AETHER.NS
+2026-02-21 02:57:12.757 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: AFCONS.NS
+2026-02-21 02:57:13.046 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: AFFLE.NS
+2026-02-21 02:57:13.341 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: AFFORDABLE.NS
+2026-02-21 02:57:13.631 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: AFIL.NS
+2026-02-21 02:57:13.916 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: AFSL.NS
+2026-02-21 02:57:14.205 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: AGARIND.NS
+2026-02-21 02:57:14.494 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: AGARWALEYE.NS
+2026-02-21 02:57:14.779 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: AGI.NS
+2026-02-21 02:57:15.071 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: AGIIL.NS
+2026-02-21 02:57:15.360 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: AGRITECH.NS
+2026-02-21 02:57:15.643 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: AGROPHOS.NS
+2026-02-21 02:57:15.927 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: AGSTRA.NS
+2026-02-21 02:57:16.233 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: AHCL.NS
+2026-02-21 02:57:16.547 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: AHLADA.NS
+2026-02-21 02:57:16.834 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: AHLEAST.NS
+2026-02-21 02:57:17.121 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: AHLUCONT.NS
+2026-02-21 02:57:17.406 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: AIAENG.NS
+2026-02-21 02:57:17.700 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: AIIL.NS
+2026-02-21 02:57:17.987 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: AIRAN.NS
+2026-02-21 02:57:18.277 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: AIROLAM.NS
+2026-02-21 02:57:18.570 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: AJANTPHARM.NS
+2026-02-21 02:57:18.864 | INFO     | src.ingestion.yahoo.fetcher:fetch_market_cap:31 - Fetching market cap: AJAXENGG.NS
+2026-02-21 03:20:34.735 | INFO     | __main__:run:26 - Starting Stock Market AI Platform
+2026-02-21 03:20:34.736 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:10 - Fetching NSE symbols
+2026-02-21 03:20:34.907 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:32 - Fetched 4 symbols
+2026-02-21 03:20:34.907 | INFO     | src.storage.db.writer:save_symbols:11 - Saving symbols master
+2026-02-21 03:20:34.952 | CRITICAL | __main__:<module>:69 - Fatal error: (psycopg2.errors.UndefinedTable) relation "symbols_master" does not exist
+LINE 1: INSERT INTO symbols_master (symbol, name, exchange, series, ...
+                    ^
+
+[SQL: INSERT INTO symbols_master (symbol, name, exchange, series, date_of_listing, paid_up_value, market_lot, isin_number, face_value, active) VALUES (%(symbol)s, %(name)s, %(exchange)s, %(series)s, %(date_of_listing)s, %(paid_up_value)s, %(market_lot)s, %(isin_number)s, %(face_value)s, %(active)s) RETURNING symbols_master.id, symbols_master.created_at]
+[parameters: {'symbol': 'MRF', 'name': 'MRF Limited', 'exchange': 'NSE', 'series': 'EQ', 'date_of_listing': '18-SEP-1996', 'paid_up_value': 10, 'market_lot': 1, 'isin_number': 'INE883A01011', 'face_value': 10, 'active': True}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-02-21 03:20:52.641 | INFO     | __main__:run:26 - Starting Stock Market AI Platform
+2026-02-21 03:20:52.642 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:10 - Fetching NSE symbols
+2026-02-21 03:20:52.923 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:32 - Fetched 4 symbols
+2026-02-21 03:20:52.923 | INFO     | src.storage.db.writer:save_symbols:11 - Saving symbols master
+2026-02-21 03:20:52.974 | INFO     | __main__:run:40 - Active symbols: 4
+2026-02-21 03:20:52.974 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: MRF.NS
+2026-02-21 03:20:54.081 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing MRF
+2026-02-21 03:20:54.107 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 496 rows
+2026-02-21 03:20:54.175 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-21 03:20:55.021 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-21 03:20:55.021 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: RELIANCE.NS
+2026-02-21 03:20:55.506 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing RELIANCE
+2026-02-21 03:20:55.529 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 497 rows
+2026-02-21 03:20:55.591 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-21 03:20:56.394 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-21 03:20:56.395 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: TATACAP.NS
+2026-02-21 03:20:56.815 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing TATACAP
+2026-02-21 03:20:56.825 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 91 rows
+2026-02-21 03:20:56.842 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-21 03:20:57.728 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-21 03:20:57.728 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: TATAELXSI.NS
+2026-02-21 03:20:58.196 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing TATAELXSI
+2026-02-21 03:20:58.225 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 497 rows
+2026-02-21 03:20:58.294 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-21 03:20:59.157 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-21 03:20:59.157 | INFO     | __main__:run:59 - Pipeline finished
+2026-02-21 15:59:29.469 | INFO     | __main__:run:30 - Starting Stock Market AI Platform
+2026-02-21 15:59:29.469 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:10 - Fetching NSE symbols
+2026-02-21 15:59:29.663 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:32 - Fetched 4 symbols
+2026-02-21 15:59:29.663 | INFO     | src.storage.db.writer:save_symbols:11 - Saving symbols master
+2026-02-21 15:59:29.717 | INFO     | __main__:run:44 - Active symbols: 4
+2026-02-21 15:59:29.717 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: MRF.NS
+2026-02-21 15:59:30.828 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing MRF
+2026-02-21 15:59:30.842 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 496 rows
+2026-02-21 15:59:30.906 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-21 15:59:31.731 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-21 15:59:31.765 | CRITICAL | __main__:<module>:78 - Fatal error: Input X contains infinity or a value too large for dtype('float32').
+2026-02-21 15:59:47.794 | INFO     | __main__:run:30 - Starting Stock Market AI Platform
+2026-02-21 15:59:47.794 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:10 - Fetching NSE symbols
+2026-02-21 15:59:48.051 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:32 - Fetched 4 symbols
+2026-02-21 15:59:48.052 | INFO     | src.storage.db.writer:save_symbols:11 - Saving symbols master
+2026-02-21 15:59:48.113 | INFO     | __main__:run:44 - Active symbols: 4
+2026-02-21 15:59:48.113 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: MRF.NS
+2026-02-21 15:59:49.295 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing MRF
+2026-02-21 15:59:49.308 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 496 rows
+2026-02-21 15:59:49.368 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-21 15:59:49.475 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-21 15:59:49.520 | CRITICAL | __main__:<module>:78 - Fatal error: Input X contains infinity or a value too large for dtype('float32').
+2026-02-21 16:00:36.173 | INFO     | __main__:run:30 - Starting Stock Market AI Platform
+2026-02-21 16:00:36.173 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:10 - Fetching NSE symbols
+2026-02-21 16:00:36.402 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:32 - Fetched 4 symbols
+2026-02-21 16:00:36.403 | INFO     | src.storage.db.writer:save_symbols:11 - Saving symbols master
+2026-02-21 16:00:36.455 | INFO     | __main__:run:44 - Active symbols: 4
+2026-02-21 16:00:36.456 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: MRF.NS
+2026-02-21 16:00:37.582 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing MRF
+2026-02-21 16:00:37.595 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 496 rows
+2026-02-21 16:00:37.667 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-21 16:00:37.792 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-21 16:00:38.575 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for MRF (2026-02-23)
+2026-02-21 16:00:38.575 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: RELIANCE.NS
+2026-02-21 16:00:39.069 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing RELIANCE
+2026-02-21 16:00:39.083 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 497 rows
+2026-02-21 16:00:39.138 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-21 16:00:39.965 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-21 16:00:40.417 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for RELIANCE (2026-02-23)
+2026-02-21 16:00:40.417 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: TATACAP.NS
+2026-02-21 16:00:40.807 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing TATACAP
+2026-02-21 16:00:40.810 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 91 rows
+2026-02-21 16:00:40.825 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-21 16:00:41.742 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-21 16:00:41.915 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for TATACAP (2026-02-23)
+2026-02-21 16:00:41.915 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: TATAELXSI.NS
+2026-02-21 16:00:42.392 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing TATAELXSI
+2026-02-21 16:00:42.406 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 497 rows
+2026-02-21 16:00:42.475 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-21 16:00:43.028 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-21 16:00:43.484 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for TATAELXSI (2026-02-23)
+2026-02-21 16:00:43.485 | INFO     | __main__:run:68 - Pipeline finished
+2026-02-21 17:03:40.105 | INFO     | __main__:run:30 - Starting Stock Market AI Platform
+2026-02-21 17:03:40.106 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:10 - Fetching NSE symbols
+2026-02-21 17:03:40.799 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:32 - Fetched 4 symbols
+2026-02-21 17:03:40.799 | INFO     | src.storage.db.writer:save_symbols:11 - Saving symbols master
+2026-02-21 17:03:40.890 | INFO     | __main__:run:44 - Active symbols: 4
+2026-02-21 17:03:40.890 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: MRF.NS
+2026-02-21 17:03:42.122 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing MRF
+2026-02-21 17:03:42.178 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 1236 rows
+2026-02-21 17:03:42.336 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-21 17:03:42.976 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-21 17:03:44.230 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for MRF (2026-02-23)
+2026-02-21 17:03:44.230 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: RELIANCE.NS
+2026-02-21 17:03:44.869 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing RELIANCE
+2026-02-21 17:03:44.929 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 1237 rows
+2026-02-21 17:03:45.048 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-21 17:03:45.932 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-21 17:03:46.838 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for RELIANCE (2026-02-23)
+2026-02-21 17:03:46.838 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: TATACAP.NS
+2026-02-21 17:03:47.241 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing TATACAP
+2026-02-21 17:03:47.245 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 91 rows
+2026-02-21 17:03:47.260 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-21 17:03:48.286 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-21 17:03:48.481 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for TATACAP (2026-02-23)
+2026-02-21 17:03:48.481 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: TATAELXSI.NS
+2026-02-21 17:03:49.035 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing TATAELXSI
+2026-02-21 17:03:49.091 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 1237 rows
+2026-02-21 17:03:49.211 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-21 17:03:50.232 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-21 17:03:51.134 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for TATAELXSI (2026-02-23)
+2026-02-21 17:03:51.134 | INFO     | __main__:run:68 - Pipeline finished
+2026-02-21 17:10:33.301 | INFO     | __main__:run:30 - Starting Stock Market AI Platform
+2026-02-21 17:10:33.301 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:10 - Fetching NSE symbols
+2026-02-21 17:10:33.781 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:32 - Fetched 9 symbols
+2026-02-21 17:10:33.781 | INFO     | src.storage.db.writer:save_symbols:11 - Saving symbols master
+2026-02-21 17:10:33.854 | INFO     | __main__:run:44 - Active symbols: 9
+2026-02-21 17:10:33.854 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: MRF.NS
+2026-02-21 17:10:35.026 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing MRF
+2026-02-21 17:10:35.080 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 1236 rows
+2026-02-21 17:10:35.234 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-21 17:10:36.146 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-21 17:10:37.825 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for MRF (2026-02-23)
+2026-02-21 17:10:37.825 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: RELIANCE.NS
+2026-02-21 17:10:38.576 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing RELIANCE
+2026-02-21 17:10:38.632 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 1237 rows
+2026-02-21 17:10:38.759 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-21 17:10:39.705 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-21 17:10:41.003 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for RELIANCE (2026-02-23)
+2026-02-21 17:10:41.003 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: TATACAP.NS
+2026-02-21 17:10:41.491 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing TATACAP
+2026-02-21 17:10:41.502 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 91 rows
+2026-02-21 17:10:41.523 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-21 17:10:42.473 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-21 17:10:42.691 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for TATACAP (2026-02-23)
+2026-02-21 17:10:42.691 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: TATAELXSI.NS
+2026-02-21 17:10:43.260 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing TATAELXSI
+2026-02-21 17:10:43.317 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 1237 rows
+2026-02-21 17:10:43.441 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-21 17:10:44.318 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-21 17:10:45.621 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for TATAELXSI (2026-02-23)
+2026-02-21 17:10:45.622 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: BHARTIARTL.NS
+2026-02-21 17:10:46.275 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing BHARTIARTL
+2026-02-21 17:10:46.329 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 1237 rows
+2026-02-21 17:10:46.462 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-21 17:10:47.077 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-21 17:10:47.643 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for BHARTIARTL (2026-02-23)
+2026-02-21 17:10:47.643 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: HDFCBANK.NS
+2026-02-21 17:10:48.223 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing HDFCBANK
+2026-02-21 17:10:48.280 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 1237 rows
+2026-02-21 17:10:48.398 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-21 17:10:49.394 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-21 17:10:49.966 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for HDFCBANK (2026-02-23)
+2026-02-21 17:10:49.967 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: ICICIBANK.NS
+2026-02-21 17:10:50.520 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing ICICIBANK
+2026-02-21 17:10:50.567 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 1237 rows
+2026-02-21 17:10:50.687 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-21 17:10:51.573 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-21 17:10:52.143 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for ICICIBANK (2026-02-23)
+2026-02-21 17:10:52.143 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: SBIN.NS
+2026-02-21 17:10:52.722 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing SBIN
+2026-02-21 17:10:52.777 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 1237 rows
+2026-02-21 17:10:52.897 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-21 17:10:53.733 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-21 17:10:54.295 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for SBIN (2026-02-23)
+2026-02-21 17:10:54.295 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: TCS.NS
+2026-02-21 17:10:54.933 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing TCS
+2026-02-21 17:10:54.990 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 1237 rows
+2026-02-21 17:10:55.108 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-21 17:10:55.802 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-21 17:10:56.351 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for TCS (2026-02-23)
+2026-02-21 17:10:56.352 | INFO     | __main__:run:68 - Pipeline finished
+2026-02-21 17:55:24.745 | INFO     | __main__:run:30 - Starting Stock Market AI Platform
+2026-02-21 17:55:24.745 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:10 - Fetching NSE symbols
+2026-02-21 17:55:24.988 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:32 - Fetched 9 symbols
+2026-02-21 17:55:24.988 | INFO     | src.storage.db.writer:save_symbols:11 - Saving symbols master
+2026-02-21 17:55:25.088 | INFO     | __main__:run:44 - Active symbols: 9
+2026-02-21 17:55:25.088 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: MRF.NS
+2026-02-21 17:55:26.536 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing MRF
+2026-02-21 17:55:26.600 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 1236 rows
+2026-02-21 17:55:26.748 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-21 17:55:27.651 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-21 17:55:30.241 | WARNING  | src.pipelines.predictor:train_and_predict_next_day:196 - XGBoost model skipped for MRF: 
+XGBoost Library (libxgboost.dylib) could not be loaded.
+Likely causes:
+  * OpenMP runtime is not installed
+    - vcomp140.dll or libgomp-1.dll for Windows
+    - libomp.dylib for Mac OSX
+    - libgomp.so for Linux and other UNIX-like OSes
+    Mac OSX users: Run `brew install libomp` to install OpenMP runtime.
+
+  * You are running 32-bit Python on a 64-bit OS
+
+Error message(s): ["dlopen(/Users/rohkumaw/Documents/stock_market_ai/.venv/lib/python3.14/site-packages/xgboost/lib/libxgboost.dylib, 0x0006): Library not loaded: @rpath/libomp.dylib\n  Referenced from: <1A0D8152-BF46-3BE0-B651-EE965C187777> /Users/rohkumaw/Documents/stock_market_ai/.venv/lib/python3.14/site-packages/xgboost/lib/libxgboost.dylib\n  Reason: tried: '/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file), '/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file)"]
+
+2026-02-21 17:55:30.251 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for MRF (2026-02-23)
+2026-02-21 17:55:30.255 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for MRF (2026-02-23)
+2026-02-21 17:55:30.259 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for MRF (2026-02-23)
+2026-02-21 17:55:30.259 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: RELIANCE.NS
+2026-02-21 17:55:30.963 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing RELIANCE
+2026-02-21 17:55:31.035 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 1237 rows
+2026-02-21 17:55:31.150 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-21 17:55:31.782 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-21 17:55:33.527 | WARNING  | src.pipelines.predictor:train_and_predict_next_day:196 - XGBoost model skipped for RELIANCE: 
+XGBoost Library (libxgboost.dylib) could not be loaded.
+Likely causes:
+  * OpenMP runtime is not installed
+    - vcomp140.dll or libgomp-1.dll for Windows
+    - libomp.dylib for Mac OSX
+    - libgomp.so for Linux and other UNIX-like OSes
+    Mac OSX users: Run `brew install libomp` to install OpenMP runtime.
+
+  * You are running 32-bit Python on a 64-bit OS
+
+Error message(s): ["dlopen(/Users/rohkumaw/Documents/stock_market_ai/.venv/lib/python3.14/site-packages/xgboost/lib/libxgboost.dylib, 0x0006): Library not loaded: @rpath/libomp.dylib\n  Referenced from: <1A0D8152-BF46-3BE0-B651-EE965C187777> /Users/rohkumaw/Documents/stock_market_ai/.venv/lib/python3.14/site-packages/xgboost/lib/libxgboost.dylib\n  Reason: tried: '/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file), '/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file)"]
+
+2026-02-21 17:55:33.529 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for RELIANCE (2026-02-23)
+2026-02-21 17:55:33.530 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for RELIANCE (2026-02-23)
+2026-02-21 17:55:33.531 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for RELIANCE (2026-02-23)
+2026-02-21 17:55:33.532 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: TATACAP.NS
+2026-02-21 17:55:33.944 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing TATACAP
+2026-02-21 17:55:33.959 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 91 rows
+2026-02-21 17:55:33.982 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-21 17:55:35.001 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-21 17:55:35.241 | WARNING  | src.pipelines.predictor:train_and_predict_next_day:196 - XGBoost model skipped for TATACAP: 
+XGBoost Library (libxgboost.dylib) could not be loaded.
+Likely causes:
+  * OpenMP runtime is not installed
+    - vcomp140.dll or libgomp-1.dll for Windows
+    - libomp.dylib for Mac OSX
+    - libgomp.so for Linux and other UNIX-like OSes
+    Mac OSX users: Run `brew install libomp` to install OpenMP runtime.
+
+  * You are running 32-bit Python on a 64-bit OS
+
+Error message(s): ["dlopen(/Users/rohkumaw/Documents/stock_market_ai/.venv/lib/python3.14/site-packages/xgboost/lib/libxgboost.dylib, 0x0006): Library not loaded: @rpath/libomp.dylib\n  Referenced from: <1A0D8152-BF46-3BE0-B651-EE965C187777> /Users/rohkumaw/Documents/stock_market_ai/.venv/lib/python3.14/site-packages/xgboost/lib/libxgboost.dylib\n  Reason: tried: '/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file), '/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file)"]
+
+2026-02-21 17:55:35.244 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for TATACAP (2026-02-23)
+2026-02-21 17:55:35.246 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for TATACAP (2026-02-23)
+2026-02-21 17:55:35.247 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for TATACAP (2026-02-23)
+2026-02-21 17:55:35.247 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: TATAELXSI.NS
+2026-02-21 17:55:35.753 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing TATAELXSI
+2026-02-21 17:55:35.828 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 1237 rows
+2026-02-21 17:55:35.947 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-21 17:55:36.808 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-21 17:55:38.549 | WARNING  | src.pipelines.predictor:train_and_predict_next_day:196 - XGBoost model skipped for TATAELXSI: 
+XGBoost Library (libxgboost.dylib) could not be loaded.
+Likely causes:
+  * OpenMP runtime is not installed
+    - vcomp140.dll or libgomp-1.dll for Windows
+    - libomp.dylib for Mac OSX
+    - libgomp.so for Linux and other UNIX-like OSes
+    Mac OSX users: Run `brew install libomp` to install OpenMP runtime.
+
+  * You are running 32-bit Python on a 64-bit OS
+
+Error message(s): ["dlopen(/Users/rohkumaw/Documents/stock_market_ai/.venv/lib/python3.14/site-packages/xgboost/lib/libxgboost.dylib, 0x0006): Library not loaded: @rpath/libomp.dylib\n  Referenced from: <1A0D8152-BF46-3BE0-B651-EE965C187777> /Users/rohkumaw/Documents/stock_market_ai/.venv/lib/python3.14/site-packages/xgboost/lib/libxgboost.dylib\n  Reason: tried: '/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file), '/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file)"]
+
+2026-02-21 17:55:38.552 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for TATAELXSI (2026-02-23)
+2026-02-21 17:55:38.553 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for TATAELXSI (2026-02-23)
+2026-02-21 17:55:38.555 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for TATAELXSI (2026-02-23)
+2026-02-21 17:55:38.555 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: BHARTIARTL.NS
+2026-02-21 17:55:39.084 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing BHARTIARTL
+2026-02-21 17:55:39.158 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 1237 rows
+2026-02-21 17:55:39.277 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-21 17:55:39.721 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-21 17:55:40.709 | WARNING  | src.pipelines.predictor:train_and_predict_next_day:196 - XGBoost model skipped for BHARTIARTL: 
+XGBoost Library (libxgboost.dylib) could not be loaded.
+Likely causes:
+  * OpenMP runtime is not installed
+    - vcomp140.dll or libgomp-1.dll for Windows
+    - libomp.dylib for Mac OSX
+    - libgomp.so for Linux and other UNIX-like OSes
+    Mac OSX users: Run `brew install libomp` to install OpenMP runtime.
+
+  * You are running 32-bit Python on a 64-bit OS
+
+Error message(s): ["dlopen(/Users/rohkumaw/Documents/stock_market_ai/.venv/lib/python3.14/site-packages/xgboost/lib/libxgboost.dylib, 0x0006): Library not loaded: @rpath/libomp.dylib\n  Referenced from: <1A0D8152-BF46-3BE0-B651-EE965C187777> /Users/rohkumaw/Documents/stock_market_ai/.venv/lib/python3.14/site-packages/xgboost/lib/libxgboost.dylib\n  Reason: tried: '/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file), '/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file)"]
+
+2026-02-21 17:55:40.711 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for BHARTIARTL (2026-02-23)
+2026-02-21 17:55:40.712 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for BHARTIARTL (2026-02-23)
+2026-02-21 17:55:40.713 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for BHARTIARTL (2026-02-23)
+2026-02-21 17:55:40.713 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: HDFCBANK.NS
+2026-02-21 17:55:41.331 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing HDFCBANK
+2026-02-21 17:55:41.403 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 1237 rows
+2026-02-21 17:55:41.516 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-21 17:55:42.702 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-21 17:55:43.725 | WARNING  | src.pipelines.predictor:train_and_predict_next_day:196 - XGBoost model skipped for HDFCBANK: 
+XGBoost Library (libxgboost.dylib) could not be loaded.
+Likely causes:
+  * OpenMP runtime is not installed
+    - vcomp140.dll or libgomp-1.dll for Windows
+    - libomp.dylib for Mac OSX
+    - libgomp.so for Linux and other UNIX-like OSes
+    Mac OSX users: Run `brew install libomp` to install OpenMP runtime.
+
+  * You are running 32-bit Python on a 64-bit OS
+
+Error message(s): ["dlopen(/Users/rohkumaw/Documents/stock_market_ai/.venv/lib/python3.14/site-packages/xgboost/lib/libxgboost.dylib, 0x0006): Library not loaded: @rpath/libomp.dylib\n  Referenced from: <1A0D8152-BF46-3BE0-B651-EE965C187777> /Users/rohkumaw/Documents/stock_market_ai/.venv/lib/python3.14/site-packages/xgboost/lib/libxgboost.dylib\n  Reason: tried: '/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file), '/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file)"]
+
+2026-02-21 17:55:43.727 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for HDFCBANK (2026-02-23)
+2026-02-21 17:55:43.729 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for HDFCBANK (2026-02-23)
+2026-02-21 17:55:43.730 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for HDFCBANK (2026-02-23)
+2026-02-21 17:55:43.730 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: ICICIBANK.NS
+2026-02-21 17:55:44.299 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing ICICIBANK
+2026-02-21 17:55:44.370 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 1237 rows
+2026-02-21 17:55:44.490 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-21 17:55:45.354 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-21 17:55:46.384 | WARNING  | src.pipelines.predictor:train_and_predict_next_day:196 - XGBoost model skipped for ICICIBANK: 
+XGBoost Library (libxgboost.dylib) could not be loaded.
+Likely causes:
+  * OpenMP runtime is not installed
+    - vcomp140.dll or libgomp-1.dll for Windows
+    - libomp.dylib for Mac OSX
+    - libgomp.so for Linux and other UNIX-like OSes
+    Mac OSX users: Run `brew install libomp` to install OpenMP runtime.
+
+  * You are running 32-bit Python on a 64-bit OS
+
+Error message(s): ["dlopen(/Users/rohkumaw/Documents/stock_market_ai/.venv/lib/python3.14/site-packages/xgboost/lib/libxgboost.dylib, 0x0006): Library not loaded: @rpath/libomp.dylib\n  Referenced from: <1A0D8152-BF46-3BE0-B651-EE965C187777> /Users/rohkumaw/Documents/stock_market_ai/.venv/lib/python3.14/site-packages/xgboost/lib/libxgboost.dylib\n  Reason: tried: '/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file), '/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file)"]
+
+2026-02-21 17:55:46.387 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for ICICIBANK (2026-02-23)
+2026-02-21 17:55:46.389 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for ICICIBANK (2026-02-23)
+2026-02-21 17:55:46.391 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for ICICIBANK (2026-02-23)
+2026-02-21 17:55:46.391 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: SBIN.NS
+2026-02-21 17:55:46.938 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing SBIN
+2026-02-21 17:55:46.992 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 1237 rows
+2026-02-21 17:55:47.116 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-21 17:55:47.620 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-21 17:55:48.614 | WARNING  | src.pipelines.predictor:train_and_predict_next_day:196 - XGBoost model skipped for SBIN: 
+XGBoost Library (libxgboost.dylib) could not be loaded.
+Likely causes:
+  * OpenMP runtime is not installed
+    - vcomp140.dll or libgomp-1.dll for Windows
+    - libomp.dylib for Mac OSX
+    - libgomp.so for Linux and other UNIX-like OSes
+    Mac OSX users: Run `brew install libomp` to install OpenMP runtime.
+
+  * You are running 32-bit Python on a 64-bit OS
+
+Error message(s): ["dlopen(/Users/rohkumaw/Documents/stock_market_ai/.venv/lib/python3.14/site-packages/xgboost/lib/libxgboost.dylib, 0x0006): Library not loaded: @rpath/libomp.dylib\n  Referenced from: <1A0D8152-BF46-3BE0-B651-EE965C187777> /Users/rohkumaw/Documents/stock_market_ai/.venv/lib/python3.14/site-packages/xgboost/lib/libxgboost.dylib\n  Reason: tried: '/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file), '/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file)"]
+
+2026-02-21 17:55:48.616 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for SBIN (2026-02-23)
+2026-02-21 17:55:48.618 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for SBIN (2026-02-23)
+2026-02-21 17:55:48.620 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for SBIN (2026-02-23)
+2026-02-21 17:55:48.620 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: TCS.NS
+2026-02-21 17:55:49.241 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing TCS
+2026-02-21 17:55:49.297 | INFO     | src.storage.db.writer:save_market_data:42 - Saving 1237 rows
+2026-02-21 17:55:49.418 | INFO     | src.storage.db.writer:save_market_data:51 - Committed
+2026-02-21 17:55:50.492 | INFO     | src.pipelines.news_loader:save_news:22 - Saved 5 news records
+2026-02-21 17:55:51.465 | WARNING  | src.pipelines.predictor:train_and_predict_next_day:196 - XGBoost model skipped for TCS: 
+XGBoost Library (libxgboost.dylib) could not be loaded.
+Likely causes:
+  * OpenMP runtime is not installed
+    - vcomp140.dll or libgomp-1.dll for Windows
+    - libomp.dylib for Mac OSX
+    - libgomp.so for Linux and other UNIX-like OSes
+    Mac OSX users: Run `brew install libomp` to install OpenMP runtime.
+
+  * You are running 32-bit Python on a 64-bit OS
+
+Error message(s): ["dlopen(/Users/rohkumaw/Documents/stock_market_ai/.venv/lib/python3.14/site-packages/xgboost/lib/libxgboost.dylib, 0x0006): Library not loaded: @rpath/libomp.dylib\n  Referenced from: <1A0D8152-BF46-3BE0-B651-EE965C187777> /Users/rohkumaw/Documents/stock_market_ai/.venv/lib/python3.14/site-packages/xgboost/lib/libxgboost.dylib\n  Reason: tried: '/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file), '/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/opt/homebrew/opt/libomp/lib/libomp.dylib' (no such file)"]
+
+2026-02-21 17:55:51.468 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for TCS (2026-02-23)
+2026-02-21 17:55:51.470 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for TCS (2026-02-23)
+2026-02-21 17:55:51.471 | INFO     | src.storage.db.writer:save_stock_prediction:141 - Saved prediction for TCS (2026-02-23)
+2026-02-21 17:55:51.471 | INFO     | __main__:run:69 - Pipeline finished

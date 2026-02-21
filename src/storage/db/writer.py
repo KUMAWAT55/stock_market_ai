@@ -1,7 +1,7 @@
 from loguru import logger
 from sqlalchemy.exc import IntegrityError
 
-from .models import SymbolMaster, MarketData, News, StockPrediction
+from .models import SymbolMaster, MarketData, News, StockPrediction, ModelBacktestResult
 
 
 # ---------------- SYMBOL MASTER ----------------
@@ -144,3 +144,40 @@ def save_stock_prediction(session, prediction):
     except Exception as e:
         session.rollback()
         logger.error(f"Prediction save failed: {e}")
+
+
+def save_model_backtest_result(session, result):
+
+    if not result:
+        return
+
+    existing = (
+        session.query(ModelBacktestResult)
+        .filter(
+            ModelBacktestResult.symbol == result["symbol"],
+            ModelBacktestResult.model_name == result["model_name"],
+            ModelBacktestResult.run_date == result["run_date"],
+        )
+        .first()
+    )
+
+    if existing:
+        existing.sample_count = result["sample_count"]
+        existing.directional_accuracy = result["directional_accuracy"]
+        existing.mae = result["mae"]
+        existing.rmse = result["rmse"]
+        existing.avg_true_return = result["avg_true_return"]
+        existing.avg_pred_return = result["avg_pred_return"]
+        existing.cumulative_return = result["cumulative_return"]
+        existing.strategy_return = result["strategy_return"]
+    else:
+        session.add(ModelBacktestResult(**result))
+
+    try:
+        session.commit()
+        logger.info(
+            f"Saved backtest for {result['symbol']} ({result['model_name']})"
+        )
+    except Exception as e:
+        session.rollback()
+        logger.error(f"Backtest save failed: {e}")

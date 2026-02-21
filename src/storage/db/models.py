@@ -116,3 +116,25 @@ class StockPrediction(Base):
     r2_score = Column(Float)
 
     created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class ModelBacktestResult(Base):
+
+    __tablename__ = "model_backtest_results"
+
+    id = Column(Integer, primary_key=True)
+
+    symbol = Column(String, index=True, nullable=False)
+    model_name = Column(String, nullable=False)
+    run_date = Column(Date, nullable=False)
+
+    sample_count = Column(Integer)
+    directional_accuracy = Column(Float)
+    mae = Column(Float)
+    rmse = Column(Float)
+    avg_true_return = Column(Float)
+    avg_pred_return = Column(Float)
+    cumulative_return = Column(Float)
+    strategy_return = Column(Float)
+
+    created_at = Column(DateTime, default=datetime.utcnow)

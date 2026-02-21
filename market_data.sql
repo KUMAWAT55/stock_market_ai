@@ -103,3 +103,23 @@ CREATE TABLE IF NOT EXISTS stock_predictions (
 
     created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+-- MODEL BACKTEST RESULTS TABLE: Stores model-wise walk-forward evaluation metrics
+CREATE TABLE IF NOT EXISTS model_backtest_results (
+    id BIGSERIAL PRIMARY KEY,
+
+    symbol VARCHAR(30) NOT NULL,
+    model_name VARCHAR(50) NOT NULL,
+    run_date DATE NOT NULL,
+
+    sample_count INT,
+    directional_accuracy FLOAT,
+    mae FLOAT,
+    rmse FLOAT,
+    avg_true_return FLOAT,
+    avg_pred_return FLOAT,
+    cumulative_return FLOAT,
+    strategy_return FLOAT,
+
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);

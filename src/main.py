@@ -7,6 +7,7 @@ from src.pipelines.normalizer import normalize_yahoo
 from src.ingestion.news.fetcher import fetch_news
 from src.pipelines.news_loader import save_news
 from src.pipelines.predictor import train_and_predict_next_day
+from src.pipelines.backtester import run_backtest_models
 
 from src.storage.db.connection import SessionLocal
 from src.storage.db.writer import (
@@ -16,9 +17,17 @@ from src.storage.db.writer import (
     get_symbol_price_df,
     get_symbol_news_df,
     save_stock_prediction,
+    save_model_backtest_result,
 )
 
-from src.configs.settings import LOG_PATH, YAHOO_PERIOD
+from src.configs.settings import (
+    LOG_PATH,
+    YAHOO_PERIOD,
+    BACKTEST_MIN_TRAIN_ROWS,
+    BACKTEST_STEP,
+    BACKTEST_TRAIN_WINDOW,
+    BACKTEST_MAX_EVAL_POINTS,
+)
 
 
 # Logging
@@ -63,6 +72,18 @@ def run():
         predictions = train_and_predict_next_day(sym, price_df, news_df)
         for prediction in predictions:
             save_stock_prediction(db, prediction)
+
+        backtest_results = run_backtest_models(
+            sym,
+            price_df,
+            news_df,
+            min_train_rows=BACKTEST_MIN_TRAIN_ROWS,
+            step=BACKTEST_STEP,
+            train_window=BACKTEST_TRAIN_WINDOW,
+            max_eval_points=BACKTEST_MAX_EVAL_POINTS,
+        )
+        for result in backtest_results:
+            save_model_backtest_result(db, result)
 
     db.close()
 

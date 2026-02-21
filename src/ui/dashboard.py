@@ -23,28 +23,28 @@ st.markdown(
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;700&display=swap');
     :root {
-        --bg: #050812;
-        --bg-2: #0b1020;
-        --card: rgba(20, 28, 51, 0.76);
-        --card-strong: #121a33;
-        --card-border: rgba(82, 106, 166, 0.42);
-        --text-main: #e6eeff;
-        --text-dim: #9caed2;
-        --accent: #30d5b8;
-        --brand: #4c8bff;
-        --brand-soft: rgba(76, 139, 255, 0.16);
-        --pos: #3ee68d;
-        --neg: #ff6a7a;
-        --neu: #ffd35a;
-        --shadow-sm: 0 10px 26px rgba(1, 4, 12, 0.52);
-        --shadow-lg: 0 20px 44px rgba(0, 2, 8, 0.72);
+        --bg: #f5f8ff;
+        --bg-2: #ecf2ff;
+        --card: rgba(255, 255, 255, 0.9);
+        --card-strong: #ffffff;
+        --card-border: rgba(148, 163, 184, 0.36);
+        --text-main: #0f172a;
+        --text-dim: #475569;
+        --accent: #0f766e;
+        --brand: #1d4ed8;
+        --brand-soft: rgba(29, 78, 216, 0.12);
+        --pos: #15803d;
+        --neg: #b91c1c;
+        --neu: #a16207;
+        --shadow-sm: 0 8px 18px rgba(15, 23, 42, 0.10);
+        --shadow-lg: 0 14px 28px rgba(15, 23, 42, 0.16);
     }
     .stApp {
         font-family: "DM Sans", "Segoe UI", sans-serif;
         color: var(--text-main);
         background:
-            radial-gradient(1100px 560px at -10% -25%, rgba(76, 139, 255, 0.28), transparent 62%),
-            radial-gradient(900px 520px at 115% -10%, rgba(48, 213, 184, 0.16), transparent 56%),
+            radial-gradient(1100px 560px at -10% -25%, rgba(29, 78, 216, 0.16), transparent 62%),
+            radial-gradient(900px 520px at 115% -10%, rgba(15, 118, 110, 0.10), transparent 56%),
             linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
     }
     .main .block-container {
@@ -59,9 +59,9 @@ st.markdown(
         background: rgba(0, 0, 0, 0);
     }
     section[data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #070c19 0%, #0a1122 72%, #080f1e 100%);
-        border-right: 1px solid rgba(82, 106, 166, 0.34);
-        box-shadow: inset -1px 0 0 rgba(76, 139, 255, 0.09);
+        background: linear-gradient(180deg, #f9fbff 0%, #eef3ff 72%, #e8efff 100%);
+        border-right: 1px solid rgba(148, 163, 184, 0.35);
+        box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.8);
     }
     section[data-testid="stSidebar"] label,
     section[data-testid="stSidebar"] p,
@@ -70,47 +70,62 @@ st.markdown(
         font-family: "Manrope", "Segoe UI", sans-serif;
     }
     section[data-testid="stSidebar"] [data-baseweb="select"] > div {
-        background: linear-gradient(145deg, rgba(16, 25, 47, 0.96), rgba(14, 21, 41, 0.92)) !important;
-        border: 1px solid rgba(82, 106, 166, 0.62) !important;
+        background: linear-gradient(145deg, #ffffff, #f4f8ff) !important;
+        border: 1px solid rgba(148, 163, 184, 0.5) !important;
         border-radius: 10px !important;
-        box-shadow: inset 0 0 0 1px rgba(76, 139, 255, 0.18), 0 4px 10px rgba(0, 0, 0, 0.34);
+        box-shadow: inset 0 0 0 1px rgba(29, 78, 216, 0.10), 0 3px 8px rgba(15, 23, 42, 0.08);
+    }
+    div[data-testid="stSelectbox"] [data-baseweb="select"] > div {
+        background: linear-gradient(145deg, #ffffff, #f4f8ff) !important;
+        border: 1px solid rgba(148, 163, 184, 0.5) !important;
+        border-radius: 10px !important;
     }
     section[data-testid="stSidebar"] [data-baseweb="select"] span {
-        color: #e6eeff !important;
+        color: #0f172a !important;
+        font-weight: 600;
+    }
+    div[data-testid="stSelectbox"] [data-baseweb="select"] span {
+        color: #0f172a !important;
         font-weight: 600;
     }
     section[data-testid="stSidebar"] [data-baseweb="select"] input {
-        color: #e6eeff !important;
+        color: #0f172a !important;
         background: transparent !important;
     }
     section[data-testid="stSidebar"] [data-baseweb="select"] svg {
-        fill: #9fb0d4 !important;
+        fill: #64748b !important;
     }
     div[data-baseweb="popover"],
     div[data-baseweb="popover"] > div,
-    div[role="listbox"] {
-        background: #0f1830 !important;
-        border: 1px solid rgba(82, 106, 166, 0.62) !important;
+    div[role="listbox"],
+    ul[role="listbox"],
+    [data-baseweb="menu"],
+    [data-baseweb="select"] [role="listbox"] {
+        background: #ffffff !important;
+        border: 1px solid rgba(148, 163, 184, 0.5) !important;
         border-radius: 10px !important;
-        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.48) !important;
+        box-shadow: 0 12px 24px rgba(15, 23, 42, 0.16) !important;
     }
     div[data-baseweb="popover"] ul,
     div[data-baseweb="popover"] li {
         background: transparent !important;
     }
     div[data-baseweb="popover"] [role="option"],
-    div[role="listbox"] [role="option"] {
-        color: #e6eeff !important;
+    div[role="listbox"] [role="option"],
+    ul[role="listbox"] li,
+    [data-baseweb="menu"] li {
+        color: #0f172a !important;
         background: transparent !important;
         font-weight: 600 !important;
+        opacity: 1 !important;
     }
     div[data-baseweb="popover"] [role="option"][aria-selected="true"],
     div[role="listbox"] [role="option"][aria-selected="true"] {
-        background: rgba(76, 139, 255, 0.28) !important;
+        background: rgba(29, 78, 216, 0.16) !important;
     }
     div[data-baseweb="popover"] [role="option"]:hover,
     div[role="listbox"] [role="option"]:hover {
-        background: rgba(76, 139, 255, 0.20) !important;
+        background: rgba(29, 78, 216, 0.12) !important;
     }
     h1, h2, h3 {
         font-family: "Manrope", "Segoe UI", sans-serif;
@@ -122,7 +137,7 @@ st.markdown(
     }
     .app-title {
         position: relative;
-        background: linear-gradient(145deg, rgba(30, 43, 78, 0.92), rgba(26, 37, 70, 0.78));
+        background: linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(244, 248, 255, 0.95));
         border: 1px solid var(--card-border);
         border-radius: 12px;
         padding: 0.68rem 0.82rem;
@@ -162,7 +177,7 @@ st.markdown(
         font-size: 0.78rem;
     }
     .snapshot-card {
-        background: linear-gradient(160deg, var(--card), rgba(26, 38, 70, 0.65));
+        background: linear-gradient(160deg, var(--card), rgba(250, 252, 255, 0.92));
         border: 1px solid var(--card-border);
         border-radius: 10px;
         padding: 8px 10px;
@@ -190,7 +205,7 @@ st.markdown(
         font-weight: 800;
     }
     .news-card {
-        background: linear-gradient(160deg, rgba(26, 37, 70, 0.90), rgba(23, 34, 62, 0.74));
+        background: linear-gradient(160deg, rgba(255, 255, 255, 0.96), rgba(246, 250, 255, 0.92));
         border: 1px solid var(--card-border);
         border-radius: 10px;
         padding: 8px 10px;
@@ -244,7 +259,7 @@ st.markdown(
         box-shadow: var(--shadow-lg);
     }
     div[data-testid="stPlotlyChart"] {
-        background: linear-gradient(160deg, rgba(27,39,73,0.96), rgba(22,33,63,0.86));
+        background: linear-gradient(160deg, rgba(255, 255, 255, 0.98), rgba(245, 249, 255, 0.92));
         border: 1px solid var(--card-border);
         border-radius: 12px;
         padding: 8px;
@@ -279,18 +294,18 @@ st.markdown(
         margin-bottom: 0.18rem !important;
     }
     .indicator-bull {
-        background: linear-gradient(150deg, rgba(46, 175, 118, 0.24), rgba(25, 112, 76, 0.20));
-        border-color: rgba(62, 230, 141, 0.58);
+        background: linear-gradient(150deg, rgba(34, 197, 94, 0.16), rgba(22, 163, 74, 0.12));
+        border-color: rgba(34, 197, 94, 0.36);
         color: var(--pos);
     }
     .indicator-bear {
-        background: linear-gradient(150deg, rgba(255, 106, 122, 0.26), rgba(137, 33, 48, 0.22));
-        border-color: rgba(255, 122, 139, 0.62);
+        background: linear-gradient(150deg, rgba(239, 68, 68, 0.16), rgba(220, 38, 38, 0.12));
+        border-color: rgba(239, 68, 68, 0.34);
         color: var(--neg);
     }
     .indicator-neutral {
-        background: linear-gradient(150deg, rgba(255, 211, 90, 0.25), rgba(150, 108, 24, 0.20));
-        border-color: rgba(255, 211, 90, 0.65);
+        background: linear-gradient(150deg, rgba(250, 204, 21, 0.20), rgba(234, 179, 8, 0.14));
+        border-color: rgba(234, 179, 8, 0.36);
         color: var(--neu);
     }
     .stDataFrame, .stTable {
@@ -324,7 +339,7 @@ def _safe_series(df, col):
     return pd.to_numeric(df[col], errors="coerce")
 
 
-def compute_indicator_consensus(price_df, sentiment_score):
+def     compute_indicator_consensus(price_df, sentiment_score):
     df = price_df.copy()
     df["date"] = pd.to_datetime(df["date"], errors="coerce")
     df = df.sort_values("date").dropna(subset=["date"]).copy()
@@ -575,6 +590,28 @@ def load_model_predictions(sym):
         return pd.DataFrame()
 
 
+@st.cache_data
+def load_backtest_results(sym):
+    try:
+        df = pd.read_sql(
+            f"""
+            SELECT *
+            FROM model_backtest_results
+            WHERE symbol='{sym}'
+            ORDER BY run_date DESC, created_at DESC
+            LIMIT 200
+            """,
+            engine,
+        )
+        if df.empty:
+            return df
+        return df.sort_values(
+            by=["run_date", "created_at"], ascending=[False, False]
+        ).drop_duplicates(subset=["model_name"], keep="first")
+    except Exception:
+        return pd.DataFrame()
+
+
 # ----------------------------------
 # Sidebar
 # ----------------------------------
@@ -606,6 +643,7 @@ prices = load_prices(symbol)
 news = load_news(symbol)
 prediction_df = load_latest_prediction(symbol)
 model_predictions_df = load_model_predictions(symbol)
+backtest_df = load_backtest_results(symbol)
 
 if prices.empty:
     st.warning(f"No market data found for {symbol}.")
@@ -720,6 +758,65 @@ if not model_predictions_df.empty:
 else:
     st.info("No model predictions available.")
 
+st.subheader("📈 Backtest Performance")
+if not backtest_df.empty:
+    backtest_cards = []
+    for model_name in model_order:
+        model_row = backtest_df[backtest_df["model_name"] == model_name]
+        if model_row.empty:
+            continue
+        row = model_row.iloc[0]
+        hit = float(row["directional_accuracy"]) * 100.0 if pd.notna(row["directional_accuracy"]) else 0.0
+        strat_ret = float(row["strategy_return"]) * 100.0 if pd.notna(row["strategy_return"]) else 0.0
+        color = "#ca8a04"
+        if strat_ret > 0:
+            color = "#15803d"
+        elif strat_ret < 0:
+            color = "#b91c1c"
+        backtest_cards.append(
+            f"""
+            <div class="snapshot-card">
+                <div class="snapshot-label">{model_label.get(model_name, model_name)} Backtest</div>
+                <div class="snapshot-value" style="color:{color};">Hit: {hit:.1f}%</div>
+                <div class="news-meta">Strategy: {strat_ret:+.2f}% | N={int(row["sample_count"]) if pd.notna(row["sample_count"]) else 0}</div>
+            </div>
+            """
+        )
+    st.markdown(
+        dedent(
+            f"""
+            <div class="indicator-grid">
+                {''.join(backtest_cards)}
+            </div>
+            """
+        ),
+        unsafe_allow_html=True,
+    )
+
+    backtest_view = backtest_df.copy()
+    backtest_view["directional_accuracy"] = (pd.to_numeric(backtest_view["directional_accuracy"], errors="coerce") * 100.0).round(2)
+    backtest_view["mae"] = pd.to_numeric(backtest_view["mae"], errors="coerce").round(5)
+    backtest_view["rmse"] = pd.to_numeric(backtest_view["rmse"], errors="coerce").round(5)
+    backtest_view["strategy_return"] = (pd.to_numeric(backtest_view["strategy_return"], errors="coerce") * 100.0).round(2)
+    st.dataframe(
+        backtest_view[["model_name", "run_date", "sample_count", "directional_accuracy", "mae", "rmse", "strategy_return"]]
+        .rename(
+            columns={
+                "model_name": "Model",
+                "run_date": "Run Date",
+                "sample_count": "Samples",
+                "directional_accuracy": "Hit Rate (%)",
+                "mae": "MAE",
+                "rmse": "RMSE",
+                "strategy_return": "Strategy Return (%)",
+            }
+        ),
+        use_container_width=True,
+        hide_index=True,
+    )
+else:
+    st.info("No backtest results available yet. Run the ingestion pipeline once.")
+
 detail_col1, detail_col2 = st.columns([1, 1], gap="small")
 
 with detail_col1:
@@ -797,19 +894,19 @@ with col1:
         decreasing_fillcolor="rgba(220,38,38,0.35)",
     ))
     fig.update_layout(
-        template="plotly_dark",
-        paper_bgcolor="#162342",
-        plot_bgcolor="#131d36",
-        font=dict(color="#dbe8ff"),
+        template="plotly_white",
+        paper_bgcolor="#ffffff",
+        plot_bgcolor="#f8fbff",
+        font=dict(color="#0f172a"),
         xaxis_rangeslider_visible=False,
         margin=dict(l=8, r=8, t=10, b=8),
     )
-    fig.update_xaxes(gridcolor="rgba(116,143,199,0.22)")
-    fig.update_yaxes(gridcolor="rgba(116,143,199,0.24)")
+    fig.update_xaxes(gridcolor="rgba(148,163,184,0.26)")
+    fig.update_yaxes(gridcolor="rgba(148,163,184,0.28)")
     st.plotly_chart(fig, use_container_width=True)
 
 with col2:
-    st.subheader("Priority Feed")
+    st.subheader("Quick Metrics")
     st.markdown(
         dedent(
             f"""
@@ -829,25 +926,6 @@ with col2:
         ),
         unsafe_allow_html=True,
     )
-
-    if not news.empty:
-        for _, row in news.head(3).iterrows():
-            sentiment = (row.get("sentiment_label") or "neutral").lower()
-            score = row.get("sentiment_score")
-            color_map = {"positive": "#15803d", "negative": "#b91c1c", "neutral": "#ca8a04"}
-            color = color_map.get(sentiment, "#ca8a04")
-            score_text = f"{float(score):.2f}" if pd.notna(score) else "0.00"
-            st.markdown(
-                dedent(
-                    f"""
-                    <div class="news-card">
-                        <div class="news-title">{row['title']}</div>
-                        <div class="news-meta">Sentiment: <span style="color:{color};font-weight:700;">{sentiment.title()} ({score_text})</span></div>
-                    </div>
-                    """
-                ),
-                unsafe_allow_html=True,
-            )
 
 st.subheader("📰 Full News")
 if not news.empty:

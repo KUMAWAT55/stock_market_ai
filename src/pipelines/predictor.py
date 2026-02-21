@@ -20,6 +20,12 @@ FEATURE_COLUMNS = [
 ]
 
 
+def _coerce_numeric(df: pd.DataFrame, columns: list[str]) -> pd.DataFrame:
+    for col in columns:
+        df[col] = pd.to_numeric(df[col], errors="coerce")
+    return df
+
+
 def _direction_from_return(predicted_return: float) -> str:
     if predicted_return > 0.001:
         return "up"
@@ -65,6 +71,7 @@ def _build_features(price_df: pd.DataFrame, news_df: pd.DataFrame) -> pd.DataFra
     data["sentiment_score"] = data["sentiment_score"].fillna(0.0)
 
     data["target_return"] = data["close"].shift(-1) / safe_close - 1.0
+    data = _coerce_numeric(data, FEATURE_COLUMNS + ["target_return"])
     data[FEATURE_COLUMNS + ["target_return"]] = data[
         FEATURE_COLUMNS + ["target_return"]
     ].replace([np.inf, -np.inf], np.nan)
@@ -82,6 +89,7 @@ def train_and_predict_next_day(
         return []
 
     data = _build_features(price_df, news_df)
+    data = _coerce_numeric(data, FEATURE_COLUMNS + ["target_return", "target_class"])
     train_data = data.dropna(subset=FEATURE_COLUMNS + ["target_return", "target_class"]).copy()
     train_data = train_data[
         np.isfinite(train_data[FEATURE_COLUMNS + ["target_return", "target_class"]]).all(axis=1)
@@ -93,10 +101,10 @@ def train_and_predict_next_day(
         return []
 
     split_idx = int(len(train_data) * 0.8)
-    x_train = train_data.iloc[:split_idx][FEATURE_COLUMNS]
-    y_train = train_data.iloc[:split_idx]["target_return"]
-    x_test = train_data.iloc[split_idx:][FEATURE_COLUMNS]
-    y_test = train_data.iloc[split_idx:]["target_return"]
+    x_train = train_data.iloc[:split_idx][FEATURE_COLUMNS].astype(float)
+    y_train = train_data.iloc[:split_idx]["target_return"].astype(float)
+    x_test = train_data.iloc[split_idx:][FEATURE_COLUMNS].astype(float)
+    y_test = train_data.iloc[split_idx:]["target_return"].astype(float)
     y_train_class = train_data.iloc[:split_idx]["target_class"].astype(int)
     y_test_class = train_data.iloc[split_idx:]["target_class"].astype(int)
 
@@ -107,7 +115,7 @@ def train_and_predict_next_day(
         return []
 
     latest_row = predict_pool.iloc[-1]
-    latest_x = latest_row[FEATURE_COLUMNS].to_frame().T
+    latest_x = latest_row[FEATURE_COLUMNS].to_frame().T.astype(float)
 
     last_close = float(latest_row["close"])
     prediction_date = pd.to_datetime(latest_row["date"]).date()

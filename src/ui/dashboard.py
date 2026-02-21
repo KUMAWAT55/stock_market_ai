@@ -23,28 +23,29 @@ st.markdown(
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;700&display=swap');
     :root {
-        --bg: #eef3fb;
-        --card: rgba(255, 255, 255, 0.82);
-        --card-strong: #ffffff;
-        --card-border: rgba(148, 163, 184, 0.32);
-        --text-main: #0f172a;
-        --text-dim: #475569;
-        --accent: #0f766e;
-        --brand: #1e40af;
-        --brand-soft: #dbeafe;
-        --pos: #166534;
-        --neg: #991b1b;
-        --neu: #a16207;
-        --shadow-sm: 0 6px 18px rgba(15, 23, 42, 0.08);
-        --shadow-lg: 0 14px 34px rgba(15, 23, 42, 0.14);
+        --bg: #050812;
+        --bg-2: #0b1020;
+        --card: rgba(20, 28, 51, 0.76);
+        --card-strong: #121a33;
+        --card-border: rgba(82, 106, 166, 0.42);
+        --text-main: #e6eeff;
+        --text-dim: #9caed2;
+        --accent: #30d5b8;
+        --brand: #4c8bff;
+        --brand-soft: rgba(76, 139, 255, 0.16);
+        --pos: #3ee68d;
+        --neg: #ff6a7a;
+        --neu: #ffd35a;
+        --shadow-sm: 0 10px 26px rgba(1, 4, 12, 0.52);
+        --shadow-lg: 0 20px 44px rgba(0, 2, 8, 0.72);
     }
     .stApp {
         font-family: "DM Sans", "Segoe UI", sans-serif;
         color: var(--text-main);
         background:
-            radial-gradient(1200px 600px at -10% -20%, rgba(30, 64, 175, 0.14), transparent 60%),
-            radial-gradient(900px 500px at 120% 0%, rgba(15, 118, 110, 0.10), transparent 52%),
-            linear-gradient(180deg, #f6f9ff 0%, #edf3fb 100%);
+            radial-gradient(1100px 560px at -10% -25%, rgba(76, 139, 255, 0.28), transparent 62%),
+            radial-gradient(900px 520px at 115% -10%, rgba(48, 213, 184, 0.16), transparent 56%),
+            linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
     }
     .main .block-container {
         max-width: 1320px;
@@ -58,9 +59,9 @@ st.markdown(
         background: rgba(0, 0, 0, 0);
     }
     section[data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #f8fbff 0%, #edf3fb 68%, #e8f0fb 100%);
-        border-right: 1px solid rgba(148, 163, 184, 0.28);
-        box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.9);
+        background: linear-gradient(180deg, #070c19 0%, #0a1122 72%, #080f1e 100%);
+        border-right: 1px solid rgba(82, 106, 166, 0.34);
+        box-shadow: inset -1px 0 0 rgba(76, 139, 255, 0.09);
     }
     section[data-testid="stSidebar"] label,
     section[data-testid="stSidebar"] p,
@@ -68,14 +69,60 @@ st.markdown(
     section[data-testid="stSidebar"] [data-testid="stSelectbox"] {
         font-family: "Manrope", "Segoe UI", sans-serif;
     }
+    section[data-testid="stSidebar"] [data-baseweb="select"] > div {
+        background: linear-gradient(145deg, rgba(16, 25, 47, 0.96), rgba(14, 21, 41, 0.92)) !important;
+        border: 1px solid rgba(82, 106, 166, 0.62) !important;
+        border-radius: 10px !important;
+        box-shadow: inset 0 0 0 1px rgba(76, 139, 255, 0.18), 0 4px 10px rgba(0, 0, 0, 0.34);
+    }
+    section[data-testid="stSidebar"] [data-baseweb="select"] span {
+        color: #e6eeff !important;
+        font-weight: 600;
+    }
+    section[data-testid="stSidebar"] [data-baseweb="select"] input {
+        color: #e6eeff !important;
+        background: transparent !important;
+    }
+    section[data-testid="stSidebar"] [data-baseweb="select"] svg {
+        fill: #9fb0d4 !important;
+    }
+    div[data-baseweb="popover"],
+    div[data-baseweb="popover"] > div,
+    div[role="listbox"] {
+        background: #0f1830 !important;
+        border: 1px solid rgba(82, 106, 166, 0.62) !important;
+        border-radius: 10px !important;
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.48) !important;
+    }
+    div[data-baseweb="popover"] ul,
+    div[data-baseweb="popover"] li {
+        background: transparent !important;
+    }
+    div[data-baseweb="popover"] [role="option"],
+    div[role="listbox"] [role="option"] {
+        color: #e6eeff !important;
+        background: transparent !important;
+        font-weight: 600 !important;
+    }
+    div[data-baseweb="popover"] [role="option"][aria-selected="true"],
+    div[role="listbox"] [role="option"][aria-selected="true"] {
+        background: rgba(76, 139, 255, 0.28) !important;
+    }
+    div[data-baseweb="popover"] [role="option"]:hover,
+    div[role="listbox"] [role="option"]:hover {
+        background: rgba(76, 139, 255, 0.20) !important;
+    }
     h1, h2, h3 {
         font-family: "Manrope", "Segoe UI", sans-serif;
         letter-spacing: 0.01em;
         color: var(--text-main);
     }
+    p, label, span, div {
+        color: var(--text-main);
+    }
     .app-title {
         position: relative;
-        background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(245,249,255,0.92));
+        background: linear-gradient(145deg, rgba(30, 43, 78, 0.92), rgba(26, 37, 70, 0.78));
         border: 1px solid var(--card-border);
         border-radius: 12px;
         padding: 0.68rem 0.82rem;
@@ -88,8 +135,8 @@ st.markdown(
         content: "";
         position: absolute;
         inset: 0 auto 0 0;
-        width: 4px;
-        background: linear-gradient(180deg, #1e40af, #0f766e);
+        width: 3px;
+        background: linear-gradient(180deg, #4f8cff, #36d7b7);
     }
     .app-title:hover {
         transform: translateY(-3px) scale(1.004);
@@ -115,18 +162,18 @@ st.markdown(
         font-size: 0.78rem;
     }
     .snapshot-card {
-        background: linear-gradient(160deg, var(--card), rgba(255,255,255,0.68));
+        background: linear-gradient(160deg, var(--card), rgba(26, 38, 70, 0.65));
         border: 1px solid var(--card-border);
         border-radius: 10px;
         padding: 8px 10px;
         margin-bottom: 7px;
         box-shadow: var(--shadow-sm);
-        backdrop-filter: blur(8px);
+        backdrop-filter: blur(12px);
         transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
     }
     .snapshot-card:hover {
         transform: translateY(-3px) scale(1.012);
-        border-color: rgba(30, 64, 175, 0.35);
+        border-color: rgba(79, 140, 255, 0.60);
         box-shadow: var(--shadow-lg);
     }
     .snapshot-label {
@@ -143,7 +190,7 @@ st.markdown(
         font-weight: 800;
     }
     .news-card {
-        background: linear-gradient(160deg, rgba(255,255,255,0.92), rgba(255,255,255,0.74));
+        background: linear-gradient(160deg, rgba(26, 37, 70, 0.90), rgba(23, 34, 62, 0.74));
         border: 1px solid var(--card-border);
         border-radius: 10px;
         padding: 8px 10px;
@@ -154,7 +201,7 @@ st.markdown(
     }
     .news-card:hover {
         transform: translateY(-3px) scale(1.01);
-        border-color: rgba(30, 64, 175, 0.35);
+        border-color: rgba(79, 140, 255, 0.60);
         box-shadow: var(--shadow-lg);
     }
     .news-title {
@@ -174,10 +221,10 @@ st.markdown(
         text-decoration: none;
         font-size: 0.78rem;
         font-weight: 700;
-        border-bottom: 1px dashed rgba(30, 64, 175, 0.4);
+        border-bottom: 1px dashed rgba(79, 140, 255, 0.5);
     }
     .news-link:hover {
-        border-bottom-color: rgba(30, 64, 175, 0.8);
+        border-bottom-color: rgba(79, 140, 255, 0.95);
     }
     .indicator-grid {
         display: grid;
@@ -197,12 +244,17 @@ st.markdown(
         box-shadow: var(--shadow-lg);
     }
     div[data-testid="stPlotlyChart"] {
-        background: linear-gradient(160deg, rgba(255,255,255,0.96), rgba(245,249,255,0.88));
+        background: linear-gradient(160deg, rgba(27,39,73,0.96), rgba(22,33,63,0.86));
         border: 1px solid var(--card-border);
         border-radius: 12px;
         padding: 8px;
         box-shadow: var(--shadow-sm);
         transition: transform 180ms ease, box-shadow 180ms ease;
+    }
+    div[data-testid="stPlotlyChart"] .js-plotly-plot,
+    div[data-testid="stPlotlyChart"] .plot-container,
+    div[data-testid="stPlotlyChart"] .svg-container {
+        background: transparent !important;
     }
     div[data-testid="stPlotlyChart"]:hover {
         transform: translateY(-3px) scale(1.004);
@@ -222,20 +274,29 @@ st.markdown(
         margin-top: 0.25rem !important;
         margin-bottom: 0.25rem !important;
     }
+    div[data-testid="stHeading"] {
+        margin-top: 0.12rem !important;
+        margin-bottom: 0.18rem !important;
+    }
     .indicator-bull {
-        background: linear-gradient(150deg, #ecfdf3, #dcfce7);
-        border-color: #86efac;
+        background: linear-gradient(150deg, rgba(46, 175, 118, 0.24), rgba(25, 112, 76, 0.20));
+        border-color: rgba(62, 230, 141, 0.58);
         color: var(--pos);
     }
     .indicator-bear {
-        background: linear-gradient(150deg, #fff1f2, #fee2e2);
-        border-color: #fca5a5;
+        background: linear-gradient(150deg, rgba(255, 106, 122, 0.26), rgba(137, 33, 48, 0.22));
+        border-color: rgba(255, 122, 139, 0.62);
         color: var(--neg);
     }
     .indicator-neutral {
-        background: linear-gradient(150deg, #fef9c3, #fef3c7);
-        border-color: #fcd34d;
+        background: linear-gradient(150deg, rgba(255, 211, 90, 0.25), rgba(150, 108, 24, 0.20));
+        border-color: rgba(255, 211, 90, 0.65);
         color: var(--neu);
+    }
+    .stDataFrame, .stTable {
+        border: 1px solid var(--card-border);
+        border-radius: 10px;
+        overflow: hidden;
     }
     @media (max-width: 900px) {
         .app-heading {
@@ -616,6 +677,49 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+st.subheader("🤖 AI Model Outputs")
+model_order = ["logistic_v1", "random_forest_v1", "xgboost_v1", "ensemble_v1"]
+model_label = {
+    "logistic_v1": "Logistic",
+    "random_forest_v1": "Random Forest",
+    "xgboost_v1": "XGBoost",
+    "ensemble_v1": "Ensemble",
+}
+if not model_predictions_df.empty:
+    model_cards = []
+    for model_name in model_order:
+        model_row = model_predictions_df[model_predictions_df["model_name"] == model_name]
+        if model_row.empty:
+            continue
+        row = model_row.iloc[0]
+        pred_ret = float(row["predicted_return"]) * 100.0 if pd.notna(row["predicted_return"]) else 0.0
+        direction = str(row["direction"]).upper()
+        color = "#ca8a04"
+        if direction == "UP":
+            color = "#15803d"
+        elif direction == "DOWN":
+            color = "#b91c1c"
+        model_cards.append(
+            f"""
+            <div class="snapshot-card">
+                <div class="snapshot-label">{model_label.get(model_name, model_name)}</div>
+                <div class="snapshot-value" style="color:{color};">{direction} ({pred_ret:+.2f}%)</div>
+            </div>
+            """
+        )
+    st.markdown(
+        dedent(
+            f"""
+            <div class="indicator-grid">
+                {''.join(model_cards)}
+            </div>
+            """
+        ),
+        unsafe_allow_html=True,
+    )
+else:
+    st.info("No model predictions available.")
+
 detail_col1, detail_col2 = st.columns([1, 1], gap="small")
 
 with detail_col1:
@@ -675,41 +779,6 @@ with detail_col2:
         unsafe_allow_html=True,
     )
 
-    st.markdown("**AI Model Outputs**")
-    model_order = ["logistic_v1", "random_forest_v1", "xgboost_v1", "ensemble_v1"]
-    model_label = {
-        "logistic_v1": "Logistic",
-        "random_forest_v1": "Random Forest",
-        "xgboost_v1": "XGBoost",
-        "ensemble_v1": "Ensemble",
-    }
-    if not model_predictions_df.empty:
-        for model_name in model_order:
-            model_row = model_predictions_df[model_predictions_df["model_name"] == model_name]
-            if model_row.empty:
-                continue
-            row = model_row.iloc[0]
-            pred_ret = float(row["predicted_return"]) * 100.0 if pd.notna(row["predicted_return"]) else 0.0
-            direction = str(row["direction"]).upper()
-            color = "#ca8a04"
-            if direction == "UP":
-                color = "#15803d"
-            elif direction == "DOWN":
-                color = "#b91c1c"
-            st.markdown(
-                dedent(
-                    f"""
-                    <div class="snapshot-card">
-                        <div class="snapshot-label">{model_label.get(model_name, model_name)}</div>
-                        <div class="snapshot-value" style="color:{color};">{direction} ({pred_ret:+.2f}%)</div>
-                    </div>
-                    """
-                ),
-                unsafe_allow_html=True,
-            )
-    else:
-        st.info("No model predictions available.")
-
 col1, col2 = st.columns([1, 1], gap="small")
 
 with col1:
@@ -728,15 +797,15 @@ with col1:
         decreasing_fillcolor="rgba(220,38,38,0.35)",
     ))
     fig.update_layout(
-        template="plotly_white",
-        paper_bgcolor="rgba(255,255,255,0.75)",
-        plot_bgcolor="rgba(255,255,255,1)",
-        font=dict(color="#0f172a"),
+        template="plotly_dark",
+        paper_bgcolor="#162342",
+        plot_bgcolor="#131d36",
+        font=dict(color="#dbe8ff"),
         xaxis_rangeslider_visible=False,
         margin=dict(l=8, r=8, t=10, b=8),
     )
-    fig.update_xaxes(gridcolor="rgba(148,163,184,0.24)")
-    fig.update_yaxes(gridcolor="rgba(148,163,184,0.26)")
+    fig.update_xaxes(gridcolor="rgba(116,143,199,0.22)")
+    fig.update_yaxes(gridcolor="rgba(116,143,199,0.24)")
     st.plotly_chart(fig, use_container_width=True)
 
 with col2:

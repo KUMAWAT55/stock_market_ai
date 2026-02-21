@@ -1,5 +1,7 @@
 from loguru import logger
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.dialects.postgresql import insert as pg_insert
+from sqlalchemy import func
 
 from .models import SymbolMaster, MarketData, News, StockPrediction, ModelBacktestResult
 
@@ -41,12 +43,32 @@ def save_market_data(session, records):
 
     logger.info(f"Saving {len(records)} rows")
 
-    for r in records:
+    deduped = {}
+    for row in records:
+        key = (row.get("symbol"), row.get("date"), row.get("source"))
+        deduped[key] = row
+    payload = list(deduped.values())
+    if not payload:
+        return
 
-        session.add(MarketData(**r))
+    stmt = pg_insert(MarketData).values(payload)
+    update_map = {
+        "open": stmt.excluded.open,
+        "high": stmt.excluded.high,
+        "low": stmt.excluded.low,
+        "close": stmt.excluded.close,
+        "volume": stmt.excluded.volume,
+        "traded_value": stmt.excluded.traded_value,
+        "vwap": stmt.excluded.vwap,
+    }
+    stmt = stmt.on_conflict_do_update(
+        index_elements=["symbol", "date", "source"],
+        set_=update_map,
+    )
 
     try:
 
+        session.execute(stmt)
         session.commit()
         logger.info("Committed")
 
@@ -89,6 +111,15 @@ def get_symbol_price_df(session, symbol):
     )
 
 
+def get_latest_market_timestamp(session, symbol):
+
+    return (
+        session.query(func.max(MarketData.date))
+        .filter(MarketData.symbol == symbol)
+        .scalar()
+    )
+
+
 def get_symbol_news_df(session, symbol):
 
     rows = (
@@ -116,27 +147,21 @@ def save_stock_prediction(session, prediction):
     if not prediction:
         return
 
-    existing = (
-        session.query(StockPrediction)
-        .filter(
-            StockPrediction.symbol == prediction["symbol"],
-            StockPrediction.target_date == prediction["target_date"],
-            StockPrediction.model_name == prediction["model_name"],
-        )
-        .first()
+    stmt = pg_insert(StockPrediction).values([prediction])
+    stmt = stmt.on_conflict_do_update(
+        index_elements=["symbol", "target_date", "model_name"],
+        set_={
+            "prediction_date": stmt.excluded.prediction_date,
+            "predicted_return": stmt.excluded.predicted_return,
+            "predicted_close": stmt.excluded.predicted_close,
+            "direction": stmt.excluded.direction,
+            "train_rows": stmt.excluded.train_rows,
+            "r2_score": stmt.excluded.r2_score,
+        },
     )
 
-    if existing:
-        existing.prediction_date = prediction["prediction_date"]
-        existing.predicted_return = prediction["predicted_return"]
-        existing.predicted_close = prediction["predicted_close"]
-        existing.direction = prediction["direction"]
-        existing.train_rows = prediction["train_rows"]
-        existing.r2_score = prediction["r2_score"]
-    else:
-        session.add(StockPrediction(**prediction))
-
     try:
+        session.execute(stmt)
         session.commit()
         logger.info(
             f"Saved prediction for {prediction['symbol']} ({prediction['target_date']})"
@@ -151,29 +176,23 @@ def save_model_backtest_result(session, result):
     if not result:
         return
 
-    existing = (
-        session.query(ModelBacktestResult)
-        .filter(
-            ModelBacktestResult.symbol == result["symbol"],
-            ModelBacktestResult.model_name == result["model_name"],
-            ModelBacktestResult.run_date == result["run_date"],
-        )
-        .first()
+    stmt = pg_insert(ModelBacktestResult).values([result])
+    stmt = stmt.on_conflict_do_update(
+        index_elements=["symbol", "model_name", "run_date"],
+        set_={
+            "sample_count": stmt.excluded.sample_count,
+            "directional_accuracy": stmt.excluded.directional_accuracy,
+            "mae": stmt.excluded.mae,
+            "rmse": stmt.excluded.rmse,
+            "avg_true_return": stmt.excluded.avg_true_return,
+            "avg_pred_return": stmt.excluded.avg_pred_return,
+            "cumulative_return": stmt.excluded.cumulative_return,
+            "strategy_return": stmt.excluded.strategy_return,
+        },
     )
 
-    if existing:
-        existing.sample_count = result["sample_count"]
-        existing.directional_accuracy = result["directional_accuracy"]
-        existing.mae = result["mae"]
-        existing.rmse = result["rmse"]
-        existing.avg_true_return = result["avg_true_return"]
-        existing.avg_pred_return = result["avg_pred_return"]
-        existing.cumulative_return = result["cumulative_return"]
-        existing.strategy_return = result["strategy_return"]
-    else:
-        session.add(ModelBacktestResult(**result))
-
     try:
+        session.execute(stmt)
         session.commit()
         logger.info(
             f"Saved backtest for {result['symbol']} ({result['model_name']})"

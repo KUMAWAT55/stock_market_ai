@@ -14,80 +14,131 @@ from src.storage.db.connection import engine
 
 
 st.set_page_config(
-    page_title="QuantBrain",
-    layout="wide"
+    page_title="TradeIQ",
+    layout="wide",
+    initial_sidebar_state="expanded",
 )
 
 st.markdown(
     """
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap');
+
     :root {
-        --bg: #f5f8ff;
-        --bg-2: #ecf2ff;
-        --card: rgba(255, 255, 255, 0.9);
-        --card-strong: #ffffff;
-        --card-border: rgba(148, 163, 184, 0.36);
+        --bg: #f3f6fb;
+        --bg-soft: #eaf0f7;
+        --surface: #ffffff;
+        --surface-soft: #f8fafd;
+        --border: #d3dce8;
+        --border-strong: #b7c4d8;
         --text-main: #0f172a;
         --text-dim: #475569;
-        --accent: #0f766e;
         --brand: #1d4ed8;
-        --brand-soft: rgba(29, 78, 216, 0.12);
+        --brand-dark: #143f95;
+        --brand-soft: #dbe7ff;
         --pos: #15803d;
         --neg: #b91c1c;
-        --neu: #a16207;
-        --shadow-sm: 0 8px 18px rgba(15, 23, 42, 0.10);
-        --shadow-lg: 0 14px 28px rgba(15, 23, 42, 0.16);
+        --neu: #b45309;
+        --shadow-sm: 0 5px 16px rgba(15, 23, 42, 0.08);
+        --shadow-md: 0 10px 24px rgba(15, 23, 42, 0.11);
     }
+
     .stApp {
-        font-family: "DM Sans", "Segoe UI", sans-serif;
+        font-family: "Source Sans 3", "Segoe UI", sans-serif;
         color: var(--text-main);
         background:
-            radial-gradient(1100px 560px at -10% -25%, rgba(29, 78, 216, 0.16), transparent 62%),
-            radial-gradient(900px 520px at 115% -10%, rgba(15, 118, 110, 0.10), transparent 56%),
-            linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+            radial-gradient(840px 460px at -8% -16%, rgba(37, 99, 235, 0.11), transparent 68%),
+            radial-gradient(760px 420px at 108% -8%, rgba(14, 116, 144, 0.08), transparent 66%),
+            linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
     }
+
     .main .block-container {
         max-width: 1320px;
-        padding-top: 0.55rem;
-        padding-bottom: 0.65rem;
+        padding-top: 0.9rem;
+        padding-bottom: 1rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
     }
+
     header[data-testid="stHeader"] {
-        background: rgba(0, 0, 0, 0);
+        background: transparent;
     }
+
     div[data-testid="stToolbar"] {
-        background: rgba(0, 0, 0, 0);
+        background: transparent;
     }
+
     section[data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #f9fbff 0%, #eef3ff 72%, #e8efff 100%);
-        border-right: 1px solid rgba(148, 163, 184, 0.35);
-        box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.8);
+        background: linear-gradient(180deg, #f7f9fc 0%, #eff4fb 100%);
+        border-right: 1px solid var(--border);
     }
+
     section[data-testid="stSidebar"] label,
     section[data-testid="stSidebar"] p,
     section[data-testid="stSidebar"] .stMarkdown,
     section[data-testid="stSidebar"] [data-testid="stSelectbox"] {
-        font-family: "Manrope", "Segoe UI", sans-serif;
+        font-family: "Manrope", "Segoe UI", sans-serif !important;
     }
+
+    .sidebar-title {
+        margin-bottom: 0.55rem;
+        padding: 0.55rem 0.65rem;
+        border-radius: 10px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .sidebar-kicker {
+        color: #33557a;
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        font-weight: 800;
+        margin-bottom: 0.15rem;
+    }
+
+    .sidebar-heading {
+        color: #0f2a4f;
+        font-size: 0.94rem;
+        font-weight: 800;
+    }
+
     section[data-testid="stSidebar"] [data-baseweb="select"] > div {
-        background: linear-gradient(145deg, #ffffff, #f4f8ff) !important;
-        border: 1px solid rgba(148, 163, 184, 0.5) !important;
+        background: var(--surface) !important;
+        border: 1px solid var(--border) !important;
         border-radius: 10px !important;
-        box-shadow: inset 0 0 0 1px rgba(29, 78, 216, 0.10), 0 3px 8px rgba(15, 23, 42, 0.08);
+        box-shadow: none !important;
     }
+
     div[data-testid="stSelectbox"] [data-baseweb="select"] > div {
-        background: linear-gradient(145deg, #ffffff, #f4f8ff) !important;
-        border: 1px solid rgba(148, 163, 184, 0.5) !important;
+        background: var(--surface) !important;
+        border: 1px solid var(--border) !important;
         border-radius: 10px !important;
+        box-shadow: none !important;
     }
+
+    section[data-testid="stSidebar"] [data-baseweb="select"] > div:hover,
+    div[data-testid="stSelectbox"] [data-baseweb="select"] > div:hover {
+        border-color: var(--border-strong) !important;
+    }
+
+    section[data-testid="stSidebar"] [data-baseweb="select"] > div:focus-within,
+    div[data-testid="stSelectbox"] [data-baseweb="select"] > div:focus-within {
+        border-color: var(--brand) !important;
+        box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.16) !important;
+    }
+
     section[data-testid="stSidebar"] [data-baseweb="select"] span {
         color: #0f172a !important;
-        font-weight: 600;
+        font-weight: 700;
     }
+
     div[data-testid="stSelectbox"] [data-baseweb="select"] span {
         color: #0f172a !important;
-        font-weight: 600;
+        font-weight: 700;
     }
+
     section[data-testid="stSidebar"] [data-baseweb="select"] input {
         color: #0f172a !important;
         background: transparent !important;
@@ -102,10 +153,11 @@ st.markdown(
     [data-baseweb="menu"],
     [data-baseweb="select"] [role="listbox"] {
         background: #ffffff !important;
-        border: 1px solid rgba(148, 163, 184, 0.5) !important;
+        border: 1px solid var(--border) !important;
         border-radius: 10px !important;
-        box-shadow: 0 12px 24px rgba(15, 23, 42, 0.16) !important;
+        box-shadow: 0 12px 24px rgba(15, 23, 42, 0.12) !important;
     }
+
     div[data-baseweb="popover"] ul,
     div[data-baseweb="popover"] li {
         background: transparent !important;
@@ -121,209 +173,358 @@ st.markdown(
     }
     div[data-baseweb="popover"] [role="option"][aria-selected="true"],
     div[role="listbox"] [role="option"][aria-selected="true"] {
-        background: rgba(29, 78, 216, 0.16) !important;
+        background: rgba(29, 78, 216, 0.14) !important;
     }
+
     div[data-baseweb="popover"] [role="option"]:hover,
     div[role="listbox"] [role="option"]:hover {
-        background: rgba(29, 78, 216, 0.12) !important;
+        background: rgba(29, 78, 216, 0.08) !important;
     }
+
     h1, h2, h3 {
         font-family: "Manrope", "Segoe UI", sans-serif;
         letter-spacing: 0.01em;
         color: var(--text-main);
+        opacity: 1 !important;
     }
     p, label, span, div {
         color: var(--text-main);
+        opacity: 1;
     }
+
     .app-title {
         position: relative;
-        background: linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(244, 248, 255, 0.95));
-        border: 1px solid var(--card-border);
-        border-radius: 12px;
-        padding: 0.68rem 0.82rem;
-        margin-bottom: 0.5rem;
-        box-shadow: var(--shadow-sm);
-        transition: transform 220ms ease, box-shadow 220ms ease;
+        background: linear-gradient(135deg, var(--brand-dark) 0%, #1e58b2 100%);
+        border: 1px solid #194789;
+        border-radius: 14px;
+        padding: 0.9rem 1rem;
+        margin-bottom: 0.75rem;
+        box-shadow: var(--shadow-md);
         overflow: hidden;
     }
-    .app-title::after {
+
+    .app-title > * {
+        position: relative;
+        z-index: 1;
+    }
+
+    .app-title::before {
         content: "";
         position: absolute;
         inset: 0 auto 0 0;
-        width: 3px;
-        background: linear-gradient(180deg, #4f8cff, #36d7b7);
+        width: 6px;
+        background: linear-gradient(180deg, #93c5fd, #bfdbfe);
+        z-index: 0;
     }
-    .app-title:hover {
-        transform: translateY(-3px) scale(1.004);
-        box-shadow: var(--shadow-lg);
+
+    .app-title::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(440px 220px at 92% -18%, rgba(147, 197, 253, 0.24), transparent 70%);
+        pointer-events: none;
+        z-index: 0;
     }
+
     .app-kicker {
-        color: var(--brand);
-        font-size: 0.67rem;
-        letter-spacing: 0.12em;
+        color: #c8ddff;
+        font-size: 0.66rem;
+        letter-spacing: 0.11em;
         text-transform: uppercase;
         font-weight: 800;
-        margin-bottom: 0.2rem;
+        margin-bottom: 0.18rem;
     }
+
     .app-heading {
-        font-size: 1.45rem;
-        line-height: 1.1;
+        font-size: 1.54rem;
+        line-height: 1.08;
         font-weight: 800;
         margin: 0;
+        color: #ffffff;
     }
+
     .app-sub {
-        color: var(--text-dim);
-        margin-top: 0.22rem;
-        font-size: 0.78rem;
+        color: #dce9ff;
+        margin-top: 0.28rem;
+        font-size: 0.79rem;
+        font-weight: 600;
     }
+
+    .decision-card,
     .snapshot-card {
-        background: linear-gradient(160deg, var(--card), rgba(250, 252, 255, 0.92));
-        border: 1px solid var(--card-border);
-        border-radius: 10px;
-        padding: 8px 10px;
-        margin-bottom: 7px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 0.65rem 0.75rem;
+        margin-bottom: 0.45rem;
         box-shadow: var(--shadow-sm);
-        backdrop-filter: blur(12px);
-        transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+        transition: border-color 160ms ease, box-shadow 160ms ease;
     }
-    .snapshot-card:hover {
-        transform: translateY(-3px) scale(1.012);
-        border-color: rgba(79, 140, 255, 0.60);
-        box-shadow: var(--shadow-lg);
+
+    .decision-card:hover,
+    .snapshot-card:hover,
+    .news-card:hover,
+    .indicator-box:hover,
+    div[data-testid="stPlotlyChart"]:hover {
+        border-color: var(--border-strong);
+        box-shadow: var(--shadow-md);
     }
+
     .snapshot-label {
-        color: var(--text-dim);
-        font-size: 0.68rem;
+        color: #5d6d82;
+        font-size: 0.67rem;
         text-transform: uppercase;
-        letter-spacing: 0.06em;
-        margin-bottom: 3px;
-        font-weight: 700;
-    }
-    .snapshot-value {
-        color: var(--text-main);
-        font-size: 0.98rem;
+        letter-spacing: 0.08em;
+        margin-bottom: 0.14rem;
         font-weight: 800;
     }
-    .news-card {
-        background: linear-gradient(160deg, rgba(255, 255, 255, 0.96), rgba(246, 250, 255, 0.92));
-        border: 1px solid var(--card-border);
-        border-radius: 10px;
-        padding: 8px 10px;
-        margin-bottom: 7px;
-        box-shadow: var(--shadow-sm);
-        backdrop-filter: blur(8px);
-        transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
-    }
-    .news-card:hover {
-        transform: translateY(-3px) scale(1.01);
-        border-color: rgba(79, 140, 255, 0.60);
-        box-shadow: var(--shadow-lg);
-    }
-    .news-title {
+
+    .snapshot-value {
         color: var(--text-main);
-        font-weight: 600;
-        margin-bottom: 3px;
-        font-size: 0.82rem;
+        font-size: 1.03rem;
+        font-weight: 800;
         line-height: 1.2;
     }
+
+    .news-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 0.65rem 0.75rem;
+        margin-bottom: 0.45rem;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .news-title {
+        color: var(--text-main);
+        font-weight: 700;
+        margin-bottom: 0.24rem;
+        font-size: 0.87rem;
+        line-height: 1.3;
+    }
+
     .news-meta {
         color: var(--text-dim);
-        font-size: 0.73rem;
-        margin-bottom: 4px;
+        font-size: 0.76rem;
+        margin-bottom: 0.16rem;
+        font-weight: 600;
     }
+
     .news-link {
         color: var(--brand);
         text-decoration: none;
-        font-size: 0.78rem;
+        font-size: 0.77rem;
         font-weight: 700;
-        border-bottom: 1px dashed rgba(79, 140, 255, 0.5);
+        border-bottom: 1px solid rgba(29, 78, 216, 0.36);
     }
+
     .news-link:hover {
-        border-bottom-color: rgba(79, 140, 255, 0.95);
+        color: #123ea5;
+        border-bottom-color: rgba(18, 62, 165, 0.72);
     }
+
+    .metric-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.45rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .metric-grid .snapshot-card {
+        margin-bottom: 0;
+    }
+
     .indicator-grid {
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 6px;
-        margin-bottom: 8px;
+        gap: 0.42rem;
+        margin-bottom: 0.1rem;
     }
+
     .indicator-box {
         border-radius: 10px;
-        padding: 7px 8px;
-        border: 1px solid transparent;
+        padding: 0.52rem 0.56rem;
+        border: 1px solid var(--border);
         box-shadow: var(--shadow-sm);
-        transition: transform 170ms ease, box-shadow 170ms ease, border-color 170ms ease;
     }
-    .indicator-box:hover {
-        transform: translateY(-3px) scale(1.015);
-        box-shadow: var(--shadow-lg);
-    }
+
     div[data-testid="stPlotlyChart"] {
-        background: linear-gradient(160deg, rgba(255, 255, 255, 0.98), rgba(245, 249, 255, 0.92));
-        border: 1px solid var(--card-border);
+        background: var(--surface);
+        border: 1px solid var(--border);
         border-radius: 12px;
-        padding: 8px;
+        padding: 0.42rem;
         box-shadow: var(--shadow-sm);
-        transition: transform 180ms ease, box-shadow 180ms ease;
+        transition: border-color 160ms ease, box-shadow 160ms ease;
     }
+
     div[data-testid="stPlotlyChart"] .js-plotly-plot,
     div[data-testid="stPlotlyChart"] .plot-container,
     div[data-testid="stPlotlyChart"] .svg-container {
         background: transparent !important;
     }
-    div[data-testid="stPlotlyChart"]:hover {
-        transform: translateY(-3px) scale(1.004);
-        box-shadow: var(--shadow-lg);
-    }
+
     .indicator-name {
-        font-size: 0.69rem;
+        font-size: 0.7rem;
         font-weight: 700;
-        margin-bottom: 2px;
+        margin-bottom: 0.12rem;
+        color: #2f435c;
     }
+
     .indicator-signal {
-        font-size: 0.8rem;
+        font-size: 0.82rem;
         font-weight: 800;
+        color: #0f172a;
     }
+
     h3 {
-        font-size: 1.02rem !important;
-        margin-top: 0.25rem !important;
-        margin-bottom: 0.25rem !important;
+        font-size: 1.03rem !important;
+        margin-top: 0.2rem !important;
+        margin-bottom: 0.38rem !important;
+        color: #0f2543 !important;
     }
+
     div[data-testid="stHeading"] {
-        margin-top: 0.12rem !important;
-        margin-bottom: 0.18rem !important;
+        margin-top: 0.05rem !important;
+        margin-bottom: 0.15rem !important;
     }
+
     .indicator-bull {
-        background: linear-gradient(150deg, rgba(34, 197, 94, 0.16), rgba(22, 163, 74, 0.12));
-        border-color: rgba(34, 197, 94, 0.36);
+        background: #ecfdf3;
+        border-color: #b8e8cc;
         color: var(--pos);
     }
+
     .indicator-bear {
-        background: linear-gradient(150deg, rgba(239, 68, 68, 0.16), rgba(220, 38, 38, 0.12));
-        border-color: rgba(239, 68, 68, 0.34);
+        background: #fef2f2;
+        border-color: #f6c3c3;
         color: var(--neg);
     }
+
     .indicator-neutral {
-        background: linear-gradient(150deg, rgba(250, 204, 21, 0.20), rgba(234, 179, 8, 0.14));
-        border-color: rgba(234, 179, 8, 0.36);
+        background: #fffbeb;
+        border-color: #f9e0ad;
         color: var(--neu);
     }
-    .stDataFrame, .stTable {
-        border: 1px solid var(--card-border);
-        border-radius: 10px;
+
+    .stDataFrame,
+    .stTable {
+        border: 1px solid var(--border);
+        border-radius: 12px;
         overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        background: var(--surface);
     }
-    @media (max-width: 900px) {
+
+    details[data-testid="stExpander"] {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: var(--surface);
+        box-shadow: var(--shadow-sm);
+    }
+
+    details[data-testid="stExpander"] summary {
+        font-family: "Manrope", "Segoe UI", sans-serif;
+        font-weight: 700;
+        color: #1a365d;
+    }
+
+    .stDataFrame div,
+    .stDataFrame span,
+    .stTable div,
+    .stTable span {
+        color: #11223d !important;
+        opacity: 1 !important;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .decision-card,
+        .snapshot-card,
+        .news-card,
+        .indicator-box,
+        div[data-testid="stPlotlyChart"],
+        section[data-testid="stSidebar"] [data-baseweb="select"] > div,
+        div[data-testid="stSelectbox"] [data-baseweb="select"] > div {
+            transition: none !important;
+            animation: none !important;
+        }
+    }
+
+    @media (max-width: 1200px) {
+        .main .block-container {
+            max-width: 100%;
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        .indicator-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+        .metric-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 940px) {
         .app-heading {
-            font-size: 1.45rem;
+            font-size: 1.38rem;
+        }
+        .app-sub {
+            font-size: 0.75rem;
         }
         .indicator-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
         }
+        .metric-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        div[data-testid="stHorizontalBlock"] {
+            display: flex;
+            flex-direction: column;
+            gap: 0.7rem;
+        }
+        div[data-testid="column"] {
+            width: 100% !important;
+            flex: 1 1 100% !important;
+            min-width: 100% !important;
+        }
+        section[data-testid="stSidebar"] {
+            min-width: 250px !important;
+            max-width: 300px !important;
+        }
     }
-    @media (max-width: 560px) {
+
+    @media (max-width: 640px) {
+        .main .block-container {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+            padding-top: 0.55rem;
+            padding-bottom: 0.7rem;
+        }
+        .app-heading {
+            font-size: 1.21rem;
+        }
+        .app-kicker {
+            font-size: 0.6rem;
+        }
+        .snapshot-value {
+            font-size: 0.9rem;
+        }
         .indicator-grid {
             grid-template-columns: repeat(1, minmax(0, 1fr));
+            gap: 0.38rem;
+        }
+        .metric-grid {
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+            gap: 0.38rem;
+        }
+        .decision-card,
+        .snapshot-card,
+        .news-card,
+        .indicator-box {
+            padding: 0.56rem 0.58rem;
+            border-radius: 9px;
+        }
+        div[data-testid="stPlotlyChart"] {
+            padding: 0.32rem;
         }
     }
     </style>
@@ -339,7 +540,7 @@ def _safe_series(df, col):
     return pd.to_numeric(df[col], errors="coerce")
 
 
-def     compute_indicator_consensus(price_df, sentiment_score):
+def compute_indicator_consensus(price_df, sentiment_score):
     df = price_df.copy()
     df["date"] = pd.to_datetime(df["date"], errors="coerce")
     df = df.sort_values("date").dropna(subset=["date"]).copy()
@@ -363,6 +564,8 @@ def     compute_indicator_consensus(price_df, sentiment_score):
 
     sma5 = close.rolling(5).mean()
     sma20 = close.rolling(20).mean()
+    ema9 = close.ewm(span=9, adjust=False).mean()
+    ema21 = close.ewm(span=21, adjust=False).mean()
     ema12 = close.ewm(span=12, adjust=False).mean()
     ema26 = close.ewm(span=26, adjust=False).mean()
 
@@ -394,14 +597,12 @@ def     compute_indicator_consensus(price_df, sentiment_score):
         [(high - low), (high - prev_close).abs(), (low - prev_close).abs()],
         axis=1,
     ).max(axis=1)
-    atr14 = tr.rolling(14).mean()
-    atr_ratio = atr14 / close.replace(0, pd.NA)
-    atr_baseline = atr_ratio.rolling(20).mean()
 
     obv = ((close.diff().fillna(0).apply(lambda x: 1 if x > 0 else (-1 if x < 0 else 0))) * volume).cumsum()
     obv_slope = obv.diff(5)
 
     volume_ratio = volume / volume.rolling(20).mean().replace(0, pd.NA)
+    price_change = close.diff()
     vol_10 = close.pct_change().rolling(10).std()
     vol_30 = close.pct_change().rolling(30).std()
     vol_regime = vol_10 / vol_30.replace(0, pd.NA)
@@ -426,19 +627,47 @@ def     compute_indicator_consensus(price_df, sentiment_score):
     dx = pd.to_numeric(dx, errors="coerce")
     adx14 = dx.rolling(14).mean()
 
+    cum_vol = volume.cumsum().replace(0, np.nan)
+    cum_tpv = (tp * volume).cumsum()
+    vwap = cum_tpv / cum_vol
+    vwap_slope = vwap.diff(5)
+
+    tp_diff = tp.diff()
+    raw_mf = tp * volume
+    pos_mf = raw_mf.where(tp_diff > 0, 0.0)
+    neg_mf = raw_mf.where(tp_diff < 0, 0.0).abs()
+    mfi_ratio = pos_mf.rolling(14).sum() / neg_mf.rolling(14).sum().replace(0, np.nan)
+    mfi14 = 100 - (100 / (1 + mfi_ratio))
+
+    donchian_upper = high.rolling(20).max().shift(1)
+    donchian_lower = low.rolling(20).min().shift(1)
+
+    session_key = df["date"].dt.floor("D")
+    session_open = df.groupby(session_key)["open"].transform("first")
+
     idx = df.index[-1]
     indicator_rows = []
 
+    def _safe_bool(value):
+        if pd.isna(value):
+            return False
+        try:
+            return bool(value)
+        except Exception:
+            return False
+
     def add_indicator(name, bullish, bearish):
-        if bullish:
+        bull = _safe_bool(bullish)
+        bear = _safe_bool(bearish)
+        if bull and not bear:
             indicator_rows.append({"Indicator": name, "Signal": "Bullish", "Score": 1})
-        elif bearish:
+        elif bear and not bull:
             indicator_rows.append({"Indicator": name, "Signal": "Bearish", "Score": -1})
         else:
             indicator_rows.append({"Indicator": name, "Signal": "Neutral", "Score": 0})
 
     add_indicator("SMA 5/20", sma5.loc[idx] > sma20.loc[idx], sma5.loc[idx] < sma20.loc[idx])
-    add_indicator("EMA 12/26", ema12.loc[idx] > ema26.loc[idx], ema12.loc[idx] < ema26.loc[idx])
+    add_indicator("EMA 9/21", ema9.loc[idx] > ema21.loc[idx], ema9.loc[idx] < ema21.loc[idx])
     add_indicator("RSI 14", rsi14.loc[idx] < 35, rsi14.loc[idx] > 70)
     add_indicator("MACD Histogram", macd_hist.loc[idx] > 0, macd_hist.loc[idx] < 0)
     add_indicator("Bollinger Position", bb_pos.loc[idx] < 0.2, bb_pos.loc[idx] > 0.8)
@@ -446,9 +675,12 @@ def     compute_indicator_consensus(price_df, sentiment_score):
     add_indicator("Williams %R", williams_r.loc[idx] < -80, williams_r.loc[idx] > -20)
     add_indicator("ROC 10", roc10.loc[idx] > 0, roc10.loc[idx] < 0)
     add_indicator("Momentum 10", momentum10.loc[idx] > 0, momentum10.loc[idx] < 0)
-    add_indicator("ATR Regime", atr_ratio.loc[idx] < atr_baseline.loc[idx], atr_ratio.loc[idx] > atr_baseline.loc[idx] * 1.2)
     add_indicator("OBV Slope", obv_slope.loc[idx] > 0, obv_slope.loc[idx] < 0)
-    add_indicator("Volume Ratio", volume_ratio.loc[idx] > 1.1, volume_ratio.loc[idx] < 0.9)
+    add_indicator(
+        "Price-Volume Impulse",
+        (price_change.loc[idx] > 0) and (volume_ratio.loc[idx] > 1.1),
+        (price_change.loc[idx] < 0) and (volume_ratio.loc[idx] > 1.1),
+    )
     add_indicator("Volatility Regime", vol_regime.loc[idx] < 1.0, vol_regime.loc[idx] > 1.3)
     add_indicator("CCI 20", cci20.loc[idx] < -100, cci20.loc[idx] > 100)
     add_indicator(
@@ -456,6 +688,15 @@ def     compute_indicator_consensus(price_df, sentiment_score):
         (plus_di.loc[idx] > minus_di.loc[idx]) and (adx14.loc[idx] > 20),
         (plus_di.loc[idx] < minus_di.loc[idx]) and (adx14.loc[idx] > 20),
     )
+    add_indicator("VWAP Bias", close.loc[idx] > vwap.loc[idx], close.loc[idx] < vwap.loc[idx])
+    add_indicator("VWAP Slope", vwap_slope.loc[idx] > 0, vwap_slope.loc[idx] < 0)
+    add_indicator("MFI 14", mfi14.loc[idx] < 25, mfi14.loc[idx] > 75)
+    add_indicator(
+        "Donchian Breakout",
+        close.loc[idx] > donchian_upper.loc[idx],
+        close.loc[idx] < donchian_lower.loc[idx],
+    )
+    add_indicator("Session Open Bias", close.loc[idx] > session_open.loc[idx], close.loc[idx] < session_open.loc[idx])
     add_indicator("News Sentiment", sentiment_score > 0.1, sentiment_score < -0.1)
 
     result_df = pd.DataFrame(indicator_rows)
@@ -464,13 +705,13 @@ def     compute_indicator_consensus(price_df, sentiment_score):
     max_abs_score = len(result_df)
     confidence = abs(total_score) / max_abs_score if max_abs_score else 0.0
 
-    if total_score >= 5:
+    if total_score >= 7:
         summary = "STRONG BULLISH"
-    elif total_score >= 2:
+    elif total_score >= 3:
         summary = "BULLISH"
-    elif total_score <= -5:
+    elif total_score <= -7:
         summary = "STRONG BEARISH"
-    elif total_score <= -2:
+    elif total_score <= -3:
         summary = "BEARISH"
     else:
         summary = "NEUTRAL"
@@ -485,9 +726,9 @@ def     compute_indicator_consensus(price_df, sentiment_score):
 st.markdown(
     """
     <div class="app-title">
-        <div class="app-kicker">Quant Research Lab</div>
-        <h1 class="app-heading">QuantBrain</h1>
-        <div class="app-sub">Turning Noise into Intelligence.</div>
+        <div class="app-kicker">Intraday Intelligence Desk</div>
+        <h1 class="app-heading">TradeIQ</h1>
+        <div class="app-sub">Signal Depth. Execution Edge.</div>
     </div>
     """,
     unsafe_allow_html=True,
@@ -628,8 +869,21 @@ symbol_labels = symbols_df.apply(
 ).tolist()
 label_to_symbol = dict(zip(symbol_labels, symbols_df["symbol"]))
 
+st.sidebar.markdown(
+    dedent(
+        f"""
+        <div class="sidebar-title">
+            <div class="sidebar-kicker">Workspace</div>
+            <div class="sidebar-heading">Market Controls</div>
+            <div class="news-meta" style="margin:0.1rem 0 0;">Tracked Symbols: {len(symbol_labels)}</div>
+        </div>
+        """
+    ),
+    unsafe_allow_html=True,
+)
+
 selected_label = st.sidebar.selectbox(
-    "Select Stock",
+    "Select Stock / Ticker",
     symbol_labels,
 )
 symbol = label_to_symbol[selected_label]
@@ -653,6 +907,8 @@ latest_close = float(prices["close"].iloc[-1])
 latest_high = float(prices["high"].iloc[-1])
 latest_low = float(prices["low"].iloc[-1])
 latest_volume = float(prices["volume"].iloc[-1]) if "volume" in prices and not pd.isna(prices["volume"].iloc[-1]) else 0.0
+latest_date = pd.to_datetime(prices["date"].iloc[-1], errors="coerce")
+latest_date_text = latest_date.strftime("%d %b %Y") if pd.notna(latest_date) else "-"
 sentiment_avg = float(news["sentiment_score"].fillna(0).mean()) if not news.empty and "sentiment_score" in news.columns else 0.0
 prediction_text = "Not available"
 prediction_target = "-"
@@ -686,45 +942,37 @@ indicator_count = int(len(indicator_rows))
 prev_close = float(prices["close"].iloc[-2]) if len(prices) > 1 else latest_close
 day_change_pct = ((latest_close - prev_close) / prev_close * 100.0) if prev_close else 0.0
 day_change_text = f"{day_change_pct:+.2f}%"
+day_change_color = "#15803d" if day_change_pct > 0 else ("#b91c1c" if day_change_pct < 0 else "#b45309")
 day_range_text = f"{latest_low:,.2f} - {latest_high:,.2f}"
+sentiment_color = "#15803d" if sentiment_avg > 0.1 else ("#b91c1c" if sentiment_avg < -0.1 else "#b45309")
 
-st.subheader("Executive Summary")
-st.markdown(
-    dedent(
-        f"""
-        <div class="indicator-grid">
-            <div class="snapshot-card">
-                <div class="snapshot-label">Last Close</div>
-                <div class="snapshot-value">{latest_close:,.2f}</div>
-            </div>
-            <div class="snapshot-card">
-                <div class="snapshot-label">Day Change</div>
-                <div class="snapshot-value">{day_change_text}</div>
-            </div>
-            <div class="snapshot-card">
-                <div class="snapshot-label">ML Prediction</div>
-                <div class="snapshot-value">{prediction_text}</div>
-            </div>
-            <div class="snapshot-card">
-                <div class="snapshot-label">Indicator Consensus</div>
-                <div class="snapshot-value">{indicator_summary}</div>
-            </div>
-        </div>
-        """
-    ),
-    unsafe_allow_html=True,
-)
-
-st.subheader("🤖 AI Model Outputs")
-model_order = ["logistic_v1", "random_forest_v1", "xgboost_v1", "ensemble_v1"]
+model_order = [
+    "sgd_regression_v1",
+    "random_forest_v1",
+    "extra_trees_v1",
+    "xgboost_v1",
+    "ensemble_v1",
+]
 model_label = {
-    "logistic_v1": "Logistic",
-    "random_forest_v1": "Random Forest",
-    "xgboost_v1": "XGBoost",
-    "ensemble_v1": "Ensemble",
+    "sgd_regression_v1": "SGD",
+    "random_forest_v1": "RF",
+    "extra_trees_v1": "ET",
+    "xgboost_v1": "XGB",
+    "ensemble_v1": "ENS",
 }
+
+final_color = "#15803d"
+if "BEARISH" in indicator_summary:
+    final_color = "#b91c1c"
+elif "NEUTRAL" in indicator_summary or "INSUFFICIENT" in indicator_summary:
+    final_color = "#0f766e"
+
+bull_count = int((indicator_rows["Signal"] == "Bullish").sum()) if not indicator_rows.empty else 0
+bear_count = int((indicator_rows["Signal"] == "Bearish").sum()) if not indicator_rows.empty else 0
+neutral_count = int((indicator_rows["Signal"] == "Neutral").sum()) if not indicator_rows.empty else 0
+
+model_snapshot_rows = []
 if not model_predictions_df.empty:
-    model_cards = []
     for model_name in model_order:
         model_row = model_predictions_df[model_predictions_df["model_name"] == model_name]
         if model_row.empty:
@@ -732,35 +980,16 @@ if not model_predictions_df.empty:
         row = model_row.iloc[0]
         pred_ret = float(row["predicted_return"]) * 100.0 if pd.notna(row["predicted_return"]) else 0.0
         direction = str(row["direction"]).upper()
-        color = "#ca8a04"
-        if direction == "UP":
-            color = "#15803d"
-        elif direction == "DOWN":
-            color = "#b91c1c"
-        model_cards.append(
-            f"""
-            <div class="snapshot-card">
-                <div class="snapshot-label">{model_label.get(model_name, model_name)}</div>
-                <div class="snapshot-value" style="color:{color};">{direction} ({pred_ret:+.2f}%)</div>
-            </div>
-            """
+        model_snapshot_rows.append(
+            {
+                "Model": model_label.get(model_name, model_name),
+                "Signal": direction,
+                "Pred Return (%)": round(pred_ret, 2),
+            }
         )
-    st.markdown(
-        dedent(
-            f"""
-            <div class="indicator-grid">
-                {''.join(model_cards)}
-            </div>
-            """
-        ),
-        unsafe_allow_html=True,
-    )
-else:
-    st.info("No model predictions available.")
 
-st.subheader("📈 Backtest Performance")
+backtest_snapshot_rows = []
 if not backtest_df.empty:
-    backtest_cards = []
     for model_name in model_order:
         model_row = backtest_df[backtest_df["model_name"] == model_name]
         if model_row.empty:
@@ -768,59 +997,116 @@ if not backtest_df.empty:
         row = model_row.iloc[0]
         hit = float(row["directional_accuracy"]) * 100.0 if pd.notna(row["directional_accuracy"]) else 0.0
         strat_ret = float(row["strategy_return"]) * 100.0 if pd.notna(row["strategy_return"]) else 0.0
-        color = "#ca8a04"
-        if strat_ret > 0:
-            color = "#15803d"
-        elif strat_ret < 0:
-            color = "#b91c1c"
-        backtest_cards.append(
-            f"""
-            <div class="snapshot-card">
-                <div class="snapshot-label">{model_label.get(model_name, model_name)} Backtest</div>
-                <div class="snapshot-value" style="color:{color};">Hit: {hit:.1f}%</div>
-                <div class="news-meta">Strategy: {strat_ret:+.2f}% | N={int(row["sample_count"]) if pd.notna(row["sample_count"]) else 0}</div>
-            </div>
-            """
+        backtest_snapshot_rows.append(
+            {
+                "Model": model_label.get(model_name, model_name),
+                "Hit Rate (%)": round(hit, 1),
+                "Strategy (%)": round(strat_ret, 2),
+            }
         )
+
+st.subheader("Decision Board")
+decision_col, metric_col = st.columns([1.2, 1.0], gap="small")
+
+with decision_col:
     st.markdown(
         dedent(
             f"""
-            <div class="indicator-grid">
-                {''.join(backtest_cards)}
+            <div class="decision-card">
+                <div class="snapshot-label">Primary Decision Signal</div>
+                <div class="snapshot-value" style="color:{final_color}; font-size:1.28rem;">{indicator_summary}</div>
+                <div class="news-meta">As of: {latest_date_text}</div>
+                <div class="news-meta">ML Signal: {prediction_text}</div>
+                <div class="news-meta">Composite: {indicator_score:+d} / {indicator_count} | Confidence: {indicator_conf:.1f}%</div>
+                <div class="news-meta">Bullish: {bull_count} | Bearish: {bear_count} | Neutral: {neutral_count}</div>
             </div>
             """
         ),
         unsafe_allow_html=True,
     )
 
-    backtest_view = backtest_df.copy()
-    backtest_view["directional_accuracy"] = (pd.to_numeric(backtest_view["directional_accuracy"], errors="coerce") * 100.0).round(2)
-    backtest_view["mae"] = pd.to_numeric(backtest_view["mae"], errors="coerce").round(5)
-    backtest_view["rmse"] = pd.to_numeric(backtest_view["rmse"], errors="coerce").round(5)
-    backtest_view["strategy_return"] = (pd.to_numeric(backtest_view["strategy_return"], errors="coerce") * 100.0).round(2)
-    st.dataframe(
-        backtest_view[["model_name", "run_date", "sample_count", "directional_accuracy", "mae", "rmse", "strategy_return"]]
-        .rename(
-            columns={
-                "model_name": "Model",
-                "run_date": "Run Date",
-                "sample_count": "Samples",
-                "directional_accuracy": "Hit Rate (%)",
-                "mae": "MAE",
-                "rmse": "RMSE",
-                "strategy_return": "Strategy Return (%)",
-            }
+with metric_col:
+    st.markdown(
+        dedent(
+            f"""
+            <div class="metric-grid">
+                <div class="snapshot-card">
+                    <div class="snapshot-label">Last Close</div>
+                    <div class="snapshot-value">{latest_close:,.2f}</div>
+                </div>
+                <div class="snapshot-card">
+                    <div class="snapshot-label">Day Change</div>
+                    <div class="snapshot-value" style="color:{day_change_color};">{day_change_text}</div>
+                </div>
+                <div class="snapshot-card">
+                    <div class="snapshot-label">Day Range</div>
+                    <div class="snapshot-value">{day_range_text}</div>
+                </div>
+                <div class="snapshot-card">
+                    <div class="snapshot-label">Volume</div>
+                    <div class="snapshot-value">{latest_volume:,.0f}</div>
+                </div>
+                <div class="snapshot-card">
+                    <div class="snapshot-label">Avg Sentiment</div>
+                    <div class="snapshot-value" style="color:{sentiment_color};">{sentiment_avg:+.2f}</div>
+                </div>
+                <div class="snapshot-card">
+                    <div class="snapshot-label">ML Target</div>
+                    <div class="snapshot-value">{prediction_target}</div>
+                </div>
+            </div>
+            """
         ),
-        use_container_width=True,
-        hide_index=True,
+        unsafe_allow_html=True,
     )
-else:
-    st.info("No backtest results available yet. Run the ingestion pipeline once.")
 
-detail_col1, detail_col2 = st.columns([1, 1], gap="small")
+main_col, side_col = st.columns([1.35, 0.9], gap="small")
 
-with detail_col1:
-    st.subheader("📊 Indicator-Wise Breakdown")
+with main_col:
+    st.subheader(f"{symbol} Price Action")
+    fig = go.Figure()
+    fig.add_trace(go.Candlestick(
+        x=prices["date"],
+        open=prices["open"],
+        high=prices["high"],
+        low=prices["low"],
+        close=prices["close"],
+        name="Price",
+        increasing_line_color="#16a34a",
+        increasing_fillcolor="rgba(22,163,74,0.35)",
+        decreasing_line_color="#dc2626",
+        decreasing_fillcolor="rgba(220,38,38,0.35)",
+    ))
+    fig.update_layout(
+        template="plotly_white",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="#f8fbff",
+        font=dict(color="#0f172a", family="Source Sans 3"),
+        xaxis_rangeslider_visible=False,
+        margin=dict(l=8, r=8, t=8, b=8),
+        height=360,
+    )
+    fig.update_xaxes(gridcolor="rgba(148,163,184,0.22)", linecolor="rgba(148,163,184,0.35)", tickfont=dict(size=12))
+    fig.update_yaxes(gridcolor="rgba(148,163,184,0.24)", linecolor="rgba(148,163,184,0.35)", tickfont=dict(size=12))
+    st.plotly_chart(fig, use_container_width=True)
+
+with side_col:
+    st.subheader("Model Snapshot")
+    if model_snapshot_rows:
+        st.dataframe(pd.DataFrame(model_snapshot_rows), use_container_width=True, hide_index=True)
+    else:
+        st.info("No model predictions available.")
+
+    st.subheader("Backtest Snapshot")
+    if backtest_snapshot_rows:
+        st.dataframe(pd.DataFrame(backtest_snapshot_rows), use_container_width=True, hide_index=True)
+    else:
+        st.info("No backtest results available.")
+
+bottom_col1, bottom_col2 = st.columns([1.25, 0.75], gap="small")
+
+with bottom_col1:
+    st.subheader("Indicator Breakdown")
     if not indicator_rows.empty:
         indicator_cards = []
         for _, row in indicator_rows.sort_values(by="Indicator").iterrows():
@@ -849,106 +1135,87 @@ with detail_col1:
             unsafe_allow_html=True,
         )
 
-with detail_col2:
-    st.subheader("🎯 Final Prediction")
-    final_color = "#15803d"
-    if "BEARISH" in indicator_summary:
-        final_color = "#b91c1c"
-    elif "NEUTRAL" in indicator_summary or "INSUFFICIENT" in indicator_summary:
-        final_color = "#0f766e"
-
-    bull_count = int((indicator_rows["Signal"] == "Bullish").sum()) if not indicator_rows.empty else 0
-    bear_count = int((indicator_rows["Signal"] == "Bearish").sum()) if not indicator_rows.empty else 0
-    neutral_count = int((indicator_rows["Signal"] == "Neutral").sum()) if not indicator_rows.empty else 0
-
-    st.markdown(
-        dedent(
-            f"""
-            <div class="news-card">
-                <div class="news-meta">Primary Decision Signal</div>
-                <div class="snapshot-value" style="color:{final_color};">{indicator_summary}</div>
-                <div class="news-meta">Composite Score: {indicator_score:+d} / {indicator_count} indicators</div>
-                <div class="news-meta">Confidence: {indicator_conf:.1f}% | Day Range: {day_range_text}</div>
-                <div class="news-meta">Bullish: {bull_count} | Bearish: {bear_count} | Neutral: {neutral_count}</div>
-            </div>
-            """
-        ),
-        unsafe_allow_html=True,
-    )
-
-col1, col2 = st.columns([1, 1], gap="small")
-
-with col1:
-    st.subheader(f"{symbol} Price Chart")
-    fig = go.Figure()
-    fig.add_trace(go.Candlestick(
-        x=prices["date"],
-        open=prices["open"],
-        high=prices["high"],
-        low=prices["low"],
-        close=prices["close"],
-        name="Price",
-        increasing_line_color="#16a34a",
-        increasing_fillcolor="rgba(22,163,74,0.35)",
-        decreasing_line_color="#dc2626",
-        decreasing_fillcolor="rgba(220,38,38,0.35)",
-    ))
-    fig.update_layout(
-        template="plotly_white",
-        paper_bgcolor="#ffffff",
-        plot_bgcolor="#f8fbff",
-        font=dict(color="#0f172a"),
-        xaxis_rangeslider_visible=False,
-        margin=dict(l=8, r=8, t=10, b=8),
-    )
-    fig.update_xaxes(gridcolor="rgba(148,163,184,0.26)")
-    fig.update_yaxes(gridcolor="rgba(148,163,184,0.28)")
-    st.plotly_chart(fig, use_container_width=True)
-
-with col2:
-    st.subheader("Quick Metrics")
-    st.markdown(
-        dedent(
-            f"""
-            <div class="snapshot-card">
-                <div class="snapshot-label">Volume</div>
-                <div class="snapshot-value">{latest_volume:,.0f}</div>
-            </div>
-            <div class="snapshot-card">
-                <div class="snapshot-label">Avg Sentiment</div>
-                <div class="snapshot-value">{sentiment_avg:+.2f}</div>
-            </div>
-            <div class="snapshot-card">
-                <div class="snapshot-label">ML Target Date</div>
-                <div class="snapshot-value">{prediction_target}</div>
-            </div>
-            """
-        ),
-        unsafe_allow_html=True,
-    )
-
-st.subheader("📰 Full News")
-if not news.empty:
-    for _, row in news.iterrows():
-        sentiment = (row.get("sentiment_label") or "neutral").lower()
-        score = row.get("sentiment_score")
-        color_map = {"positive": "#15803d", "negative": "#b91c1c", "neutral": "#ca8a04"}
-        color = color_map.get(sentiment, "#ca8a04")
-        score_text = f"{float(score):.2f}" if pd.notna(score) else "0.00"
-        st.markdown(
-            dedent(
-                f"""
-                <div class="news-card">
-                    <div class="news-title">{row['title']}</div>
-                    <div class="news-meta">Source: {row['source']}</div>
-                    <div class="news-meta">
-                        Sentiment: <span style="color:{color}; font-weight:700;">{sentiment.title()} ({score_text})</span>
+with bottom_col2:
+    st.subheader("News Snapshot")
+    if not news.empty:
+        for _, row in news.head(2).iterrows():
+            sentiment = (row.get("sentiment_label") or "neutral").lower()
+            score = row.get("sentiment_score")
+            color_map = {"positive": "#15803d", "negative": "#b91c1c", "neutral": "#ca8a04"}
+            color = color_map.get(sentiment, "#ca8a04")
+            score_text = f"{float(score):.2f}" if pd.notna(score) else "0.00"
+            st.markdown(
+                dedent(
+                    f"""
+                    <div class="news-card">
+                        <div class="news-title">{row['title']}</div>
+                        <div class="news-meta">Source: {row['source']}</div>
+                        <div class="news-meta">
+                            Sentiment: <span style="color:{color}; font-weight:700;">{sentiment.title()} ({score_text})</span>
+                        </div>
+                        <a class="news-link" href="{row['url']}" target="_blank">Read More</a>
                     </div>
-                    <a class="news-link" href="{row['url']}" target="_blank">Read More</a>
-                </div>
-                """
+                    """
+                ),
+                unsafe_allow_html=True,
+            )
+    else:
+        st.info("No recent news")
+
+with st.expander("Detailed Backtest Metrics", expanded=False):
+    if not backtest_df.empty:
+        backtest_view = backtest_df.copy()
+        backtest_view["directional_accuracy"] = (
+            pd.to_numeric(backtest_view["directional_accuracy"], errors="coerce") * 100.0
+        ).round(2)
+        backtest_view["mae"] = pd.to_numeric(backtest_view["mae"], errors="coerce").round(5)
+        backtest_view["rmse"] = pd.to_numeric(backtest_view["rmse"], errors="coerce").round(5)
+        backtest_view["strategy_return"] = (
+            pd.to_numeric(backtest_view["strategy_return"], errors="coerce") * 100.0
+        ).round(2)
+        st.dataframe(
+            backtest_view[["model_name", "run_date", "sample_count", "directional_accuracy", "mae", "rmse", "strategy_return"]]
+            .rename(
+                columns={
+                    "model_name": "Model",
+                    "run_date": "Run Date",
+                    "sample_count": "Samples",
+                    "directional_accuracy": "Hit Rate (%)",
+                    "mae": "MAE",
+                    "rmse": "RMSE",
+                    "strategy_return": "Strategy Return (%)",
+                }
             ),
-            unsafe_allow_html=True,
+            use_container_width=True,
+            hide_index=True,
         )
-else:
-    st.info("No recent news")
+    else:
+        st.info("No backtest results available yet.")
+
+with st.expander("More News", expanded=False):
+    if not news.empty and len(news) > 2:
+        for _, row in news.iloc[2:].iterrows():
+            sentiment = (row.get("sentiment_label") or "neutral").lower()
+            score = row.get("sentiment_score")
+            color_map = {"positive": "#15803d", "negative": "#b91c1c", "neutral": "#ca8a04"}
+            color = color_map.get(sentiment, "#ca8a04")
+            score_text = f"{float(score):.2f}" if pd.notna(score) else "0.00"
+            st.markdown(
+                dedent(
+                    f"""
+                    <div class="news-card">
+                        <div class="news-title">{row['title']}</div>
+                        <div class="news-meta">Source: {row['source']}</div>
+                        <div class="news-meta">
+                            Sentiment: <span style="color:{color}; font-weight:700;">{sentiment.title()} ({score_text})</span>
+                        </div>
+                        <a class="news-link" href="{row['url']}" target="_blank">Read More</a>
+                    </div>
+                    """
+                ),
+                unsafe_allow_html=True,
+            )
+    elif news.empty:
+        st.info("No recent news.")
+    else:
+        st.info("No additional news beyond the snapshot.")

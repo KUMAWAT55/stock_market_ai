@@ -1,6 +1,6 @@
 from sqlalchemy import (
     Column, Integer, String, Float,
-    Date, Boolean, BigInteger, TIMESTAMP
+    Date, Boolean, BigInteger, TIMESTAMP, UniqueConstraint
 )
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import func
@@ -37,37 +37,24 @@ class SymbolMaster(Base):
 class MarketData(Base):
 
     __tablename__ = "market_data"
+    __table_args__ = (
+        UniqueConstraint("symbol", "date", "source", name="uq_market_data_symbol_date_source"),
+    )
 
     id = Column(Integer, primary_key=True)
 
     symbol = Column(String, nullable=False)
-    date = Column(Date, nullable=False)
+    date = Column(DateTime, nullable=False, index=True)
     source = Column(String, nullable=False)
 
     open = Column(Float)
     high = Column(Float)
     low = Column(Float)
     close = Column(Float)
-    adj_close = Column(Float)
 
     volume = Column(BigInteger)
     traded_value = Column(Float)
     vwap = Column(Float)
-
-    dividend = Column(Float)
-    split = Column(Float)
-
-    market_cap = Column(BigInteger)
-    pe_ratio = Column(Float)
-    eps = Column(Float)
-    book_value = Column(Float)
-    dividend_yield = Column(Float)
-    beta = Column(Float)
-
-    sector = Column(String)
-    industry = Column(String)
-    exchange = Column(String)
-    currency = Column(String)
 
     created_at = Column(TIMESTAMP, server_default=func.now())
 
@@ -76,6 +63,9 @@ class MarketData(Base):
 class News(Base):
 
     __tablename__ = "market_news"
+    __table_args__ = (
+        UniqueConstraint("symbol", "title", "published_at", name="uq_market_news_symbol_title_published_at"),
+    )
 
     id = Column(Integer, primary_key=True)
 
@@ -100,12 +90,15 @@ class News(Base):
 class StockPrediction(Base):
 
     __tablename__ = "stock_predictions"
+    __table_args__ = (
+        UniqueConstraint("symbol", "target_date", "model_name", name="uq_stock_predictions_symbol_target_model"),
+    )
 
     id = Column(Integer, primary_key=True)
 
     symbol = Column(String, index=True, nullable=False)
-    prediction_date = Column(Date, nullable=False)
-    target_date = Column(Date, nullable=False)
+    prediction_date = Column(DateTime, nullable=False)
+    target_date = Column(DateTime, nullable=False)
 
     predicted_return = Column(Float)
     predicted_close = Column(Float)
@@ -121,6 +114,9 @@ class StockPrediction(Base):
 class ModelBacktestResult(Base):
 
     __tablename__ = "model_backtest_results"
+    __table_args__ = (
+        UniqueConstraint("symbol", "model_name", "run_date", name="uq_model_backtest_results_symbol_model_run_date"),
+    )
 
     id = Column(Integer, primary_key=True)
 

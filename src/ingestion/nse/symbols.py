@@ -10,7 +10,28 @@ def fetch_nse_symbols():
     logger.info("Fetching NSE symbols")
 
     df = pd.read_csv(NSE_URL)
-    symbols_to_filter = ["TATACAP", "TATAELXSI", "MRF", "RELIANCE" , "ICICIBANK" , "HDFCBANK" , "BHARTIARTL","SBIN","TCS"]
+    symbols_to_filter = [
+        "ADANIENT",
+        "ADANIPORTS",
+        "ASIANPAINT",
+        "AXISBANK",
+        "BAJFINANCE",
+        "BHARTIARTL",
+        "HCLTECH",
+        "HDFCBANK",
+        "HINDUNILVR",
+        "ICICIBANK",
+        "INFY",
+        "ITC",
+        "KOTAKBANK",
+        "LT",
+        "MARUTI",
+        "RELIANCE",
+        "SBIN",
+        "TATAMOTORS",
+        "TECHM",
+        "TCS",
+    ]
     df = df[df["SYMBOL"].isin(symbols_to_filter)]
     symbols = []
 
@@ -32,6 +53,3 @@ def fetch_nse_symbols():
     logger.info(f"Fetched {len(symbols)} symbols")
 
     return symbols
-
-fetch_nse_symbols()
-

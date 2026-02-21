@@ -1,4 +1,5 @@
 import sys
+from datetime import timedelta
 from loguru import logger
 
 from src.ingestion.nse.symbols import fetch_nse_symbols
@@ -10,10 +11,15 @@ from src.pipelines.predictor import train_and_predict_next_day
 from src.pipelines.backtester import run_backtest_models
 
 from src.storage.db.connection import SessionLocal
+from src.storage.db.maintenance import (
+    clean_and_enforce_uniqueness,
+    align_market_data_intraday_schema,
+)
 from src.storage.db.writer import (
     save_symbols,
     get_active_symbols,
     save_market_data,
+    get_latest_market_timestamp,
     get_symbol_price_df,
     get_symbol_news_df,
     save_stock_prediction,
@@ -23,6 +29,7 @@ from src.storage.db.writer import (
 from src.configs.settings import (
     LOG_PATH,
     YAHOO_PERIOD,
+    YAHOO_INTERVAL,
     BACKTEST_MIN_TRAIN_ROWS,
     BACKTEST_STEP,
     BACKTEST_TRAIN_WINDOW,
@@ -40,6 +47,8 @@ def run():
 
     db = SessionLocal()
     # 0 Create tables
+    clean_and_enforce_uniqueness(db)
+    align_market_data_intraday_schema(db)
 
 
     # 1. Load symbol master
@@ -52,14 +61,25 @@ def run():
 
     logger.info(f"Active symbols: {len(active_symbols)}")
 
-    # Safety limit first run
-    active_symbols = active_symbols[:10]
-
     # 3. Ingestion loop
     for sym in active_symbols:
-        nse_sym=sym+".NS"
-        df, info = fetch_yahoo_data(nse_sym, YAHOO_PERIOD)
-        records = normalize_yahoo(df, info,sym)
+        nse_sym = sym + ".NS"
+        latest_ts = get_latest_market_timestamp(db, sym)
+        fetch_start = None
+        if latest_ts is not None:
+            # Small overlap avoids missing candles around session boundaries.
+            fetch_start = latest_ts - timedelta(days=2)
+            logger.info(f"{sym}: incremental fetch from {fetch_start}")
+
+        df, info = fetch_yahoo_data(
+            nse_sym,
+            YAHOO_PERIOD,
+            YAHOO_INTERVAL,
+            start=fetch_start,
+        )
+        records = normalize_yahoo(df, info, sym)
+        if latest_ts is not None and records:
+            records = [r for r in records if r["date"] > latest_ts]
 
         save_market_data(db, records)
     # News

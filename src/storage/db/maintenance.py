@@ -66,6 +66,66 @@ DEDUP_QUERIES = {
         WHERE t.ctid = r.ctid
           AND r.rn > 1
     """,
+    "compliance_consents": """
+        WITH ranked AS (
+            SELECT
+                ctid,
+                ROW_NUMBER() OVER (
+                    PARTITION BY user_key, disclaimer_version
+                    ORDER BY accepted_at DESC NULLS LAST, created_at DESC NULLS LAST, id DESC
+                ) AS rn
+            FROM compliance_consents
+        )
+        DELETE FROM compliance_consents t
+        USING ranked r
+        WHERE t.ctid = r.ctid
+          AND r.rn > 1
+    """,
+    "app_users": """
+        WITH ranked AS (
+            SELECT
+                ctid,
+                ROW_NUMBER() OVER (
+                    PARTITION BY username
+                    ORDER BY created_at DESC NULLS LAST, id DESC
+                ) AS rn
+            FROM app_users
+        )
+        DELETE FROM app_users t
+        USING ranked r
+        WHERE t.ctid = r.ctid
+          AND r.rn > 1
+    """,
+    "app_users_email": """
+        WITH ranked AS (
+            SELECT
+                ctid,
+                ROW_NUMBER() OVER (
+                    PARTITION BY email
+                    ORDER BY created_at DESC NULLS LAST, id DESC
+                ) AS rn
+            FROM app_users
+        )
+        DELETE FROM app_users t
+        USING ranked r
+        WHERE t.ctid = r.ctid
+          AND r.rn > 1
+    """,
+    "user_subscriptions": """
+        WITH ranked AS (
+            SELECT
+                ctid,
+                ROW_NUMBER() OVER (
+                    PARTITION BY user_id
+                    ORDER BY created_at DESC NULLS LAST, id DESC
+                ) AS rn
+            FROM user_subscriptions
+        )
+        DELETE FROM user_subscriptions t
+        USING ranked r
+        WHERE t.ctid = r.ctid
+          AND r.rn > 1
+    """,
 }
 
 
@@ -85,6 +145,22 @@ INDEX_QUERIES = [
     """
     CREATE UNIQUE INDEX IF NOT EXISTS uq_model_backtest_results_symbol_model_run_date
     ON model_backtest_results(symbol, model_name, run_date)
+    """,
+    """
+    CREATE UNIQUE INDEX IF NOT EXISTS uq_compliance_consents_user_version
+    ON compliance_consents(user_key, disclaimer_version)
+    """,
+    """
+    CREATE UNIQUE INDEX IF NOT EXISTS uq_app_users_username
+    ON app_users(username)
+    """,
+    """
+    CREATE UNIQUE INDEX IF NOT EXISTS uq_app_users_email
+    ON app_users(email)
+    """,
+    """
+    CREATE UNIQUE INDEX IF NOT EXISTS uq_user_subscriptions_user
+    ON user_subscriptions(user_id)
     """,
 ]
 
@@ -119,6 +195,10 @@ def clean_and_enforce_uniqueness(session: Session) -> None:
         "uq_market_news_symbol_title_published_at",
         "uq_stock_predictions_symbol_target_model",
         "uq_model_backtest_results_symbol_model_run_date",
+        "uq_compliance_consents_user_version",
+        "uq_app_users_username",
+        "uq_app_users_email",
+        "uq_user_subscriptions_user",
     ]
     existing = session.execute(
         text(

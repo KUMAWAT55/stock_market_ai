@@ -11,6 +11,7 @@ from src.pipelines.predictor import train_and_predict_next_day
 from src.pipelines.backtester import run_backtest_models
 
 from src.storage.db.connection import SessionLocal
+from src.storage.db.models import Base
 from src.storage.db.maintenance import (
     clean_and_enforce_uniqueness,
     align_market_data_intraday_schema,
@@ -46,6 +47,7 @@ def run():
     logger.info("Starting Stock Market AI Platform")
 
     db = SessionLocal()
+    Base.metadata.create_all(bind=db.get_bind())
     # 0 Create tables
     clean_and_enforce_uniqueness(db)
     align_market_data_intraday_schema(db)

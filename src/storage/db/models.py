@@ -1,6 +1,6 @@
 from sqlalchemy import (
     Column, Integer, String, Float,
-    Date, Boolean, BigInteger, TIMESTAMP, UniqueConstraint
+    Date, Boolean, BigInteger, TIMESTAMP, UniqueConstraint, ForeignKey
 )
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import func
@@ -132,5 +132,69 @@ class ModelBacktestResult(Base):
     avg_pred_return = Column(Float)
     cumulative_return = Column(Float)
     strategy_return = Column(Float)
+
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class AppUser(Base):
+
+    __tablename__ = "app_users"
+
+    id = Column(Integer, primary_key=True)
+
+    username = Column(String, nullable=False, unique=True, index=True)
+    email = Column(String, nullable=False, unique=True, index=True)
+    password_hash = Column(String, nullable=False)
+    full_name = Column(String)
+    is_active = Column(Boolean, nullable=False, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class UserSubscription(Base):
+
+    __tablename__ = "user_subscriptions"
+    __table_args__ = (
+        UniqueConstraint("user_id", name="uq_user_subscriptions_user"),
+    )
+
+    id = Column(Integer, primary_key=True)
+
+    user_id = Column(Integer, ForeignKey("app_users.id"), nullable=False, index=True)
+    plan_name = Column(String, nullable=False, default="TradeIQ Pro")
+    status = Column(String, nullable=False, default="inactive")
+    start_at = Column(DateTime)
+    end_at = Column(DateTime)
+    payment_reference = Column(String)
+
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class ComplianceConsent(Base):
+
+    __tablename__ = "compliance_consents"
+    __table_args__ = (
+        UniqueConstraint("user_key", "disclaimer_version", name="uq_compliance_consents_user_version"),
+    )
+
+    id = Column(Integer, primary_key=True)
+
+    user_key = Column(String, nullable=False, index=True)
+    disclaimer_version = Column(String, nullable=False)
+    accepted_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    app_version = Column(String)
+
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class ComplianceAuditLog(Base):
+
+    __tablename__ = "compliance_audit_logs"
+
+    id = Column(Integer, primary_key=True)
+
+    user_key = Column(String, nullable=False, index=True)
+    event_type = Column(String, nullable=False)
+    symbol = Column(String, index=True)
+    payload = Column(Text)
 
     created_at = Column(DateTime, default=datetime.utcnow)

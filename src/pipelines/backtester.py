@@ -25,6 +25,7 @@ def _direction(x: np.ndarray) -> np.ndarray:
 def _score_predictions(
     symbol: str,
     model_name: str,
+    run_date: date,
     y_true: list[float],
     y_pred: list[float],
 ) -> dict | None:
@@ -51,7 +52,7 @@ def _score_predictions(
     return {
         "symbol": symbol,
         "model_name": model_name,
-        "run_date": date.today(),
+        "run_date": run_date,
         "sample_count": n,
         "directional_accuracy": directional_accuracy,
         "mae": mae,
@@ -79,6 +80,8 @@ def run_backtest_models(
     data = _build_features(price_df, news_df)
     data = data.dropna(subset=FEATURE_COLUMNS + ["target_return"]).copy()
     data = data[np.isfinite(data[FEATURE_COLUMNS + ["target_return"]]).all(axis=1)].copy()
+    run_ts = pd.to_datetime(data["date"], errors="coerce").max() if "date" in data.columns else pd.NaT
+    run_date_value = run_ts.date() if pd.notna(run_ts) else date.today()
 
     if len(data) < (min_train_rows + 15):
         logger.warning(f"Backtest skipped for {symbol}: insufficient rows ({len(data)})")
@@ -204,7 +207,13 @@ def run_backtest_models(
     results: list[dict] = []
     for model_name in model_order:
         y_pred_common = [model_predictions[model_name][i] for i in common_eval_indices]
-        row = _score_predictions(symbol, model_name, y_true_common, y_pred_common)
+        row = _score_predictions(
+            symbol,
+            model_name,
+            run_date_value,
+            y_true_common,
+            y_pred_common,
+        )
         if row is not None:
             results.append(row)
 
@@ -223,6 +232,7 @@ def run_backtest_models(
         ensemble_row = _score_predictions(
             symbol,
             "ensemble_v1",
+            run_date_value,
             y_true_common,
             ensemble_pred,
         )

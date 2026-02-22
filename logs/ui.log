@@ -3535,3 +3535,532 @@ Error message(s): ["dlopen(/Users/rohkumaw/Documents/stock_market_ai/.venv/lib/p
 2026-02-22 04:39:07.555 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for TECHM (xgboost_v1)
 2026-02-22 04:39:07.556 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for TECHM (ensemble_v1)
 2026-02-22 04:39:07.556 | INFO     | __main__:run:110 - Pipeline finished
+2026-02-22 11:05:00.350 | INFO     | __main__:run:46 - Starting Stock Market AI Platform
+2026-02-22 11:05:00.412 | INFO     | src.storage.db.maintenance:clean_and_enforce_uniqueness:135 - Uniqueness indexes already present, skipping cleanup pass
+2026-02-22 11:05:00.417 | INFO     | src.storage.db.maintenance:align_market_data_intraday_schema:113 - market_data table aligned to intraday schema
+2026-02-22 11:05:00.417 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:10 - Fetching NSE symbols
+2026-02-22 11:05:00.819 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:53 - Fetched 19 symbols
+2026-02-22 11:05:00.820 | INFO     | src.storage.db.writer:save_symbols:13 - Saving symbols master
+2026-02-22 11:05:00.853 | INFO     | __main__:run:62 - Active symbols: 19
+2026-02-22 11:05:00.857 | INFO     | __main__:run:72 - ADANIENT: incremental fetch from 2026-02-18 15:25:00
+2026-02-22 11:05:16.611 | INFO     | src.pipelines.backtester:run_backtest_models:233 - Backtest finished for ADANIENT: 80 common eval points in 15.68s
+2026-02-22 11:05:16.619 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ADANIENT (sgd_regression_v1)
+2026-02-22 11:05:16.621 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ADANIENT (random_forest_v1)
+2026-02-22 11:05:16.621 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ADANIENT (extra_trees_v1)
+2026-02-22 11:05:16.622 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ADANIENT (xgboost_v1)
+2026-02-22 11:05:16.623 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ADANIENT (ensemble_v1)
+2026-02-22 11:05:16.624 | INFO     | __main__:run:72 - ADANIPORTS: incremental fetch from 2026-02-18 15:25:00
+2026-02-22 11:05:32.211 | INFO     | src.pipelines.backtester:run_backtest_models:233 - Backtest finished for ADANIPORTS: 80 common eval points in 15.55s
+2026-02-22 11:05:32.213 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ADANIPORTS (sgd_regression_v1)
+2026-02-22 11:05:32.215 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ADANIPORTS (random_forest_v1)
+2026-02-22 11:05:32.216 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ADANIPORTS (extra_trees_v1)
+2026-02-22 11:05:32.217 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ADANIPORTS (xgboost_v1)
+2026-02-22 11:05:32.219 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ADANIPORTS (ensemble_v1)
+2026-02-22 11:05:32.220 | INFO     | __main__:run:72 - ASIANPAINT: incremental fetch from 2026-02-18 15:25:00
+2026-02-22 11:05:47.699 | INFO     | src.pipelines.backtester:run_backtest_models:233 - Backtest finished for ASIANPAINT: 80 common eval points in 15.44s
+2026-02-22 11:05:47.701 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ASIANPAINT (sgd_regression_v1)
+2026-02-22 11:05:47.702 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ASIANPAINT (random_forest_v1)
+2026-02-22 11:05:47.704 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ASIANPAINT (extra_trees_v1)
+2026-02-22 11:05:47.705 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ASIANPAINT (xgboost_v1)
+2026-02-22 11:05:47.707 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ASIANPAINT (ensemble_v1)
+2026-02-22 11:05:47.708 | INFO     | __main__:run:72 - AXISBANK: incremental fetch from 2026-02-18 15:25:00
+2026-02-22 11:06:03.007 | INFO     | src.pipelines.backtester:run_backtest_models:233 - Backtest finished for AXISBANK: 80 common eval points in 15.24s
+2026-02-22 11:06:03.009 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for AXISBANK (sgd_regression_v1)
+2026-02-22 11:06:03.010 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for AXISBANK (random_forest_v1)
+2026-02-22 11:06:03.012 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for AXISBANK (extra_trees_v1)
+2026-02-22 11:06:03.013 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for AXISBANK (xgboost_v1)
+2026-02-22 11:06:03.014 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for AXISBANK (ensemble_v1)
+2026-02-22 11:06:03.015 | INFO     | __main__:run:72 - BAJFINANCE: incremental fetch from 2026-02-18 15:25:00
+2026-02-22 11:06:18.611 | INFO     | src.pipelines.backtester:run_backtest_models:233 - Backtest finished for BAJFINANCE: 80 common eval points in 15.56s
+2026-02-22 11:06:18.614 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for BAJFINANCE (sgd_regression_v1)
+2026-02-22 11:06:18.615 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for BAJFINANCE (random_forest_v1)
+2026-02-22 11:06:18.617 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for BAJFINANCE (extra_trees_v1)
+2026-02-22 11:06:18.618 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for BAJFINANCE (xgboost_v1)
+2026-02-22 11:06:18.619 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for BAJFINANCE (ensemble_v1)
+2026-02-22 11:06:18.620 | INFO     | __main__:run:72 - BHARTIARTL: incremental fetch from 2026-02-18 15:25:00
+2026-02-22 11:06:33.895 | INFO     | src.pipelines.backtester:run_backtest_models:233 - Backtest finished for BHARTIARTL: 80 common eval points in 15.24s
+2026-02-22 11:06:33.898 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for BHARTIARTL (sgd_regression_v1)
+2026-02-22 11:06:33.899 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for BHARTIARTL (random_forest_v1)
+2026-02-22 11:06:33.901 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for BHARTIARTL (extra_trees_v1)
+2026-02-22 11:06:33.902 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for BHARTIARTL (xgboost_v1)
+2026-02-22 11:06:33.904 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for BHARTIARTL (ensemble_v1)
+2026-02-22 11:06:33.905 | INFO     | __main__:run:72 - HCLTECH: incremental fetch from 2026-02-18 15:25:00
+2026-02-22 11:06:49.445 | INFO     | src.pipelines.backtester:run_backtest_models:233 - Backtest finished for HCLTECH: 80 common eval points in 15.49s
+2026-02-22 11:06:49.448 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for HCLTECH (sgd_regression_v1)
+2026-02-22 11:06:49.449 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for HCLTECH (random_forest_v1)
+2026-02-22 11:06:49.450 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for HCLTECH (extra_trees_v1)
+2026-02-22 11:06:49.451 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for HCLTECH (xgboost_v1)
+2026-02-22 11:06:49.453 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for HCLTECH (ensemble_v1)
+2026-02-22 11:06:49.453 | INFO     | __main__:run:72 - HDFCBANK: incremental fetch from 2026-02-18 15:25:00
+2026-02-22 11:07:04.579 | INFO     | src.pipelines.backtester:run_backtest_models:233 - Backtest finished for HDFCBANK: 80 common eval points in 15.09s
+2026-02-22 11:07:04.581 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for HDFCBANK (sgd_regression_v1)
+2026-02-22 11:07:04.583 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for HDFCBANK (random_forest_v1)
+2026-02-22 11:07:04.584 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for HDFCBANK (extra_trees_v1)
+2026-02-22 11:07:04.586 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for HDFCBANK (xgboost_v1)
+2026-02-22 11:07:04.587 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for HDFCBANK (ensemble_v1)
+2026-02-22 11:07:04.588 | INFO     | __main__:run:72 - HINDUNILVR: incremental fetch from 2026-02-18 15:25:00
+2026-02-22 11:07:20.296 | INFO     | src.pipelines.backtester:run_backtest_models:233 - Backtest finished for HINDUNILVR: 80 common eval points in 15.67s
+2026-02-22 11:07:20.299 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for HINDUNILVR (sgd_regression_v1)
+2026-02-22 11:07:20.301 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for HINDUNILVR (random_forest_v1)
+2026-02-22 11:07:20.302 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for HINDUNILVR (extra_trees_v1)
+2026-02-22 11:07:20.303 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for HINDUNILVR (xgboost_v1)
+2026-02-22 11:07:20.304 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for HINDUNILVR (ensemble_v1)
+2026-02-22 11:07:20.305 | INFO     | __main__:run:72 - ICICIBANK: incremental fetch from 2026-02-18 15:25:00
+2026-02-22 11:07:35.129 | INFO     | src.pipelines.backtester:run_backtest_models:233 - Backtest finished for ICICIBANK: 80 common eval points in 14.78s
+2026-02-22 11:07:35.131 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ICICIBANK (sgd_regression_v1)
+2026-02-22 11:07:35.133 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ICICIBANK (random_forest_v1)
+2026-02-22 11:07:35.134 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ICICIBANK (extra_trees_v1)
+2026-02-22 11:07:35.135 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ICICIBANK (xgboost_v1)
+2026-02-22 11:07:35.137 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ICICIBANK (ensemble_v1)
+2026-02-22 11:07:35.138 | INFO     | __main__:run:72 - INFY: incremental fetch from 2026-02-18 15:25:00
+2026-02-22 11:07:50.700 | INFO     | src.pipelines.backtester:run_backtest_models:233 - Backtest finished for INFY: 80 common eval points in 15.53s
+2026-02-22 11:07:50.702 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for INFY (sgd_regression_v1)
+2026-02-22 11:07:50.704 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for INFY (random_forest_v1)
+2026-02-22 11:07:50.705 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for INFY (extra_trees_v1)
+2026-02-22 11:07:50.707 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for INFY (xgboost_v1)
+2026-02-22 11:07:50.708 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for INFY (ensemble_v1)
+2026-02-22 11:07:50.709 | INFO     | __main__:run:72 - ITC: incremental fetch from 2026-02-18 15:25:00
+2026-02-22 11:08:05.809 | INFO     | src.pipelines.backtester:run_backtest_models:233 - Backtest finished for ITC: 80 common eval points in 15.06s
+2026-02-22 11:08:05.812 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ITC (sgd_regression_v1)
+2026-02-22 11:08:05.813 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ITC (random_forest_v1)
+2026-02-22 11:08:05.815 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ITC (extra_trees_v1)
+2026-02-22 11:08:05.816 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ITC (xgboost_v1)
+2026-02-22 11:08:05.817 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ITC (ensemble_v1)
+2026-02-22 11:08:05.818 | INFO     | __main__:run:72 - KOTAKBANK: incremental fetch from 2026-02-18 15:25:00
+2026-02-22 11:08:20.873 | INFO     | src.pipelines.backtester:run_backtest_models:233 - Backtest finished for KOTAKBANK: 80 common eval points in 15.02s
+2026-02-22 11:08:20.875 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for KOTAKBANK (sgd_regression_v1)
+2026-02-22 11:08:20.876 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for KOTAKBANK (random_forest_v1)
+2026-02-22 11:08:20.880 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for KOTAKBANK (extra_trees_v1)
+2026-02-22 11:08:20.881 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for KOTAKBANK (xgboost_v1)
+2026-02-22 11:08:20.882 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for KOTAKBANK (ensemble_v1)
+2026-02-22 11:08:20.883 | INFO     | __main__:run:72 - LT: incremental fetch from 2026-02-18 15:25:00
+2026-02-22 11:08:35.764 | INFO     | src.pipelines.backtester:run_backtest_models:233 - Backtest finished for LT: 80 common eval points in 14.85s
+2026-02-22 11:08:35.766 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for LT (sgd_regression_v1)
+2026-02-22 11:08:35.768 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for LT (random_forest_v1)
+2026-02-22 11:08:35.769 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for LT (extra_trees_v1)
+2026-02-22 11:08:35.770 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for LT (xgboost_v1)
+2026-02-22 11:08:35.771 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for LT (ensemble_v1)
+2026-02-22 11:08:35.772 | INFO     | __main__:run:72 - MARUTI: incremental fetch from 2026-02-18 15:25:00
+2026-02-22 11:08:51.091 | INFO     | src.pipelines.backtester:run_backtest_models:233 - Backtest finished for MARUTI: 80 common eval points in 15.27s
+2026-02-22 11:08:51.093 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for MARUTI (sgd_regression_v1)
+2026-02-22 11:08:51.095 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for MARUTI (random_forest_v1)
+2026-02-22 11:08:51.096 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for MARUTI (extra_trees_v1)
+2026-02-22 11:08:51.098 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for MARUTI (xgboost_v1)
+2026-02-22 11:08:51.099 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for MARUTI (ensemble_v1)
+2026-02-22 11:08:51.100 | INFO     | __main__:run:72 - RELIANCE: incremental fetch from 2026-02-18 15:25:00
+2026-02-22 11:09:06.488 | INFO     | src.pipelines.backtester:run_backtest_models:233 - Backtest finished for RELIANCE: 80 common eval points in 15.35s
+2026-02-22 11:09:06.491 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for RELIANCE (sgd_regression_v1)
+2026-02-22 11:09:06.492 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for RELIANCE (random_forest_v1)
+2026-02-22 11:09:06.494 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for RELIANCE (extra_trees_v1)
+2026-02-22 11:09:06.495 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for RELIANCE (xgboost_v1)
+2026-02-22 11:09:06.496 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for RELIANCE (ensemble_v1)
+2026-02-22 11:09:06.497 | INFO     | __main__:run:72 - SBIN: incremental fetch from 2026-02-18 15:25:00
+2026-02-22 11:09:21.759 | INFO     | src.pipelines.backtester:run_backtest_models:233 - Backtest finished for SBIN: 80 common eval points in 15.23s
+2026-02-22 11:09:21.763 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for SBIN (sgd_regression_v1)
+2026-02-22 11:09:21.765 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for SBIN (random_forest_v1)
+2026-02-22 11:09:21.767 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for SBIN (extra_trees_v1)
+2026-02-22 11:09:21.768 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for SBIN (xgboost_v1)
+2026-02-22 11:09:21.770 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for SBIN (ensemble_v1)
+2026-02-22 11:09:21.771 | INFO     | __main__:run:72 - TCS: incremental fetch from 2026-02-18 15:25:00
+2026-02-22 11:09:37.382 | INFO     | src.pipelines.backtester:run_backtest_models:233 - Backtest finished for TCS: 80 common eval points in 15.56s
+2026-02-22 11:09:37.385 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for TCS (sgd_regression_v1)
+2026-02-22 11:09:37.386 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for TCS (random_forest_v1)
+2026-02-22 11:09:37.388 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for TCS (extra_trees_v1)
+2026-02-22 11:09:37.389 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for TCS (xgboost_v1)
+2026-02-22 11:09:37.390 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for TCS (ensemble_v1)
+2026-02-22 11:09:37.391 | INFO     | __main__:run:72 - TECHM: incremental fetch from 2026-02-18 15:25:00
+2026-02-22 11:09:53.132 | INFO     | src.pipelines.backtester:run_backtest_models:233 - Backtest finished for TECHM: 80 common eval points in 15.71s
+2026-02-22 11:09:53.136 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for TECHM (sgd_regression_v1)
+2026-02-22 11:09:53.137 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for TECHM (random_forest_v1)
+2026-02-22 11:09:53.139 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for TECHM (extra_trees_v1)
+2026-02-22 11:09:53.140 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for TECHM (xgboost_v1)
+2026-02-22 11:09:53.141 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for TECHM (ensemble_v1)
+2026-02-22 11:09:53.141 | INFO     | __main__:run:110 - Pipeline finished
+2026-02-22 11:45:42.572 | INFO     | __main__:run:46 - Starting Stock Market AI Platform
+2026-02-22 11:45:42.631 | INFO     | src.storage.db.maintenance:clean_and_enforce_uniqueness:135 - Uniqueness indexes already present, skipping cleanup pass
+2026-02-22 11:45:42.635 | INFO     | src.storage.db.maintenance:align_market_data_intraday_schema:113 - market_data table aligned to intraday schema
+2026-02-22 11:45:42.635 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:10 - Fetching NSE symbols
+2026-02-22 11:45:43.097 | INFO     | src.ingestion.nse.symbols:fetch_nse_symbols:53 - Fetched 19 symbols
+2026-02-22 11:45:43.098 | INFO     | src.storage.db.writer:save_symbols:13 - Saving symbols master
+2026-02-22 11:45:43.123 | INFO     | __main__:run:62 - Active symbols: 19
+2026-02-22 11:45:43.127 | INFO     | __main__:run:72 - ADANIENT: incremental fetch from 2026-02-18 15:25:00
+2026-02-22 11:45:43.127 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: ADANIENT.NS
+2026-02-22 11:45:44.379 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing ADANIENT
+2026-02-22 11:45:45.148 | INFO     | src.pipelines.news_loader:save_news:38 - Saved 5 news records
+2026-02-22 11:45:50.971 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ADANIENT (2026-02-23 09:15:00)
+2026-02-22 11:45:50.973 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ADANIENT (2026-02-23 09:15:00)
+2026-02-22 11:45:50.974 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ADANIENT (2026-02-23 09:15:00)
+2026-02-22 11:45:50.976 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ADANIENT (2026-02-23 09:15:00)
+2026-02-22 11:45:50.977 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ADANIENT (2026-02-23 09:15:00)
+2026-02-22 11:45:50.979 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ADANIENT (2026-02-23 15:25:00)
+2026-02-22 11:45:50.980 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ADANIENT (2026-02-23 15:25:00)
+2026-02-22 11:45:50.981 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ADANIENT (2026-02-23 15:25:00)
+2026-02-22 11:45:50.982 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ADANIENT (2026-02-23 15:25:00)
+2026-02-22 11:45:50.983 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ADANIENT (2026-02-23 15:25:00)
+2026-02-22 11:46:06.500 | INFO     | src.pipelines.backtester:run_backtest_models:233 - Backtest finished for ADANIENT: 80 common eval points in 15.52s
+2026-02-22 11:46:06.506 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ADANIENT (sgd_regression_v1)
+2026-02-22 11:46:06.508 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ADANIENT (random_forest_v1)
+2026-02-22 11:46:06.509 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ADANIENT (extra_trees_v1)
+2026-02-22 11:46:06.511 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ADANIENT (xgboost_v1)
+2026-02-22 11:46:06.512 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ADANIENT (ensemble_v1)
+2026-02-22 11:46:06.516 | INFO     | __main__:run:72 - ADANIPORTS: incremental fetch from 2026-02-18 15:25:00
+2026-02-22 11:46:06.516 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: ADANIPORTS.NS
+2026-02-22 11:46:06.933 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing ADANIPORTS
+2026-02-22 11:46:07.650 | INFO     | src.pipelines.news_loader:save_news:38 - Saved 5 news records
+2026-02-22 11:46:13.459 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ADANIPORTS (2026-02-23 09:15:00)
+2026-02-22 11:46:13.460 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ADANIPORTS (2026-02-23 09:15:00)
+2026-02-22 11:46:13.461 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ADANIPORTS (2026-02-23 09:15:00)
+2026-02-22 11:46:13.462 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ADANIPORTS (2026-02-23 09:15:00)
+2026-02-22 11:46:13.463 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ADANIPORTS (2026-02-23 09:15:00)
+2026-02-22 11:46:13.464 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ADANIPORTS (2026-02-23 15:25:00)
+2026-02-22 11:46:13.465 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ADANIPORTS (2026-02-23 15:25:00)
+2026-02-22 11:46:13.466 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ADANIPORTS (2026-02-23 15:25:00)
+2026-02-22 11:46:13.467 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ADANIPORTS (2026-02-23 15:25:00)
+2026-02-22 11:46:13.468 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ADANIPORTS (2026-02-23 15:25:00)
+2026-02-22 11:46:28.854 | INFO     | src.pipelines.backtester:run_backtest_models:233 - Backtest finished for ADANIPORTS: 80 common eval points in 15.39s
+2026-02-22 11:46:28.858 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ADANIPORTS (sgd_regression_v1)
+2026-02-22 11:46:28.859 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ADANIPORTS (random_forest_v1)
+2026-02-22 11:46:28.860 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ADANIPORTS (extra_trees_v1)
+2026-02-22 11:46:28.862 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ADANIPORTS (xgboost_v1)
+2026-02-22 11:46:28.863 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ADANIPORTS (ensemble_v1)
+2026-02-22 11:46:28.863 | INFO     | __main__:run:72 - ASIANPAINT: incremental fetch from 2026-02-18 15:25:00
+2026-02-22 11:46:28.863 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: ASIANPAINT.NS
+2026-02-22 11:46:29.333 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing ASIANPAINT
+2026-02-22 11:46:30.407 | INFO     | src.pipelines.news_loader:save_news:38 - Saved 5 news records
+2026-02-22 11:46:36.259 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ASIANPAINT (2026-02-23 09:15:00)
+2026-02-22 11:46:36.260 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ASIANPAINT (2026-02-23 09:15:00)
+2026-02-22 11:46:36.261 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ASIANPAINT (2026-02-23 09:15:00)
+2026-02-22 11:46:36.262 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ASIANPAINT (2026-02-23 09:15:00)
+2026-02-22 11:46:36.263 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ASIANPAINT (2026-02-23 09:15:00)
+2026-02-22 11:46:36.263 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ASIANPAINT (2026-02-23 15:25:00)
+2026-02-22 11:46:36.264 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ASIANPAINT (2026-02-23 15:25:00)
+2026-02-22 11:46:36.265 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ASIANPAINT (2026-02-23 15:25:00)
+2026-02-22 11:46:36.266 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ASIANPAINT (2026-02-23 15:25:00)
+2026-02-22 11:46:36.267 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ASIANPAINT (2026-02-23 15:25:00)
+2026-02-22 11:46:51.521 | INFO     | src.pipelines.backtester:run_backtest_models:233 - Backtest finished for ASIANPAINT: 80 common eval points in 15.25s
+2026-02-22 11:46:51.524 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ASIANPAINT (sgd_regression_v1)
+2026-02-22 11:46:51.525 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ASIANPAINT (random_forest_v1)
+2026-02-22 11:46:51.526 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ASIANPAINT (extra_trees_v1)
+2026-02-22 11:46:51.527 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ASIANPAINT (xgboost_v1)
+2026-02-22 11:46:51.529 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ASIANPAINT (ensemble_v1)
+2026-02-22 11:46:51.530 | INFO     | __main__:run:72 - AXISBANK: incremental fetch from 2026-02-18 15:25:00
+2026-02-22 11:46:51.530 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: AXISBANK.NS
+2026-02-22 11:46:51.938 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing AXISBANK
+2026-02-22 11:46:52.938 | INFO     | src.pipelines.news_loader:save_news:38 - Saved 5 news records
+2026-02-22 11:46:58.723 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for AXISBANK (2026-02-23 09:15:00)
+2026-02-22 11:46:58.725 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for AXISBANK (2026-02-23 09:15:00)
+2026-02-22 11:46:58.726 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for AXISBANK (2026-02-23 09:15:00)
+2026-02-22 11:46:58.727 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for AXISBANK (2026-02-23 09:15:00)
+2026-02-22 11:46:58.728 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for AXISBANK (2026-02-23 09:15:00)
+2026-02-22 11:46:58.729 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for AXISBANK (2026-02-23 15:25:00)
+2026-02-22 11:46:58.730 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for AXISBANK (2026-02-23 15:25:00)
+2026-02-22 11:46:58.732 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for AXISBANK (2026-02-23 15:25:00)
+2026-02-22 11:46:58.733 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for AXISBANK (2026-02-23 15:25:00)
+2026-02-22 11:46:58.734 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for AXISBANK (2026-02-23 15:25:00)
+2026-02-22 11:47:14.334 | INFO     | src.pipelines.backtester:run_backtest_models:233 - Backtest finished for AXISBANK: 80 common eval points in 15.60s
+2026-02-22 11:47:14.337 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for AXISBANK (sgd_regression_v1)
+2026-02-22 11:47:14.339 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for AXISBANK (random_forest_v1)
+2026-02-22 11:47:14.340 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for AXISBANK (extra_trees_v1)
+2026-02-22 11:47:14.341 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for AXISBANK (xgboost_v1)
+2026-02-22 11:47:14.343 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for AXISBANK (ensemble_v1)
+2026-02-22 11:47:14.344 | INFO     | __main__:run:72 - BAJFINANCE: incremental fetch from 2026-02-18 15:25:00
+2026-02-22 11:47:14.344 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: BAJFINANCE.NS
+2026-02-22 11:47:14.752 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing BAJFINANCE
+2026-02-22 11:47:15.759 | INFO     | src.pipelines.news_loader:save_news:38 - Saved 5 news records
+2026-02-22 11:47:21.527 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for BAJFINANCE (2026-02-23 09:15:00)
+2026-02-22 11:47:21.528 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for BAJFINANCE (2026-02-23 09:15:00)
+2026-02-22 11:47:21.529 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for BAJFINANCE (2026-02-23 09:15:00)
+2026-02-22 11:47:21.530 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for BAJFINANCE (2026-02-23 09:15:00)
+2026-02-22 11:47:21.531 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for BAJFINANCE (2026-02-23 09:15:00)
+2026-02-22 11:47:21.532 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for BAJFINANCE (2026-02-23 15:25:00)
+2026-02-22 11:47:21.534 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for BAJFINANCE (2026-02-23 15:25:00)
+2026-02-22 11:47:21.535 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for BAJFINANCE (2026-02-23 15:25:00)
+2026-02-22 11:47:21.536 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for BAJFINANCE (2026-02-23 15:25:00)
+2026-02-22 11:47:21.537 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for BAJFINANCE (2026-02-23 15:25:00)
+2026-02-22 11:47:36.921 | INFO     | src.pipelines.backtester:run_backtest_models:233 - Backtest finished for BAJFINANCE: 80 common eval points in 15.38s
+2026-02-22 11:47:36.924 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for BAJFINANCE (sgd_regression_v1)
+2026-02-22 11:47:36.925 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for BAJFINANCE (random_forest_v1)
+2026-02-22 11:47:36.927 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for BAJFINANCE (extra_trees_v1)
+2026-02-22 11:47:36.928 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for BAJFINANCE (xgboost_v1)
+2026-02-22 11:47:36.929 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for BAJFINANCE (ensemble_v1)
+2026-02-22 11:47:36.930 | INFO     | __main__:run:72 - BHARTIARTL: incremental fetch from 2026-02-18 15:25:00
+2026-02-22 11:47:36.930 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: BHARTIARTL.NS
+2026-02-22 11:47:37.414 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing BHARTIARTL
+2026-02-22 11:47:38.261 | INFO     | src.pipelines.news_loader:save_news:38 - Saved 5 news records
+2026-02-22 11:47:44.105 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for BHARTIARTL (2026-02-23 09:15:00)
+2026-02-22 11:47:44.107 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for BHARTIARTL (2026-02-23 09:15:00)
+2026-02-22 11:47:44.108 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for BHARTIARTL (2026-02-23 09:15:00)
+2026-02-22 11:47:44.109 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for BHARTIARTL (2026-02-23 09:15:00)
+2026-02-22 11:47:44.110 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for BHARTIARTL (2026-02-23 09:15:00)
+2026-02-22 11:47:44.112 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for BHARTIARTL (2026-02-23 15:25:00)
+2026-02-22 11:47:44.113 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for BHARTIARTL (2026-02-23 15:25:00)
+2026-02-22 11:47:44.114 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for BHARTIARTL (2026-02-23 15:25:00)
+2026-02-22 11:47:44.115 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for BHARTIARTL (2026-02-23 15:25:00)
+2026-02-22 11:47:44.117 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for BHARTIARTL (2026-02-23 15:25:00)
+2026-02-22 11:47:59.092 | INFO     | src.pipelines.backtester:run_backtest_models:233 - Backtest finished for BHARTIARTL: 80 common eval points in 14.97s
+2026-02-22 11:47:59.094 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for BHARTIARTL (sgd_regression_v1)
+2026-02-22 11:47:59.096 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for BHARTIARTL (random_forest_v1)
+2026-02-22 11:47:59.097 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for BHARTIARTL (extra_trees_v1)
+2026-02-22 11:47:59.098 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for BHARTIARTL (xgboost_v1)
+2026-02-22 11:47:59.099 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for BHARTIARTL (ensemble_v1)
+2026-02-22 11:47:59.100 | INFO     | __main__:run:72 - HCLTECH: incremental fetch from 2026-02-18 15:25:00
+2026-02-22 11:47:59.100 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: HCLTECH.NS
+2026-02-22 11:47:59.521 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing HCLTECH
+2026-02-22 11:48:00.553 | INFO     | src.pipelines.news_loader:save_news:38 - Saved 5 news records
+2026-02-22 11:48:06.325 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for HCLTECH (2026-02-23 09:15:00)
+2026-02-22 11:48:06.327 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for HCLTECH (2026-02-23 09:15:00)
+2026-02-22 11:48:06.328 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for HCLTECH (2026-02-23 09:15:00)
+2026-02-22 11:48:06.328 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for HCLTECH (2026-02-23 09:15:00)
+2026-02-22 11:48:06.329 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for HCLTECH (2026-02-23 09:15:00)
+2026-02-22 11:48:06.331 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for HCLTECH (2026-02-23 15:25:00)
+2026-02-22 11:48:06.334 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for HCLTECH (2026-02-23 15:25:00)
+2026-02-22 11:48:06.335 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for HCLTECH (2026-02-23 15:25:00)
+2026-02-22 11:48:06.335 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for HCLTECH (2026-02-23 15:25:00)
+2026-02-22 11:48:06.336 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for HCLTECH (2026-02-23 15:25:00)
+2026-02-22 11:48:21.842 | INFO     | src.pipelines.backtester:run_backtest_models:233 - Backtest finished for HCLTECH: 80 common eval points in 15.51s
+2026-02-22 11:48:21.845 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for HCLTECH (sgd_regression_v1)
+2026-02-22 11:48:21.847 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for HCLTECH (random_forest_v1)
+2026-02-22 11:48:21.847 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for HCLTECH (extra_trees_v1)
+2026-02-22 11:48:21.848 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for HCLTECH (xgboost_v1)
+2026-02-22 11:48:21.850 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for HCLTECH (ensemble_v1)
+2026-02-22 11:48:21.851 | INFO     | __main__:run:72 - HDFCBANK: incremental fetch from 2026-02-18 15:25:00
+2026-02-22 11:48:21.851 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: HDFCBANK.NS
+2026-02-22 11:48:22.263 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing HDFCBANK
+2026-02-22 11:48:23.255 | INFO     | src.pipelines.news_loader:save_news:38 - Saved 5 news records
+2026-02-22 11:48:29.055 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for HDFCBANK (2026-02-23 09:15:00)
+2026-02-22 11:48:29.057 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for HDFCBANK (2026-02-23 09:15:00)
+2026-02-22 11:48:29.058 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for HDFCBANK (2026-02-23 09:15:00)
+2026-02-22 11:48:29.059 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for HDFCBANK (2026-02-23 09:15:00)
+2026-02-22 11:48:29.060 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for HDFCBANK (2026-02-23 09:15:00)
+2026-02-22 11:48:29.061 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for HDFCBANK (2026-02-23 15:25:00)
+2026-02-22 11:48:29.062 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for HDFCBANK (2026-02-23 15:25:00)
+2026-02-22 11:48:29.063 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for HDFCBANK (2026-02-23 15:25:00)
+2026-02-22 11:48:29.063 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for HDFCBANK (2026-02-23 15:25:00)
+2026-02-22 11:48:29.064 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for HDFCBANK (2026-02-23 15:25:00)
+2026-02-22 11:48:44.508 | INFO     | src.pipelines.backtester:run_backtest_models:233 - Backtest finished for HDFCBANK: 80 common eval points in 15.44s
+2026-02-22 11:48:44.512 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for HDFCBANK (sgd_regression_v1)
+2026-02-22 11:48:44.514 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for HDFCBANK (random_forest_v1)
+2026-02-22 11:48:44.515 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for HDFCBANK (extra_trees_v1)
+2026-02-22 11:48:44.516 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for HDFCBANK (xgboost_v1)
+2026-02-22 11:48:44.517 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for HDFCBANK (ensemble_v1)
+2026-02-22 11:48:44.517 | INFO     | __main__:run:72 - HINDUNILVR: incremental fetch from 2026-02-18 15:25:00
+2026-02-22 11:48:44.517 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: HINDUNILVR.NS
+2026-02-22 11:48:45.007 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing HINDUNILVR
+2026-02-22 11:48:46.390 | INFO     | src.pipelines.news_loader:save_news:38 - Saved 5 news records
+2026-02-22 11:48:52.201 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for HINDUNILVR (2026-02-23 09:15:00)
+2026-02-22 11:48:52.202 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for HINDUNILVR (2026-02-23 09:15:00)
+2026-02-22 11:48:52.203 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for HINDUNILVR (2026-02-23 09:15:00)
+2026-02-22 11:48:52.204 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for HINDUNILVR (2026-02-23 09:15:00)
+2026-02-22 11:48:52.205 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for HINDUNILVR (2026-02-23 09:15:00)
+2026-02-22 11:48:52.206 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for HINDUNILVR (2026-02-23 15:25:00)
+2026-02-22 11:48:52.207 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for HINDUNILVR (2026-02-23 15:25:00)
+2026-02-22 11:48:52.208 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for HINDUNILVR (2026-02-23 15:25:00)
+2026-02-22 11:48:52.209 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for HINDUNILVR (2026-02-23 15:25:00)
+2026-02-22 11:48:52.210 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for HINDUNILVR (2026-02-23 15:25:00)
+2026-02-22 11:49:07.476 | INFO     | src.pipelines.backtester:run_backtest_models:233 - Backtest finished for HINDUNILVR: 80 common eval points in 15.27s
+2026-02-22 11:49:07.480 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for HINDUNILVR (sgd_regression_v1)
+2026-02-22 11:49:07.481 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for HINDUNILVR (random_forest_v1)
+2026-02-22 11:49:07.482 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for HINDUNILVR (extra_trees_v1)
+2026-02-22 11:49:07.484 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for HINDUNILVR (xgboost_v1)
+2026-02-22 11:49:07.485 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for HINDUNILVR (ensemble_v1)
+2026-02-22 11:49:07.486 | INFO     | __main__:run:72 - ICICIBANK: incremental fetch from 2026-02-18 15:25:00
+2026-02-22 11:49:07.486 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: ICICIBANK.NS
+2026-02-22 11:49:07.908 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing ICICIBANK
+2026-02-22 11:49:08.746 | INFO     | src.pipelines.news_loader:save_news:38 - Saved 5 news records
+2026-02-22 11:49:14.534 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ICICIBANK (2026-02-23 09:15:00)
+2026-02-22 11:49:14.536 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ICICIBANK (2026-02-23 09:15:00)
+2026-02-22 11:49:14.537 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ICICIBANK (2026-02-23 09:15:00)
+2026-02-22 11:49:14.539 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ICICIBANK (2026-02-23 09:15:00)
+2026-02-22 11:49:14.540 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ICICIBANK (2026-02-23 09:15:00)
+2026-02-22 11:49:14.541 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ICICIBANK (2026-02-23 15:25:00)
+2026-02-22 11:49:14.542 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ICICIBANK (2026-02-23 15:25:00)
+2026-02-22 11:49:14.544 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ICICIBANK (2026-02-23 15:25:00)
+2026-02-22 11:49:14.545 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ICICIBANK (2026-02-23 15:25:00)
+2026-02-22 11:49:14.546 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ICICIBANK (2026-02-23 15:25:00)
+2026-02-22 11:49:29.448 | INFO     | src.pipelines.backtester:run_backtest_models:233 - Backtest finished for ICICIBANK: 80 common eval points in 14.90s
+2026-02-22 11:49:29.453 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ICICIBANK (sgd_regression_v1)
+2026-02-22 11:49:29.455 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ICICIBANK (random_forest_v1)
+2026-02-22 11:49:29.456 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ICICIBANK (extra_trees_v1)
+2026-02-22 11:49:29.458 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ICICIBANK (xgboost_v1)
+2026-02-22 11:49:29.459 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ICICIBANK (ensemble_v1)
+2026-02-22 11:49:29.460 | INFO     | __main__:run:72 - INFY: incremental fetch from 2026-02-18 15:25:00
+2026-02-22 11:49:29.460 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: INFY.NS
+2026-02-22 11:49:29.942 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing INFY
+2026-02-22 11:49:31.047 | INFO     | src.pipelines.news_loader:save_news:38 - Saved 5 news records
+2026-02-22 11:49:36.847 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for INFY (2026-02-23 09:15:00)
+2026-02-22 11:49:36.848 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for INFY (2026-02-23 09:15:00)
+2026-02-22 11:49:36.849 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for INFY (2026-02-23 09:15:00)
+2026-02-22 11:49:36.851 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for INFY (2026-02-23 09:15:00)
+2026-02-22 11:49:36.852 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for INFY (2026-02-23 09:15:00)
+2026-02-22 11:49:36.853 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for INFY (2026-02-23 15:25:00)
+2026-02-22 11:49:36.854 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for INFY (2026-02-23 15:25:00)
+2026-02-22 11:49:36.855 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for INFY (2026-02-23 15:25:00)
+2026-02-22 11:49:36.857 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for INFY (2026-02-23 15:25:00)
+2026-02-22 11:49:36.858 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for INFY (2026-02-23 15:25:00)
+2026-02-22 11:49:52.418 | INFO     | src.pipelines.backtester:run_backtest_models:233 - Backtest finished for INFY: 80 common eval points in 15.56s
+2026-02-22 11:49:52.421 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for INFY (sgd_regression_v1)
+2026-02-22 11:49:52.422 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for INFY (random_forest_v1)
+2026-02-22 11:49:52.423 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for INFY (extra_trees_v1)
+2026-02-22 11:49:52.425 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for INFY (xgboost_v1)
+2026-02-22 11:49:52.426 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for INFY (ensemble_v1)
+2026-02-22 11:49:52.427 | INFO     | __main__:run:72 - ITC: incremental fetch from 2026-02-18 15:25:00
+2026-02-22 11:49:52.427 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: ITC.NS
+2026-02-22 11:49:52.844 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing ITC
+2026-02-22 11:49:53.596 | INFO     | src.pipelines.news_loader:save_news:38 - Saved 5 news records
+2026-02-22 11:49:59.311 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ITC (2026-02-23 09:15:00)
+2026-02-22 11:49:59.313 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ITC (2026-02-23 09:15:00)
+2026-02-22 11:49:59.314 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ITC (2026-02-23 09:15:00)
+2026-02-22 11:49:59.315 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ITC (2026-02-23 09:15:00)
+2026-02-22 11:49:59.316 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ITC (2026-02-23 09:15:00)
+2026-02-22 11:49:59.318 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ITC (2026-02-23 15:25:00)
+2026-02-22 11:49:59.319 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ITC (2026-02-23 15:25:00)
+2026-02-22 11:49:59.320 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ITC (2026-02-23 15:25:00)
+2026-02-22 11:49:59.321 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ITC (2026-02-23 15:25:00)
+2026-02-22 11:49:59.322 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for ITC (2026-02-23 15:25:00)
+2026-02-22 11:50:14.671 | INFO     | src.pipelines.backtester:run_backtest_models:233 - Backtest finished for ITC: 80 common eval points in 15.35s
+2026-02-22 11:50:14.673 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ITC (sgd_regression_v1)
+2026-02-22 11:50:14.674 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ITC (random_forest_v1)
+2026-02-22 11:50:14.675 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ITC (extra_trees_v1)
+2026-02-22 11:50:14.676 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ITC (xgboost_v1)
+2026-02-22 11:50:14.677 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for ITC (ensemble_v1)
+2026-02-22 11:50:14.679 | INFO     | __main__:run:72 - KOTAKBANK: incremental fetch from 2026-02-18 15:25:00
+2026-02-22 11:50:14.679 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: KOTAKBANK.NS
+2026-02-22 11:50:15.163 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing KOTAKBANK
+2026-02-22 11:50:16.205 | INFO     | src.pipelines.news_loader:save_news:38 - Saved 5 news records
+2026-02-22 11:50:21.928 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for KOTAKBANK (2026-02-23 09:15:00)
+2026-02-22 11:50:21.929 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for KOTAKBANK (2026-02-23 09:15:00)
+2026-02-22 11:50:21.931 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for KOTAKBANK (2026-02-23 09:15:00)
+2026-02-22 11:50:21.932 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for KOTAKBANK (2026-02-23 09:15:00)
+2026-02-22 11:50:21.933 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for KOTAKBANK (2026-02-23 09:15:00)
+2026-02-22 11:50:21.934 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for KOTAKBANK (2026-02-23 15:25:00)
+2026-02-22 11:50:21.936 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for KOTAKBANK (2026-02-23 15:25:00)
+2026-02-22 11:50:21.937 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for KOTAKBANK (2026-02-23 15:25:00)
+2026-02-22 11:50:21.938 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for KOTAKBANK (2026-02-23 15:25:00)
+2026-02-22 11:50:21.939 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for KOTAKBANK (2026-02-23 15:25:00)
+2026-02-22 11:50:37.083 | INFO     | src.pipelines.backtester:run_backtest_models:233 - Backtest finished for KOTAKBANK: 80 common eval points in 15.14s
+2026-02-22 11:50:37.086 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for KOTAKBANK (sgd_regression_v1)
+2026-02-22 11:50:37.088 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for KOTAKBANK (random_forest_v1)
+2026-02-22 11:50:37.090 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for KOTAKBANK (extra_trees_v1)
+2026-02-22 11:50:37.092 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for KOTAKBANK (xgboost_v1)
+2026-02-22 11:50:37.093 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for KOTAKBANK (ensemble_v1)
+2026-02-22 11:50:37.093 | INFO     | __main__:run:72 - LT: incremental fetch from 2026-02-18 15:25:00
+2026-02-22 11:50:37.093 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: LT.NS
+2026-02-22 11:50:37.507 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing LT
+2026-02-22 11:50:38.541 | INFO     | src.pipelines.news_loader:save_news:38 - Saved 5 news records
+2026-02-22 11:50:44.268 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for LT (2026-02-23 09:15:00)
+2026-02-22 11:50:44.270 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for LT (2026-02-23 09:15:00)
+2026-02-22 11:50:44.271 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for LT (2026-02-23 09:15:00)
+2026-02-22 11:50:44.271 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for LT (2026-02-23 09:15:00)
+2026-02-22 11:50:44.272 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for LT (2026-02-23 09:15:00)
+2026-02-22 11:50:44.273 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for LT (2026-02-23 15:25:00)
+2026-02-22 11:50:44.275 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for LT (2026-02-23 15:25:00)
+2026-02-22 11:50:44.276 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for LT (2026-02-23 15:25:00)
+2026-02-22 11:50:44.277 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for LT (2026-02-23 15:25:00)
+2026-02-22 11:50:44.279 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for LT (2026-02-23 15:25:00)
+2026-02-22 11:50:59.250 | INFO     | src.pipelines.backtester:run_backtest_models:233 - Backtest finished for LT: 80 common eval points in 14.97s
+2026-02-22 11:50:59.254 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for LT (sgd_regression_v1)
+2026-02-22 11:50:59.255 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for LT (random_forest_v1)
+2026-02-22 11:50:59.256 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for LT (extra_trees_v1)
+2026-02-22 11:50:59.258 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for LT (xgboost_v1)
+2026-02-22 11:50:59.259 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for LT (ensemble_v1)
+2026-02-22 11:50:59.260 | INFO     | __main__:run:72 - MARUTI: incremental fetch from 2026-02-18 15:25:00
+2026-02-22 11:50:59.260 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: MARUTI.NS
+2026-02-22 11:50:59.667 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing MARUTI
+2026-02-22 11:51:00.739 | INFO     | src.pipelines.news_loader:save_news:38 - Saved 5 news records
+2026-02-22 11:51:06.545 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for MARUTI (2026-02-23 09:15:00)
+2026-02-22 11:51:06.546 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for MARUTI (2026-02-23 09:15:00)
+2026-02-22 11:51:06.548 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for MARUTI (2026-02-23 09:15:00)
+2026-02-22 11:51:06.550 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for MARUTI (2026-02-23 09:15:00)
+2026-02-22 11:51:06.551 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for MARUTI (2026-02-23 09:15:00)
+2026-02-22 11:51:06.552 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for MARUTI (2026-02-23 15:25:00)
+2026-02-22 11:51:06.553 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for MARUTI (2026-02-23 15:25:00)
+2026-02-22 11:51:06.554 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for MARUTI (2026-02-23 15:25:00)
+2026-02-22 11:51:06.555 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for MARUTI (2026-02-23 15:25:00)
+2026-02-22 11:51:06.556 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for MARUTI (2026-02-23 15:25:00)
+2026-02-22 11:51:22.174 | INFO     | src.pipelines.backtester:run_backtest_models:233 - Backtest finished for MARUTI: 80 common eval points in 15.62s
+2026-02-22 11:51:22.180 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for MARUTI (sgd_regression_v1)
+2026-02-22 11:51:22.182 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for MARUTI (random_forest_v1)
+2026-02-22 11:51:22.187 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for MARUTI (extra_trees_v1)
+2026-02-22 11:51:22.189 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for MARUTI (xgboost_v1)
+2026-02-22 11:51:22.190 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for MARUTI (ensemble_v1)
+2026-02-22 11:51:22.198 | INFO     | __main__:run:72 - RELIANCE: incremental fetch from 2026-02-18 15:25:00
+2026-02-22 11:51:22.198 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: RELIANCE.NS
+2026-02-22 11:51:22.627 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing RELIANCE
+2026-02-22 11:51:23.603 | INFO     | src.pipelines.news_loader:save_news:38 - Saved 5 news records
+2026-02-22 11:51:29.411 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for RELIANCE (2026-02-23 09:15:00)
+2026-02-22 11:51:29.414 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for RELIANCE (2026-02-23 09:15:00)
+2026-02-22 11:51:29.416 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for RELIANCE (2026-02-23 09:15:00)
+2026-02-22 11:51:29.417 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for RELIANCE (2026-02-23 09:15:00)
+2026-02-22 11:51:29.419 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for RELIANCE (2026-02-23 09:15:00)
+2026-02-22 11:51:29.420 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for RELIANCE (2026-02-23 15:25:00)
+2026-02-22 11:51:29.422 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for RELIANCE (2026-02-23 15:25:00)
+2026-02-22 11:51:29.423 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for RELIANCE (2026-02-23 15:25:00)
+2026-02-22 11:51:29.423 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for RELIANCE (2026-02-23 15:25:00)
+2026-02-22 11:51:29.424 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for RELIANCE (2026-02-23 15:25:00)
+2026-02-22 11:51:44.637 | INFO     | src.pipelines.backtester:run_backtest_models:233 - Backtest finished for RELIANCE: 80 common eval points in 15.21s
+2026-02-22 11:51:44.640 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for RELIANCE (sgd_regression_v1)
+2026-02-22 11:51:44.642 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for RELIANCE (random_forest_v1)
+2026-02-22 11:51:44.643 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for RELIANCE (extra_trees_v1)
+2026-02-22 11:51:44.645 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for RELIANCE (xgboost_v1)
+2026-02-22 11:51:44.646 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for RELIANCE (ensemble_v1)
+2026-02-22 11:51:44.647 | INFO     | __main__:run:72 - SBIN: incremental fetch from 2026-02-18 15:25:00
+2026-02-22 11:51:44.647 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: SBIN.NS
+2026-02-22 11:51:45.383 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing SBIN
+2026-02-22 11:51:46.476 | INFO     | src.pipelines.news_loader:save_news:38 - Saved 5 news records
+2026-02-22 11:51:52.272 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for SBIN (2026-02-23 09:15:00)
+2026-02-22 11:51:52.274 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for SBIN (2026-02-23 09:15:00)
+2026-02-22 11:51:52.276 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for SBIN (2026-02-23 09:15:00)
+2026-02-22 11:51:52.277 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for SBIN (2026-02-23 09:15:00)
+2026-02-22 11:51:52.278 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for SBIN (2026-02-23 09:15:00)
+2026-02-22 11:51:52.279 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for SBIN (2026-02-23 15:25:00)
+2026-02-22 11:51:52.281 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for SBIN (2026-02-23 15:25:00)
+2026-02-22 11:51:52.282 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for SBIN (2026-02-23 15:25:00)
+2026-02-22 11:51:52.283 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for SBIN (2026-02-23 15:25:00)
+2026-02-22 11:51:52.284 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for SBIN (2026-02-23 15:25:00)
+2026-02-22 11:52:07.295 | INFO     | src.pipelines.backtester:run_backtest_models:233 - Backtest finished for SBIN: 80 common eval points in 15.01s
+2026-02-22 11:52:07.297 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for SBIN (sgd_regression_v1)
+2026-02-22 11:52:07.298 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for SBIN (random_forest_v1)
+2026-02-22 11:52:07.299 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for SBIN (extra_trees_v1)
+2026-02-22 11:52:07.300 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for SBIN (xgboost_v1)
+2026-02-22 11:52:07.301 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for SBIN (ensemble_v1)
+2026-02-22 11:52:07.302 | INFO     | __main__:run:72 - TCS: incremental fetch from 2026-02-18 15:25:00
+2026-02-22 11:52:07.302 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: TCS.NS
+2026-02-22 11:52:07.727 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing TCS
+2026-02-22 11:52:08.762 | INFO     | src.pipelines.news_loader:save_news:38 - Saved 5 news records
+2026-02-22 11:52:14.531 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for TCS (2026-02-23 09:15:00)
+2026-02-22 11:52:14.533 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for TCS (2026-02-23 09:15:00)
+2026-02-22 11:52:14.534 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for TCS (2026-02-23 09:15:00)
+2026-02-22 11:52:14.535 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for TCS (2026-02-23 09:15:00)
+2026-02-22 11:52:14.536 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for TCS (2026-02-23 09:15:00)
+2026-02-22 11:52:14.538 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for TCS (2026-02-23 15:25:00)
+2026-02-22 11:52:14.539 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for TCS (2026-02-23 15:25:00)
+2026-02-22 11:52:14.540 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for TCS (2026-02-23 15:25:00)
+2026-02-22 11:52:14.541 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for TCS (2026-02-23 15:25:00)
+2026-02-22 11:52:14.542 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for TCS (2026-02-23 15:25:00)
+2026-02-22 12:08:30.985 | INFO     | src.pipelines.backtester:run_backtest_models:233 - Backtest finished for TCS: 80 common eval points in 15.69s
+2026-02-22 12:08:30.991 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for TCS (sgd_regression_v1)
+2026-02-22 12:08:30.993 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for TCS (random_forest_v1)
+2026-02-22 12:08:31.005 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for TCS (extra_trees_v1)
+2026-02-22 12:08:31.022 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for TCS (xgboost_v1)
+2026-02-22 12:08:31.025 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for TCS (ensemble_v1)
+2026-02-22 12:08:31.027 | INFO     | __main__:run:72 - TECHM: incremental fetch from 2026-02-18 15:25:00
+2026-02-22 12:08:31.027 | INFO     | src.ingestion.yahoo.fetcher:fetch_yahoo_data:7 - Fetching Yahoo: TECHM.NS
+2026-02-22 12:08:31.930 | INFO     | src.pipelines.normalizer:normalize_yahoo:7 - Normalizing TECHM
+2026-02-22 12:08:32.582 | INFO     | src.pipelines.news_loader:save_news:38 - Saved 5 news records
+2026-02-22 12:24:57.159 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for TECHM (2026-02-23 09:15:00)
+2026-02-22 12:24:57.161 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for TECHM (2026-02-23 09:15:00)
+2026-02-22 12:24:57.162 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for TECHM (2026-02-23 09:15:00)
+2026-02-22 12:24:57.164 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for TECHM (2026-02-23 09:15:00)
+2026-02-22 12:24:57.165 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for TECHM (2026-02-23 09:15:00)
+2026-02-22 12:24:57.166 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for TECHM (2026-02-23 15:25:00)
+2026-02-22 12:24:57.168 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for TECHM (2026-02-23 15:25:00)
+2026-02-22 12:24:57.169 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for TECHM (2026-02-23 15:25:00)
+2026-02-22 12:24:57.170 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for TECHM (2026-02-23 15:25:00)
+2026-02-22 12:24:57.171 | INFO     | src.storage.db.writer:save_stock_prediction:166 - Saved prediction for TECHM (2026-02-23 15:25:00)
+2026-02-22 13:15:48.232 | INFO     | src.pipelines.backtester:run_backtest_models:233 - Backtest finished for TECHM: 80 common eval points in 16.08s
+2026-02-22 13:15:48.235 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for TECHM (sgd_regression_v1)
+2026-02-22 13:15:48.236 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for TECHM (random_forest_v1)
+2026-02-22 13:15:48.238 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for TECHM (extra_trees_v1)
+2026-02-22 13:15:48.239 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for TECHM (xgboost_v1)
+2026-02-22 13:15:48.241 | INFO     | src.storage.db.writer:save_model_backtest_result:197 - Saved backtest for TECHM (ensemble_v1)
+2026-02-22 13:15:48.241 | INFO     | __main__:run:110 - Pipeline finished

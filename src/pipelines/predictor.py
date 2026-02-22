@@ -81,6 +81,25 @@ def _next_intraday_target_timestamp(date_series: pd.Series, prediction_date: pd.
     return candidate
 
 
+def _next_session_close_timestamp(date_series: pd.Series, prediction_date: pd.Timestamp) -> pd.Timestamp:
+    dt = pd.to_datetime(date_series, errors="coerce").dropna().sort_values()
+    if dt.empty:
+        return pd.to_datetime(prediction_date) + pd.offsets.BDay(1)
+
+    frame = pd.DataFrame({"date": dt})
+    frame["session_day"] = frame["date"].dt.floor("D")
+    session_closes = frame.groupby("session_day")["date"].max().sort_index()
+
+    prediction_ts = pd.to_datetime(prediction_date)
+    future_closes = session_closes[session_closes.index > prediction_ts.normalize()]
+    if not future_closes.empty:
+        return pd.to_datetime(future_closes.iloc[0])
+
+    _, close_minute = _estimate_session_bounds_minutes(dt)
+    next_business_day = prediction_ts + pd.offsets.BDay(1)
+    return next_business_day.normalize() + pd.Timedelta(minutes=close_minute)
+
+
 def _coerce_numeric(df: pd.DataFrame, columns: list[str]) -> pd.DataFrame:
     for col in columns:
         df[col] = pd.to_numeric(df[col], errors="coerce")
@@ -161,9 +180,16 @@ def _build_features(price_df: pd.DataFrame, news_df: pd.DataFrame) -> pd.DataFra
         data["sentiment_6h"] = 0.0
 
     data["target_return"] = data["close"].shift(-1) / safe_close - 1.0
+    data["session_day"] = data["date"].dt.floor("D")
+    # Keep intraday bars, but map every bar from day D to the close of day D+1.
+    session_close_by_day = data.groupby("session_day")["close"].last().sort_index()
+    next_session_close_by_day = session_close_by_day.shift(-1)
+    data["next_session_close"] = data["session_day"].map(next_session_close_by_day)
+    data["target_next_close_return"] = data["next_session_close"] / safe_close - 1.0
     data = _coerce_numeric(data, FEATURE_COLUMNS + ["target_return"])
-    data[FEATURE_COLUMNS + ["target_return"]] = data[
-        FEATURE_COLUMNS + ["target_return"]
+    data = _coerce_numeric(data, ["target_next_close_return"])
+    data[FEATURE_COLUMNS + ["target_return", "target_next_close_return"]] = data[
+        FEATURE_COLUMNS + ["target_return", "target_next_close_return"]
     ].replace([np.inf, -np.inf], np.nan)
     data["target_class"] = (data["target_return"] > 0).astype(float)
     return data
@@ -341,5 +367,119 @@ def train_and_predict_next_day(
         "train_rows": int(len(train_data)),
         "r2_score": ensemble_score,
     })
+
+    # Additional horizon: next session close prediction (model-wise + ensemble).
+    next_close_target = _next_session_close_timestamp(data["date"], prediction_date)
+    next_close_data = data.dropna(subset=FEATURE_COLUMNS + ["target_next_close_return"]).copy()
+    next_close_data = next_close_data[
+        np.isfinite(next_close_data[FEATURE_COLUMNS + ["target_next_close_return"]]).all(axis=1)
+    ].copy()
+
+    if len(next_close_data) >= 60:
+        next_split_idx = int(len(next_close_data) * 0.8)
+        x_train_nc = next_close_data.iloc[:next_split_idx][FEATURE_COLUMNS].astype(float)
+        y_train_nc = next_close_data.iloc[:next_split_idx]["target_next_close_return"].astype(float)
+        x_test_nc = next_close_data.iloc[next_split_idx:][FEATURE_COLUMNS].astype(float)
+        y_test_nc = next_close_data.iloc[next_split_idx:]["target_next_close_return"].astype(float)
+
+        next_close_predictions: list[dict] = []
+
+        def _append_next_close_prediction(
+            model_name: str,
+            predicted_return: float,
+            model_score: float | None,
+        ) -> None:
+            next_close_predictions.append(
+                {
+                    "symbol": symbol,
+                    "prediction_date": prediction_date,
+                    "target_date": next_close_target,
+                    "predicted_return": float(predicted_return),
+                    "predicted_close": last_close * (1.0 + float(predicted_return)),
+                    "direction": _direction_from_return(float(predicted_return)),
+                    "model_name": model_name,
+                    "train_rows": int(len(next_close_data)),
+                    "r2_score": model_score,
+                }
+            )
+
+        sgd_nc = make_pipeline(
+            StandardScaler(),
+            SGDRegressor(
+                loss="huber",
+                penalty="elasticnet",
+                alpha=0.0005,
+                l1_ratio=0.15,
+                max_iter=2500,
+                tol=1e-4,
+                random_state=42,
+            ),
+        )
+        sgd_nc.fit(x_train_nc, y_train_nc)
+        sgd_nc_score = float(sgd_nc.score(x_test_nc, y_test_nc)) if len(x_test_nc) >= 2 else None
+        sgd_nc_return = float(sgd_nc.predict(latest_x)[0])
+        _append_next_close_prediction("sgd_next_close_v1", sgd_nc_return, sgd_nc_score)
+
+        rf_nc = RandomForestRegressor(
+            n_estimators=280,
+            max_depth=6,
+            min_samples_leaf=3,
+            random_state=42,
+        )
+        rf_nc.fit(x_train_nc, y_train_nc)
+        rf_nc_score = float(rf_nc.score(x_test_nc, y_test_nc)) if len(x_test_nc) >= 2 else None
+        rf_nc_return = float(rf_nc.predict(latest_x)[0])
+        _append_next_close_prediction("random_forest_next_close_v1", rf_nc_return, rf_nc_score)
+
+        et_nc = ExtraTreesRegressor(
+            n_estimators=320,
+            max_depth=7,
+            min_samples_leaf=2,
+            random_state=42,
+            n_jobs=1,
+        )
+        et_nc.fit(x_train_nc, y_train_nc)
+        et_nc_score = float(et_nc.score(x_test_nc, y_test_nc)) if len(x_test_nc) >= 2 else None
+        et_nc_return = float(et_nc.predict(latest_x)[0])
+        _append_next_close_prediction("extra_trees_next_close_v1", et_nc_return, et_nc_score)
+
+        try:
+            from xgboost import XGBRegressor
+
+            xgb_nc = XGBRegressor(
+                n_estimators=320,
+                max_depth=4,
+                learning_rate=0.05,
+                subsample=0.9,
+                colsample_bytree=0.8,
+                objective="reg:squarederror",
+                random_state=42,
+                n_jobs=1,
+            )
+            xgb_nc.fit(x_train_nc, y_train_nc)
+            xgb_nc_score = float(xgb_nc.score(x_test_nc, y_test_nc)) if len(x_test_nc) >= 2 else None
+            xgb_nc_return = float(xgb_nc.predict(latest_x)[0])
+            _append_next_close_prediction("xgboost_next_close_v1", xgb_nc_return, xgb_nc_score)
+        except Exception as e:
+            logger.warning(f"XGBoost next-close model skipped for {symbol}: {e}")
+
+        if next_close_predictions:
+            next_close_return = float(np.mean([p["predicted_return"] for p in next_close_predictions]))
+            next_close_score_values = [p["r2_score"] for p in next_close_predictions if p["r2_score"] is not None]
+            next_close_score = float(np.mean(next_close_score_values)) if next_close_score_values else None
+            next_close_predictions.append(
+                {
+                    "symbol": symbol,
+                    "prediction_date": prediction_date,
+                    "target_date": next_close_target,
+                    "predicted_return": next_close_return,
+                    "predicted_close": last_close * (1.0 + next_close_return),
+                    "direction": _direction_from_return(next_close_return),
+                    "model_name": "ensemble_next_close_v1",
+                    "train_rows": int(len(next_close_data)),
+                    "r2_score": next_close_score,
+                }
+            )
+            predictions.extend(next_close_predictions)
 
     return predictions

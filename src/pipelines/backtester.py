@@ -87,15 +87,6 @@ def run_backtest_models(
     x = data[FEATURE_COLUMNS].astype(float)
     y = data["target_return"].astype(float)
 
-    sgd_true: list[float] = []
-    sgd_pred: list[float] = []
-    rf_true: list[float] = []
-    rf_pred: list[float] = []
-    et_true: list[float] = []
-    et_pred: list[float] = []
-    xgb_true: list[float] = []
-    xgb_pred: list[float] = []
-
     has_xgb = False
     XGBRegressor = None
     try:
@@ -105,6 +96,19 @@ def run_backtest_models(
         XGBRegressor = _XGBRegressor
     except Exception as e:
         logger.warning(f"XGBoost backtest disabled for {symbol}: {e}")
+
+    model_order = [
+        "sgd_regression_v1",
+        "random_forest_v1",
+        "extra_trees_v1",
+    ]
+    if has_xgb and XGBRegressor is not None:
+        model_order.append("xgboost_v1")
+
+    model_predictions: dict[str, dict[int, float]] = {
+        model_name: {} for model_name in model_order
+    }
+    true_by_index: dict[int, float] = {}
 
     eval_indices = list(range(min_train_rows, len(data), max(1, step)))
     if max_eval_points > 0 and len(eval_indices) > max_eval_points:
@@ -116,6 +120,7 @@ def run_backtest_models(
         y_train = y.iloc[train_start:i]
         x_test = x.iloc[i : i + 1]
         y_actual = float(y.iloc[i])
+        true_by_index[i] = y_actual
 
         try:
             sgd_model = make_pipeline(
@@ -131,31 +136,34 @@ def run_backtest_models(
                 ),
             )
             sgd_model.fit(x_train, y_train)
-            sgd_true.append(y_actual)
-            sgd_pred.append(float(sgd_model.predict(x_test)[0]))
-        except Exception:
-            pass
+            model_predictions["sgd_regression_v1"][i] = float(sgd_model.predict(x_test)[0])
+        except Exception as e:
+            logger.debug(f"Backtest SGD failure for {symbol} at index {i}: {e}")
 
-        rf_model = RandomForestRegressor(
-            n_estimators=120,
-            max_depth=6,
-            min_samples_leaf=3,
-            random_state=42,
-        )
-        rf_model.fit(x_train, y_train)
-        rf_true.append(y_actual)
-        rf_pred.append(float(rf_model.predict(x_test)[0]))
+        try:
+            rf_model = RandomForestRegressor(
+                n_estimators=120,
+                max_depth=6,
+                min_samples_leaf=3,
+                random_state=42,
+            )
+            rf_model.fit(x_train, y_train)
+            model_predictions["random_forest_v1"][i] = float(rf_model.predict(x_test)[0])
+        except Exception as e:
+            logger.debug(f"Backtest RF failure for {symbol} at index {i}: {e}")
 
-        et_model = ExtraTreesRegressor(
-            n_estimators=180,
-            max_depth=7,
-            min_samples_leaf=2,
-            random_state=42,
-            n_jobs=1,
-        )
-        et_model.fit(x_train, y_train)
-        et_true.append(y_actual)
-        et_pred.append(float(et_model.predict(x_test)[0]))
+        try:
+            et_model = ExtraTreesRegressor(
+                n_estimators=180,
+                max_depth=7,
+                min_samples_leaf=2,
+                random_state=42,
+                n_jobs=1,
+            )
+            et_model.fit(x_train, y_train)
+            model_predictions["extra_trees_v1"][i] = float(et_model.predict(x_test)[0])
+        except Exception as e:
+            logger.debug(f"Backtest ET failure for {symbol} at index {i}: {e}")
 
         if has_xgb and XGBRegressor is not None:
             try:
@@ -170,47 +178,60 @@ def run_backtest_models(
                     n_jobs=1,
                 )
                 xgb_model.fit(x_train, y_train)
-                xgb_true.append(y_actual)
-                xgb_pred.append(float(xgb_model.predict(x_test)[0]))
-            except Exception:
-                pass
+                model_predictions["xgboost_v1"][i] = float(xgb_model.predict(x_test)[0])
+            except Exception as e:
+                logger.debug(f"Backtest XGB failure for {symbol} at index {i}: {e}")
+
+    common_eval_indices = set(eval_indices)
+    for model_name in model_order:
+        common_eval_indices &= set(model_predictions[model_name].keys())
+    common_eval_indices = sorted(common_eval_indices)
+
+    if not common_eval_indices:
+        logger.warning(
+            f"Backtest skipped for {symbol}: no common evaluation points across models"
+        )
+        return []
+
+    dropped_eval_points = len(eval_indices) - len(common_eval_indices)
+    if dropped_eval_points > 0:
+        logger.warning(
+            f"Backtest aligned for {symbol}: dropped {dropped_eval_points} eval points to keep a shared sample set"
+        )
+
+    y_true_common = [true_by_index[i] for i in common_eval_indices]
 
     results: list[dict] = []
-    for row in [
-        _score_predictions(symbol, "sgd_regression_v1", sgd_true, sgd_pred),
-        _score_predictions(symbol, "random_forest_v1", rf_true, rf_pred),
-        _score_predictions(symbol, "extra_trees_v1", et_true, et_pred),
-        _score_predictions(symbol, "xgboost_v1", xgb_true, xgb_pred),
-    ]:
+    for model_name in model_order:
+        y_pred_common = [model_predictions[model_name][i] for i in common_eval_indices]
+        row = _score_predictions(symbol, model_name, y_true_common, y_pred_common)
         if row is not None:
             results.append(row)
 
     if results:
-        ensemble_models = [
-            r
-            for r in results
-            if r["model_name"] in {"sgd_regression_v1", "random_forest_v1", "extra_trees_v1", "xgboost_v1"}
-        ]
-        if ensemble_models:
-            results.append(
-                {
-                    "symbol": symbol,
-                    "model_name": "ensemble_v1",
-                    "run_date": date.today(),
-                    "sample_count": int(np.mean([r["sample_count"] for r in ensemble_models])),
-                    "directional_accuracy": float(np.mean([r["directional_accuracy"] for r in ensemble_models])),
-                    "mae": float(np.mean([r["mae"] for r in ensemble_models])),
-                    "rmse": float(np.mean([r["rmse"] for r in ensemble_models])),
-                    "avg_true_return": float(np.mean([r["avg_true_return"] for r in ensemble_models])),
-                    "avg_pred_return": float(np.mean([r["avg_pred_return"] for r in ensemble_models])),
-                    "cumulative_return": float(np.mean([r["cumulative_return"] for r in ensemble_models])),
-                    "strategy_return": float(np.mean([r["strategy_return"] for r in ensemble_models])),
-                }
+        ensemble_pred = (
+            np.array(
+                [
+                    [model_predictions[model_name][i] for i in common_eval_indices]
+                    for model_name in model_order
+                ],
+                dtype=float,
             )
+            .mean(axis=0)
+            .tolist()
+        )
+        ensemble_row = _score_predictions(
+            symbol,
+            "ensemble_v1",
+            y_true_common,
+            ensemble_pred,
+        )
+        if ensemble_row is not None:
+            results.append(ensemble_row)
 
     elapsed = perf_counter() - start_ts
     logger.info(
-        f"Backtest finished for {symbol}: {len(eval_indices)} eval points in {elapsed:.2f}s"
+        f"Backtest finished for {symbol}: {len(common_eval_indices)} common eval points in {elapsed:.2f}s"
     )
 
     return results

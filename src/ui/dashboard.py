@@ -194,8 +194,8 @@ st.markdown(
 
     .app-title {
         position: relative;
-        background: linear-gradient(135deg, var(--brand-dark) 0%, #1e58b2 100%);
-        border: 1px solid #194789;
+        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 52%, #cfe5ff 100%);
+        border: 1px solid #93c5fd;
         border-radius: 14px;
         padding: 0.9rem 1rem;
         margin-bottom: 0.75rem;
@@ -213,7 +213,7 @@ st.markdown(
         position: absolute;
         inset: 0 auto 0 0;
         width: 6px;
-        background: linear-gradient(180deg, #93c5fd, #bfdbfe);
+        background: linear-gradient(180deg, #2563eb, #60a5fa);
         z-index: 0;
     }
 
@@ -221,13 +221,13 @@ st.markdown(
         content: "";
         position: absolute;
         inset: 0;
-        background: radial-gradient(440px 220px at 92% -18%, rgba(147, 197, 253, 0.24), transparent 70%);
+        background: radial-gradient(440px 220px at 92% -18%, rgba(37, 99, 235, 0.16), transparent 70%);
         pointer-events: none;
         z-index: 0;
     }
 
     .app-kicker {
-        color: #c8ddff;
+        color: #1f3c7a;
         font-size: 0.66rem;
         letter-spacing: 0.11em;
         text-transform: uppercase;
@@ -240,11 +240,11 @@ st.markdown(
         line-height: 1.08;
         font-weight: 800;
         margin: 0;
-        color: #ffffff;
+        color: #0f2a4f;
     }
 
     .app-sub {
-        color: #dce9ff;
+        color: #2f4b70;
         margin-top: 0.28rem;
         font-size: 0.79rem;
         font-weight: 600;
@@ -912,6 +912,9 @@ latest_date_text = latest_date.strftime("%d %b %Y") if pd.notna(latest_date) els
 sentiment_avg = float(news["sentiment_score"].fillna(0).mean()) if not news.empty and "sentiment_score" in news.columns else 0.0
 prediction_text = "Not available"
 prediction_target = "-"
+next_close_text = "Not available"
+next_close_target = "-"
+next_close_price = "-"
 if not prediction_df.empty:
     p = prediction_df.iloc[0]
     pred_ret = float(p["predicted_return"]) * 100.0 if pd.notna(p["predicted_return"]) else 0.0
@@ -927,6 +930,16 @@ if not model_predictions_df.empty:
         pred_ret = float(p["predicted_return"]) * 100.0 if pd.notna(p["predicted_return"]) else 0.0
         prediction_text = f"{p['direction'].upper()} ({pred_ret:+.2f}%)"
         prediction_target = str(p["target_date"])
+
+    next_close_row = model_predictions_df[
+        model_predictions_df["model_name"] == "ensemble_next_close_v1"
+    ]
+    if not next_close_row.empty:
+        p = next_close_row.iloc[0]
+        next_ret = float(p["predicted_return"]) * 100.0 if pd.notna(p["predicted_return"]) else 0.0
+        next_close_text = f"{str(p['direction']).upper()} ({next_ret:+.2f}%)"
+        next_close_target = str(p["target_date"])
+        next_close_price = f"{float(p['predicted_close']):,.2f}" if pd.notna(p["predicted_close"]) else "-"
 
 indicator_consensus = compute_indicator_consensus(prices, sentiment_avg)
 indicator_summary = indicator_consensus["summary"]
@@ -960,6 +973,20 @@ model_label = {
     "xgboost_v1": "XGB",
     "ensemble_v1": "ENS",
 }
+next_close_model_order = [
+    "sgd_next_close_v1",
+    "random_forest_next_close_v1",
+    "extra_trees_next_close_v1",
+    "xgboost_next_close_v1",
+    "ensemble_next_close_v1",
+]
+next_close_model_label = {
+    "sgd_next_close_v1": "SGD NC",
+    "random_forest_next_close_v1": "RF NC",
+    "extra_trees_next_close_v1": "ET NC",
+    "xgboost_next_close_v1": "XGB NC",
+    "ensemble_next_close_v1": "ENS NC",
+}
 
 final_color = "#15803d"
 if "BEARISH" in indicator_summary:
@@ -985,6 +1012,27 @@ if not model_predictions_df.empty:
                 "Model": model_label.get(model_name, model_name),
                 "Signal": direction,
                 "Pred Return (%)": round(pred_ret, 2),
+            }
+        )
+
+next_close_snapshot_rows = []
+if not model_predictions_df.empty:
+    for model_name in next_close_model_order:
+        model_row = model_predictions_df[model_predictions_df["model_name"] == model_name]
+        if model_row.empty:
+            continue
+        row = model_row.iloc[0]
+        pred_ret = float(row["predicted_return"]) * 100.0 if pd.notna(row["predicted_return"]) else 0.0
+        pred_close = float(row["predicted_close"]) if pd.notna(row["predicted_close"]) else np.nan
+        direction = str(row["direction"]).upper()
+        target_dt = str(row["target_date"])
+        next_close_snapshot_rows.append(
+            {
+                "Model": next_close_model_label.get(model_name, model_name),
+                "Signal": direction,
+                "Pred Return (%)": round(pred_ret, 2),
+                "Pred Close": round(pred_close, 2) if pd.notna(pred_close) else "-",
+                "Target": target_dt,
             }
         )
 
@@ -1016,7 +1064,8 @@ with decision_col:
                 <div class="snapshot-label">Primary Decision Signal</div>
                 <div class="snapshot-value" style="color:{final_color}; font-size:1.28rem;">{indicator_summary}</div>
                 <div class="news-meta">As of: {latest_date_text}</div>
-                <div class="news-meta">ML Signal: {prediction_text}</div>
+                <div class="news-meta">Next-Bar ML: {prediction_text}</div>
+                <div class="news-meta">Next-Day Close ML: {next_close_text}</div>
                 <div class="news-meta">Composite: {indicator_score:+d} / {indicator_count} | Confidence: {indicator_conf:.1f}%</div>
                 <div class="news-meta">Bullish: {bull_count} | Bearish: {bear_count} | Neutral: {neutral_count}</div>
             </div>
@@ -1051,8 +1100,20 @@ with metric_col:
                     <div class="snapshot-value" style="color:{sentiment_color};">{sentiment_avg:+.2f}</div>
                 </div>
                 <div class="snapshot-card">
-                    <div class="snapshot-label">ML Target</div>
+                    <div class="snapshot-label">Next-Bar Target</div>
                     <div class="snapshot-value">{prediction_target}</div>
+                </div>
+                <div class="snapshot-card">
+                    <div class="snapshot-label">Next-Day Close Target</div>
+                    <div class="snapshot-value">{next_close_target}</div>
+                </div>
+                <div class="snapshot-card">
+                    <div class="snapshot-label">Next-Day Close ML</div>
+                    <div class="snapshot-value">{next_close_text}</div>
+                </div>
+                <div class="snapshot-card">
+                    <div class="snapshot-label">Pred Next-Day Close</div>
+                    <div class="snapshot-value">{next_close_price}</div>
                 </div>
             </div>
             """
@@ -1091,11 +1152,17 @@ with main_col:
     st.plotly_chart(fig, use_container_width=True)
 
 with side_col:
-    st.subheader("Model Snapshot")
+    st.subheader("Next-Bar Models")
     if model_snapshot_rows:
         st.dataframe(pd.DataFrame(model_snapshot_rows), use_container_width=True, hide_index=True)
     else:
         st.info("No model predictions available.")
+
+    st.subheader("Next-Day Close Models")
+    if next_close_snapshot_rows:
+        st.dataframe(pd.DataFrame(next_close_snapshot_rows), use_container_width=True, hide_index=True)
+    else:
+        st.info("No next-day close model predictions available.")
 
     st.subheader("Backtest Snapshot")
     if backtest_snapshot_rows:

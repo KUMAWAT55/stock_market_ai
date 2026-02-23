@@ -2,15 +2,38 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 import numpy as np
+import json
+import os
 import sys
+import hmac
+import hashlib
+import secrets
+from html import escape
 from textwrap import dedent
 from pathlib import Path
+from datetime import datetime, timedelta
+from sqlalchemy import text
 
 ROOT_DIR = Path(__file__).resolve().parents[2]
 if str(ROOT_DIR) not in sys.path:
     sys.path.append(str(ROOT_DIR))
 
 from src.storage.db.connection import engine
+from src.storage.db.models import (
+    Base,
+    AppUser,
+    UserSubscription,
+    ComplianceConsent,
+    ComplianceAuditLog,
+)
+
+
+COMPLIANCE_DISCLAIMER_VERSION = "sebi_phase1_v1_2026-02-22"
+APP_VERSION = "tradeiq_phase2_auth_2026-02-22"
+PASSWORD_ITERATIONS = 260000
+SUBSCRIPTION_PLAN_NAME = "TradeIQ Pro"
+SUBSCRIPTION_DURATION_DAYS = 30
+SUBSCRIPTION_REDEEM_CODE = os.getenv("TRADEIQ_SUBSCRIPTION_CODE", "TRADEIQ-PRO-2026")
 
 
 st.set_page_config(
@@ -25,30 +48,30 @@ st.markdown(
     @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap');
 
     :root {
-        --bg: #f3f6fb;
-        --bg-soft: #eaf0f7;
-        --surface: #ffffff;
-        --surface-soft: #f8fafd;
-        --border: #d3dce8;
-        --border-strong: #b7c4d8;
-        --text-main: #0f172a;
-        --text-dim: #475569;
-        --brand: #1d4ed8;
-        --brand-dark: #143f95;
-        --brand-soft: #dbe7ff;
-        --pos: #15803d;
-        --neg: #b91c1c;
-        --neu: #b45309;
-        --shadow-sm: 0 5px 16px rgba(15, 23, 42, 0.08);
-        --shadow-md: 0 10px 24px rgba(15, 23, 42, 0.11);
+        --bg: #050505;
+        --bg-soft: #0d0d0d;
+        --surface: #171717;
+        --surface-soft: #212121;
+        --border: #2f2f2f;
+        --border-strong: #474747;
+        --text-main: #f0f0f0;
+        --text-dim: #b4b4b4;
+        --brand: #8d8d8d;
+        --brand-dark: #6f6f6f;
+        --brand-soft: #2b2b2b;
+        --pos: #34d399;
+        --neg: #f87171;
+        --neu: #fbbf24;
+        --shadow-sm: 0 6px 16px rgba(0, 0, 0, 0.35);
+        --shadow-md: 0 12px 26px rgba(0, 0, 0, 0.45);
     }
 
     .stApp {
         font-family: "Source Sans 3", "Segoe UI", sans-serif;
         color: var(--text-main);
         background:
-            radial-gradient(840px 460px at -8% -16%, rgba(37, 99, 235, 0.11), transparent 68%),
-            radial-gradient(760px 420px at 108% -8%, rgba(14, 116, 144, 0.08), transparent 66%),
+            radial-gradient(900px 520px at -8% -18%, rgba(120, 120, 120, 0.14), transparent 72%),
+            radial-gradient(760px 420px at 108% -8%, rgba(90, 90, 90, 0.10), transparent 68%),
             linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
     }
 
@@ -69,7 +92,7 @@ st.markdown(
     }
 
     section[data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #f7f9fc 0%, #eff4fb 100%);
+        background: linear-gradient(180deg, #121212 0%, #0b0b0b 100%);
         border-right: 1px solid var(--border);
     }
 
@@ -90,7 +113,7 @@ st.markdown(
     }
 
     .sidebar-kicker {
-        color: #33557a;
+        color: #adadad;
         font-size: 0.65rem;
         text-transform: uppercase;
         letter-spacing: 0.09em;
@@ -99,7 +122,7 @@ st.markdown(
     }
 
     .sidebar-heading {
-        color: #0f2a4f;
+        color: #f0f0f0;
         font-size: 0.94rem;
         font-weight: 800;
     }
@@ -126,25 +149,25 @@ st.markdown(
     section[data-testid="stSidebar"] [data-baseweb="select"] > div:focus-within,
     div[data-testid="stSelectbox"] [data-baseweb="select"] > div:focus-within {
         border-color: var(--brand) !important;
-        box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.16) !important;
+        box-shadow: 0 0 0 3px rgba(141, 141, 141, 0.26) !important;
     }
 
     section[data-testid="stSidebar"] [data-baseweb="select"] span {
-        color: #0f172a !important;
+        color: #ededed !important;
         font-weight: 700;
     }
 
     div[data-testid="stSelectbox"] [data-baseweb="select"] span {
-        color: #0f172a !important;
+        color: #ededed !important;
         font-weight: 700;
     }
 
     section[data-testid="stSidebar"] [data-baseweb="select"] input {
-        color: #0f172a !important;
+        color: #ededed !important;
         background: transparent !important;
     }
     section[data-testid="stSidebar"] [data-baseweb="select"] svg {
-        fill: #64748b !important;
+        fill: #a7a7a7 !important;
     }
     div[data-baseweb="popover"],
     div[data-baseweb="popover"] > div,
@@ -152,10 +175,10 @@ st.markdown(
     ul[role="listbox"],
     [data-baseweb="menu"],
     [data-baseweb="select"] [role="listbox"] {
-        background: #ffffff !important;
+        background: #151515 !important;
         border: 1px solid var(--border) !important;
         border-radius: 10px !important;
-        box-shadow: 0 12px 24px rgba(15, 23, 42, 0.12) !important;
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.45) !important;
     }
 
     div[data-baseweb="popover"] ul,
@@ -166,19 +189,324 @@ st.markdown(
     div[role="listbox"] [role="option"],
     ul[role="listbox"] li,
     [data-baseweb="menu"] li {
-        color: #0f172a !important;
+        color: #f0f0f0 !important;
         background: transparent !important;
         font-weight: 600 !important;
         opacity: 1 !important;
     }
     div[data-baseweb="popover"] [role="option"][aria-selected="true"],
     div[role="listbox"] [role="option"][aria-selected="true"] {
-        background: rgba(29, 78, 216, 0.14) !important;
+        background: rgba(141, 141, 141, 0.24) !important;
     }
 
     div[data-baseweb="popover"] [role="option"]:hover,
     div[role="listbox"] [role="option"]:hover {
-        background: rgba(29, 78, 216, 0.08) !important;
+        background: rgba(141, 141, 141, 0.16) !important;
+    }
+
+    div[data-baseweb="popover"] [role="menuitem"],
+    div[data-baseweb="popover"] [role="menuitem"] *,
+    [data-baseweb="menu"] [role="menuitem"],
+    [data-baseweb="menu"] [role="menuitem"] *,
+    [data-baseweb="menu"] button,
+    [data-baseweb="menu"] a,
+    [data-baseweb="menu"] span,
+    [data-baseweb="menu"] div {
+        color: #f1f1f1 !important;
+        opacity: 1 !important;
+    }
+
+    div[data-baseweb="popover"] [role="menuitem"]:hover,
+    [data-baseweb="menu"] [role="menuitem"]:hover,
+    [data-baseweb="menu"] li:hover {
+        background: rgba(141, 141, 141, 0.16) !important;
+    }
+
+    header[data-testid="stHeader"] [data-baseweb="popover"],
+    header[data-testid="stHeader"] [data-baseweb="popover"] > div,
+    header[data-testid="stHeader"] [data-baseweb="menu"],
+    div[data-testid="stToolbar"] [data-baseweb="popover"],
+    div[data-testid="stToolbar"] [data-baseweb="popover"] > div,
+    div[data-testid="stToolbar"] [data-baseweb="menu"] {
+        background: #151515 !important;
+        border: 1px solid var(--border) !important;
+        color: #f1f1f1 !important;
+    }
+
+    /* Streamlit deploy modal (different from st.dialog) */
+    div[data-baseweb="modal"],
+    div[data-baseweb="modal"] > div,
+    div[aria-modal="true"][role="dialog"],
+    div[aria-modal="true"][role="dialog"] > div {
+        background: #141414 !important;
+        color: #efefef !important;
+        border-color: var(--border) !important;
+    }
+
+    div[data-baseweb="modal"] h1,
+    div[data-baseweb="modal"] h2,
+    div[data-baseweb="modal"] h3,
+    div[data-baseweb="modal"] h4,
+    div[data-baseweb="modal"] p,
+    div[data-baseweb="modal"] span,
+    div[data-baseweb="modal"] label,
+    div[data-baseweb="modal"] li,
+    div[data-baseweb="modal"] a,
+    div[aria-modal="true"][role="dialog"] h1,
+    div[aria-modal="true"][role="dialog"] h2,
+    div[aria-modal="true"][role="dialog"] h3,
+    div[aria-modal="true"][role="dialog"] h4,
+    div[aria-modal="true"][role="dialog"] p,
+    div[aria-modal="true"][role="dialog"] span,
+    div[aria-modal="true"][role="dialog"] label,
+    div[aria-modal="true"][role="dialog"] li,
+    div[aria-modal="true"][role="dialog"] a {
+        color: #e8e8e8 !important;
+        opacity: 1 !important;
+    }
+
+    div[data-baseweb="modal"] [data-baseweb="card"],
+    div[data-baseweb="modal"] [role="button"],
+    div[aria-modal="true"][role="dialog"] [data-baseweb="card"],
+    div[aria-modal="true"][role="dialog"] [role="button"] {
+        background: #171717 !important;
+        border-color: var(--border) !important;
+        color: #efefef !important;
+    }
+
+    div[data-baseweb="modal"] button,
+    div[aria-modal="true"][role="dialog"] button {
+        color: #efefef !important;
+        border-color: var(--border) !important;
+    }
+
+    div[data-baseweb="modal"] button,
+    div[data-baseweb="modal"] [data-baseweb="button"],
+    div[data-baseweb="modal"] [role="button"],
+    div[data-baseweb="modal"] a[role="button"],
+    div[aria-modal="true"][role="dialog"] button,
+    div[aria-modal="true"][role="dialog"] [data-baseweb="button"],
+    div[aria-modal="true"][role="dialog"] [role="button"],
+    div[aria-modal="true"][role="dialog"] a[role="button"] {
+        background: #1c1c1c !important;
+        background-image: none !important;
+        color: #efefef !important;
+        border: 1px solid var(--border) !important;
+        opacity: 1 !important;
+    }
+
+    div[data-baseweb="modal"] button[kind="primary"],
+    div[data-baseweb="modal"] [data-baseweb="button"][kind="primary"],
+    div[aria-modal="true"][role="dialog"] button[kind="primary"],
+    div[aria-modal="true"][role="dialog"] [data-baseweb="button"][kind="primary"] {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+        border-color: #f87171 !important;
+        color: #ffffff !important;
+    }
+
+    div[data-baseweb="modal"] button[kind="secondary"],
+    div[data-baseweb="modal"] button[kind="tertiary"],
+    div[data-baseweb="modal"] [data-baseweb="button"][kind="secondary"],
+    div[data-baseweb="modal"] [data-baseweb="button"][kind="tertiary"],
+    div[aria-modal="true"][role="dialog"] button[kind="secondary"],
+    div[aria-modal="true"][role="dialog"] button[kind="tertiary"],
+    div[aria-modal="true"][role="dialog"] [data-baseweb="button"][kind="secondary"],
+    div[aria-modal="true"][role="dialog"] [data-baseweb="button"][kind="tertiary"] {
+        background: #1c1c1c !important;
+        color: #efefef !important;
+        border: 1px solid var(--border) !important;
+    }
+
+    div[data-baseweb="modal"] button:disabled,
+    div[data-baseweb="modal"] [data-baseweb="button"][disabled],
+    div[data-baseweb="modal"] [role="button"][aria-disabled="true"],
+    div[data-baseweb="modal"] a[role="button"][aria-disabled="true"],
+    div[aria-modal="true"][role="dialog"] button:disabled,
+    div[aria-modal="true"][role="dialog"] [data-baseweb="button"][disabled],
+    div[aria-modal="true"][role="dialog"] [role="button"][aria-disabled="true"],
+    div[aria-modal="true"][role="dialog"] a[role="button"][aria-disabled="true"] {
+        background: #171717 !important;
+        color: #8f8f8f !important;
+        border-color: #2f2f2f !important;
+        opacity: 1 !important;
+        box-shadow: none !important;
+    }
+
+    div[data-baseweb="modal"] button:hover,
+    div[aria-modal="true"][role="dialog"] button:hover {
+        border-color: var(--border-strong) !important;
+    }
+
+    div[data-baseweb="modal"] svg,
+    div[aria-modal="true"][role="dialog"] svg {
+        fill: #d0d0d0 !important;
+        stroke: #d0d0d0 !important;
+    }
+
+    div[data-testid="stDialog"] > div[role="dialog"],
+    div[data-testid="stDialog"] [role="dialog"] {
+        background: #141414 !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 14px !important;
+        box-shadow: 0 20px 48px rgba(0, 0, 0, 0.62) !important;
+    }
+
+    div[data-testid="stDialog"] [data-testid="stDialogHeader"] {
+        background: #141414 !important;
+        border-bottom: 1px solid var(--border) !important;
+    }
+
+    div[data-testid="stDialog"] [data-testid="stDialogHeader"] * {
+        color: #f2f2f2 !important;
+    }
+
+    div[data-testid="stDialog"] [data-testid="stDialogContent"] {
+        background: #141414 !important;
+    }
+
+    div[data-testid="stDialog"] button[aria-label*="Close"],
+    div[data-testid="stDialog"] button[aria-label*="close"] {
+        color: #d7d7d7 !important;
+        background: #1a1a1a !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 8px !important;
+    }
+
+    div[data-testid="stDialog"] button[aria-label*="Close"]:hover,
+    div[data-testid="stDialog"] button[aria-label*="close"]:hover {
+        background: #222222 !important;
+        border-color: var(--border-strong) !important;
+    }
+
+    div[data-testid="stForm"] {
+        background: #141414 !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 12px !important;
+        padding: 0.7rem 0.8rem 0.55rem !important;
+    }
+
+    div[data-baseweb="base-input"],
+    div[data-baseweb="input"] > div,
+    div[data-testid="stTextInput"] > div > div,
+    div[data-testid="stNumberInput"] > div > div,
+    div[data-testid="stDateInput"] > div > div,
+    div[data-testid="stTimeInput"] > div > div,
+    div[data-testid="stTextArea"] > div > div {
+        background: #1a1a1a !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 10px !important;
+        box-shadow: none !important;
+    }
+
+    div[data-baseweb="base-input"]:hover,
+    div[data-baseweb="input"] > div:hover,
+    div[data-testid="stTextInput"] > div > div:hover,
+    div[data-testid="stNumberInput"] > div > div:hover,
+    div[data-testid="stDateInput"] > div > div:hover,
+    div[data-testid="stTimeInput"] > div > div:hover,
+    div[data-testid="stTextArea"] > div > div:hover {
+        border-color: var(--border-strong) !important;
+    }
+
+    div[data-baseweb="base-input"]:focus-within,
+    div[data-baseweb="input"] > div:focus-within,
+    div[data-testid="stTextInput"] > div > div:focus-within,
+    div[data-testid="stNumberInput"] > div > div:focus-within,
+    div[data-testid="stDateInput"] > div > div:focus-within,
+    div[data-testid="stTimeInput"] > div > div:focus-within,
+    div[data-testid="stTextArea"] > div > div:focus-within {
+        border-color: var(--brand) !important;
+        box-shadow: 0 0 0 3px rgba(141, 141, 141, 0.20) !important;
+    }
+
+    div[data-testid="stTextInput"] input,
+    div[data-testid="stNumberInput"] input,
+    div[data-testid="stDateInput"] input,
+    div[data-testid="stTimeInput"] input,
+    div[data-testid="stTextArea"] textarea,
+    input, textarea {
+        background: transparent !important;
+        color: #ececec !important;
+        caret-color: #ececec !important;
+    }
+
+    div[data-testid="stTextInput"] input::placeholder,
+    div[data-testid="stNumberInput"] input::placeholder,
+    div[data-testid="stDateInput"] input::placeholder,
+    div[data-testid="stTimeInput"] input::placeholder,
+    div[data-testid="stTextArea"] textarea::placeholder,
+    input::placeholder,
+    textarea::placeholder {
+        color: #909090 !important;
+        opacity: 1 !important;
+    }
+
+    div[data-testid="stTextInput"] label,
+    div[data-testid="stNumberInput"] label,
+    div[data-testid="stDateInput"] label,
+    div[data-testid="stTimeInput"] label,
+    div[data-testid="stTextArea"] label,
+    div[data-testid="stCheckbox"] label {
+        color: #d6d6d6 !important;
+    }
+
+    div[data-testid="stTextInput"] button,
+    div[data-testid="stNumberInput"] button,
+    div[data-testid="stDateInput"] button,
+    div[data-testid="stTimeInput"] button {
+        background: transparent !important;
+        border: 0 !important;
+        color: #bdbdbd !important;
+    }
+
+    div[data-testid="stTextInput"] svg,
+    div[data-testid="stNumberInput"] svg,
+    div[data-testid="stDateInput"] svg,
+    div[data-testid="stTimeInput"] svg {
+        fill: #bdbdbd !important;
+    }
+
+    div[data-testid="stButton"] > button,
+    div[data-testid="stFormSubmitButton"] > button {
+        width: 100%;
+        background: linear-gradient(135deg, #242424 0%, #1a1a1a 100%) !important;
+        color: #f2f2f2 !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 10px !important;
+        font-weight: 700 !important;
+        box-shadow: var(--shadow-sm) !important;
+    }
+
+    div[data-testid="stButton"] > button:hover,
+    div[data-testid="stFormSubmitButton"] > button:hover {
+        border-color: var(--border-strong) !important;
+        background: linear-gradient(135deg, #2c2c2c 0%, #202020 100%) !important;
+        color: #ffffff !important;
+    }
+
+    div[data-testid="stButton"] > button:disabled,
+    div[data-testid="stFormSubmitButton"] > button:disabled {
+        background: #1a1a1a !important;
+        color: #8b8b8b !important;
+        border-color: #2a2a2a !important;
+        opacity: 1 !important;
+        cursor: not-allowed !important;
+    }
+
+    div[data-testid="stCheckbox"] input {
+        accent-color: #6f6f6f !important;
+    }
+
+    div[data-testid="stSidebar"] div[data-testid="stTextInput"] > div > div,
+    div[data-testid="stSidebar"] div[data-testid="stNumberInput"] > div > div,
+    div[data-testid="stSidebar"] div[data-testid="stDateInput"] > div > div,
+    div[data-testid="stSidebar"] div[data-testid="stTimeInput"] > div > div {
+        background: #171717 !important;
+    }
+
+    div[data-testid="stSidebar"] div[data-testid="stButton"] > button,
+    div[data-testid="stSidebar"] div[data-testid="stFormSubmitButton"] > button {
+        background: linear-gradient(135deg, #2a2a2a 0%, #1d1d1d 100%) !important;
     }
 
     h1, h2, h3 {
@@ -194,8 +522,8 @@ st.markdown(
 
     .app-title {
         position: relative;
-        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 52%, #cfe5ff 100%);
-        border: 1px solid #93c5fd;
+        background: linear-gradient(135deg, #1d1d1d 0%, #262626 52%, #1a1a1a 100%);
+        border: 1px solid #3a3a3a;
         border-radius: 14px;
         padding: 0.9rem 1rem;
         margin-bottom: 0.75rem;
@@ -213,7 +541,7 @@ st.markdown(
         position: absolute;
         inset: 0 auto 0 0;
         width: 6px;
-        background: linear-gradient(180deg, #2563eb, #60a5fa);
+        background: linear-gradient(180deg, #8d8d8d, #5f5f5f);
         z-index: 0;
     }
 
@@ -221,13 +549,13 @@ st.markdown(
         content: "";
         position: absolute;
         inset: 0;
-        background: radial-gradient(440px 220px at 92% -18%, rgba(37, 99, 235, 0.16), transparent 70%);
+        background: radial-gradient(440px 220px at 92% -18%, rgba(160, 160, 160, 0.16), transparent 70%);
         pointer-events: none;
         z-index: 0;
     }
 
     .app-kicker {
-        color: #1f3c7a;
+        color: #bfbfbf;
         font-size: 0.66rem;
         letter-spacing: 0.11em;
         text-transform: uppercase;
@@ -240,14 +568,158 @@ st.markdown(
         line-height: 1.08;
         font-weight: 800;
         margin: 0;
-        color: #0f2a4f;
+        color: #fafafa;
     }
 
     .app-sub {
-        color: #2f4b70;
+        color: #c9c9c9;
         margin-top: 0.28rem;
         font-size: 0.79rem;
         font-weight: 600;
+    }
+
+    .compliance-banner {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 0.7rem 0.85rem;
+        margin-bottom: 0.65rem;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .compliance-banner.pending {
+        background: linear-gradient(135deg, rgba(180, 83, 9, 0.16), rgba(23, 23, 23, 0.92));
+        border-color: rgba(251, 191, 36, 0.42);
+    }
+
+    .compliance-banner.active {
+        background: linear-gradient(135deg, rgba(22, 163, 74, 0.16), rgba(23, 23, 23, 0.92));
+        border-color: rgba(52, 211, 153, 0.42);
+    }
+
+    .compliance-title {
+        font-size: 0.86rem;
+        font-weight: 800;
+        margin-bottom: 0.2rem;
+        color: #f3f3f3;
+    }
+
+    .compliance-text {
+        font-size: 0.76rem;
+        color: #d0d0d0;
+        line-height: 1.35;
+        margin-bottom: 0.16rem;
+        font-weight: 600;
+    }
+
+    .compliance-links {
+        font-size: 0.74rem;
+        color: #c9c9c9;
+        margin-top: 0.1rem;
+    }
+
+    .compliance-links a {
+        color: #d4d4d4;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    .technical-summary-card {
+        background: linear-gradient(160deg, #171717 0%, #141414 100%);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 0.78rem 0.84rem 0.74rem;
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 0.42rem;
+    }
+
+    .technical-summary-title {
+        color: #b9b9b9;
+        font-size: 0.84rem;
+        font-weight: 700;
+        margin-bottom: 0.06rem;
+    }
+
+    .technical-summary-signal {
+        font-size: 1.18rem;
+        font-weight: 800;
+        margin-bottom: 0.52rem;
+        line-height: 1.1;
+    }
+
+    .technical-summary-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 0.62fr;
+        gap: 0.72rem;
+        align-items: center;
+    }
+
+    .technical-track-wrap {
+        position: relative;
+        padding-bottom: 0.44rem;
+    }
+
+    .technical-track {
+        display: grid;
+        grid-template-columns: repeat(28, minmax(0, 1fr));
+        gap: 0.22rem;
+        align-items: end;
+        width: 100%;
+    }
+
+    .technical-seg {
+        height: 1.72rem;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+    }
+
+    .technical-pointer {
+        position: absolute;
+        bottom: 0;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 0.36rem solid transparent;
+        border-right: 0.36rem solid transparent;
+        border-top: 0.58rem solid #cfcfcf;
+        filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+    }
+
+    .technical-legend {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.48rem;
+    }
+
+    .technical-legend-item {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.05rem;
+    }
+
+    .technical-legend-head {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.26rem;
+        color: #d3d3d3;
+        font-size: 0.82rem;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .technical-dot {
+        width: 0.54rem;
+        height: 0.54rem;
+        border-radius: 999px;
+    }
+
+    .technical-legend-val {
+        color: #f0f0f0;
+        font-size: 0.98rem;
+        font-weight: 800;
+        padding-left: 0.8rem;
+        line-height: 1.1;
     }
 
     .decision-card,
@@ -271,7 +743,7 @@ st.markdown(
     }
 
     .snapshot-label {
-        color: #5d6d82;
+        color: #b0b0b0;
         font-size: 0.67rem;
         text-transform: uppercase;
         letter-spacing: 0.08em;
@@ -315,12 +787,12 @@ st.markdown(
         text-decoration: none;
         font-size: 0.77rem;
         font-weight: 700;
-        border-bottom: 1px solid rgba(29, 78, 216, 0.36);
+        border-bottom: 1px solid rgba(181, 181, 181, 0.42);
     }
 
     .news-link:hover {
-        color: #123ea5;
-        border-bottom-color: rgba(18, 62, 165, 0.72);
+        color: #e4e4e4;
+        border-bottom-color: rgba(228, 228, 228, 0.65);
     }
 
     .metric-grid {
@@ -367,20 +839,20 @@ st.markdown(
         font-size: 0.7rem;
         font-weight: 700;
         margin-bottom: 0.12rem;
-        color: #2f435c;
+        color: #d3d3d3;
     }
 
     .indicator-signal {
         font-size: 0.82rem;
         font-weight: 800;
-        color: #0f172a;
+        color: #f1f1f1;
     }
 
     h3 {
         font-size: 1.03rem !important;
         margin-top: 0.2rem !important;
         margin-bottom: 0.38rem !important;
-        color: #0f2543 !important;
+        color: #f5f5f5 !important;
     }
 
     div[data-testid="stHeading"] {
@@ -389,20 +861,20 @@ st.markdown(
     }
 
     .indicator-bull {
-        background: #ecfdf3;
-        border-color: #b8e8cc;
+        background: rgba(52, 211, 153, 0.16);
+        border-color: rgba(52, 211, 153, 0.42);
         color: var(--pos);
     }
 
     .indicator-bear {
-        background: #fef2f2;
-        border-color: #f6c3c3;
+        background: rgba(248, 113, 113, 0.16);
+        border-color: rgba(248, 113, 113, 0.42);
         color: var(--neg);
     }
 
     .indicator-neutral {
-        background: #fffbeb;
-        border-color: #f9e0ad;
+        background: rgba(251, 191, 36, 0.14);
+        border-color: rgba(251, 191, 36, 0.38);
         color: var(--neu);
     }
 
@@ -415,24 +887,135 @@ st.markdown(
         background: var(--surface);
     }
 
-    details[data-testid="stExpander"] {
+    div[data-testid="stDataFrame"],
+    div[data-testid="stDataFrame"] > div,
+    div[data-testid="stDataFrame"] [data-testid="stDataFrameResizable"],
+    div[data-testid="stTable"],
+    div[data-testid="stTable"] > div {
+        background: var(--surface) !important;
+        border-color: var(--border) !important;
+    }
+
+    div[data-testid="stDataFrame"] [role="columnheader"] {
+        background: #202020 !important;
+        color: #f0f0f0 !important;
+        border-bottom: 1px solid var(--border) !important;
+        font-weight: 700 !important;
+    }
+
+    div[data-testid="stDataFrame"] [role="gridcell"] {
+        background: #171717 !important;
+        color: #ededed !important;
+        border-bottom: 1px solid rgba(71, 71, 71, 0.45) !important;
+    }
+
+    div[data-testid="stDataFrame"] [role="row"]:hover [role="gridcell"] {
+        background: #1f1f1f !important;
+    }
+
+    .themed-table {
+        width: 100%;
+        overflow-x: auto;
         border: 1px solid var(--border);
         border-radius: 12px;
         background: var(--surface);
         box-shadow: var(--shadow-sm);
     }
 
+    .themed-table table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #171717 !important;
+        color: #ededed !important;
+        font-size: 0.84rem;
+    }
+
+    .themed-table thead th {
+        background: #202020 !important;
+        color: #f0f0f0 !important;
+        border-bottom: 1px solid var(--border);
+        padding: 0.48rem 0.52rem;
+        text-align: left;
+        font-weight: 700;
+    }
+
+    .themed-table tbody td {
+        background: #171717 !important;
+        color: #ededed !important;
+        border-bottom: 1px solid rgba(71, 71, 71, 0.45);
+        padding: 0.44rem 0.52rem;
+    }
+
+    .themed-table tbody tr:hover td {
+        background: #1f1f1f !important;
+    }
+
+    div[data-testid="stExpander"],
+    div[data-testid="stExpander"] > details,
+    details[data-testid="stExpander"] {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: var(--surface);
+        box-shadow: var(--shadow-sm);
+        overflow: hidden;
+    }
+
+    div[data-testid="stAlert"] {
+        background: #1a1a1a !important;
+        border: 1px solid var(--border) !important;
+        color: #efefef !important;
+    }
+
+    div[data-testid="stExpander"] > details > summary,
+    div[data-testid="stExpander"] summary,
     details[data-testid="stExpander"] summary {
         font-family: "Manrope", "Segoe UI", sans-serif;
         font-weight: 700;
-        color: #1a365d;
+        color: #efefef !important;
+        background: #171717 !important;
+        border: 0 !important;
+        border-radius: 12px;
+    }
+
+    div[data-testid="stExpander"] > details > summary:hover,
+    div[data-testid="stExpander"] summary:hover,
+    details[data-testid="stExpander"] summary:hover {
+        background: #1f1f1f !important;
+    }
+
+    div[data-testid="stExpander"] > details[open] > summary,
+    div[data-testid="stExpander"] details[open] summary,
+    details[data-testid="stExpander"][open] summary {
+        border-bottom: 1px solid var(--border) !important;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    div[data-testid="stExpander"] summary *,
+    details[data-testid="stExpander"] summary * {
+        color: #efefef !important;
+    }
+
+    div[data-testid="stExpander"] summary svg,
+    details[data-testid="stExpander"] summary svg {
+        fill: #bcbcbc !important;
+    }
+
+    div[data-testid="stExpander"] > details > div,
+    div[data-testid="stExpander"] details > div,
+    details[data-testid="stExpander"] > div {
+        background: #171717 !important;
+    }
+
+    div[data-testid="stExpander"] summary::marker {
+        color: #bcbcbc !important;
     }
 
     .stDataFrame div,
     .stDataFrame span,
     .stTable div,
     .stTable span {
-        color: #11223d !important;
+        color: #efefef;
         opacity: 1 !important;
     }
 
@@ -476,6 +1059,13 @@ st.markdown(
         .metric-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
         }
+        .technical-summary-grid {
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+            gap: 0.54rem;
+        }
+        .technical-legend {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
         div[data-testid="stHorizontalBlock"] {
             display: flex;
             flex-direction: column;
@@ -515,6 +1105,18 @@ st.markdown(
         .metric-grid {
             grid-template-columns: repeat(1, minmax(0, 1fr));
             gap: 0.38rem;
+        }
+        .technical-track {
+            gap: 0.16rem;
+        }
+        .technical-seg {
+            height: 1.52rem;
+        }
+        .technical-legend-head {
+            font-size: 0.76rem;
+        }
+        .technical-legend-val {
+            font-size: 0.89rem;
         }
         .decision-card,
         .snapshot-card,
@@ -723,6 +1325,556 @@ def compute_indicator_consensus(price_df, sentiment_score):
         "rows": result_df,
     }
 
+
+def _signal_color_style(value):
+    text = str(value).strip().lower()
+    if text in {"up", "bullish", "positive"}:
+        return "color: #34d399; font-weight: 700;"
+    if text in {"down", "bearish", "negative"}:
+        return "color: #f87171; font-weight: 700;"
+    return "color: #fbbf24; font-weight: 700;"
+
+
+def _signed_value_style(value):
+    try:
+        num = float(value)
+    except (TypeError, ValueError):
+        return ""
+    if np.isnan(num):
+        return ""
+    if num > 0:
+        return "color: #34d399; font-weight: 700;"
+    if num < 0:
+        return "color: #f87171; font-weight: 700;"
+    return "color: #fbbf24; font-weight: 700;"
+
+
+def _hit_rate_style(value):
+    try:
+        num = float(value)
+    except (TypeError, ValueError):
+        return ""
+    if np.isnan(num):
+        return ""
+    if num >= 55.0:
+        return "color: #34d399; font-weight: 700;"
+    if num <= 45.0:
+        return "color: #f87171; font-weight: 700;"
+    return "color: #fbbf24; font-weight: 700;"
+
+
+def _model_name_style(value):
+    text = str(value).strip().lower()
+    if text.startswith("ens") or "ensemble" in text:
+        return "color: #e5e7eb; font-weight: 800;"
+    return ""
+
+
+def _format_table_value(value, fmt: str | None = None) -> str:
+    if pd.isna(value):
+        return "-"
+    if fmt is not None:
+        try:
+            return fmt.format(float(value))
+        except Exception:
+            pass
+    if isinstance(value, pd.Timestamp):
+        return value.strftime("%Y-%m-%d %H:%M:%S")
+    return str(value)
+
+
+def _table_cell_style(column: str, value) -> str:
+    style = "color: #ededed; font-weight: 600;"
+    if column == "Model":
+        style = _model_name_style(value) or style
+    elif column == "Signal":
+        style = _signal_color_style(value) or style
+    elif column in {"Pred Return (%)", "Strategy (%)", "Strategy Return (%)"}:
+        style = _signed_value_style(value) or style
+    elif column == "Hit Rate (%)":
+        style = _hit_rate_style(value) or style
+    return style
+
+
+def _hex_to_rgb(color: str) -> tuple[int, int, int]:
+    color = color.strip().lstrip("#")
+    return int(color[0:2], 16), int(color[2:4], 16), int(color[4:6], 16)
+
+
+def _rgb_to_hex(rgb: tuple[int, int, int]) -> str:
+    return "#{:02x}{:02x}{:02x}".format(*rgb)
+
+
+def _lerp_color(start_hex: str, end_hex: str, t: float) -> str:
+    t = max(0.0, min(1.0, float(t)))
+    s = _hex_to_rgb(start_hex)
+    e = _hex_to_rgb(end_hex)
+    rgb = (
+        int(round(s[0] + (e[0] - s[0]) * t)),
+        int(round(s[1] + (e[1] - s[1]) * t)),
+        int(round(s[2] + (e[2] - s[2]) * t)),
+    )
+    return _rgb_to_hex(rgb)
+
+
+def _build_sentiment_segment_colors(segment_count: int = 28) -> list[str]:
+    if segment_count <= 1:
+        return ["#8b9098"]
+    left = "#ff6b4a"
+    middle = "#8b9098"
+    right = "#10b981"
+    midpoint = (segment_count - 1) / 2.0
+    colors: list[str] = []
+    for i in range(segment_count):
+        if i <= midpoint:
+            t = i / midpoint if midpoint else 1.0
+            colors.append(_lerp_color(left, middle, t))
+        else:
+            t = (i - midpoint) / (segment_count - 1 - midpoint) if (segment_count - 1 - midpoint) else 1.0
+            colors.append(_lerp_color(middle, right, t))
+    return colors
+
+
+def render_themed_table(df: pd.DataFrame, format_map: dict[str, str] | None = None) -> None:
+    format_map = format_map or {}
+    headers = "".join([f"<th>{escape(str(col))}</th>" for col in df.columns])
+    rows_html: list[str] = []
+
+    for _, row in df.iterrows():
+        cell_html: list[str] = []
+        for col in df.columns:
+            value = row[col]
+            text = _format_table_value(value, format_map.get(col))
+            style = _table_cell_style(col, value)
+            cell_html.append(f"<td style=\"{style}\">{escape(text)}</td>")
+        rows_html.append(f"<tr>{''.join(cell_html)}</tr>")
+
+    table_html = (
+        "<div class=\"themed-table\">"
+        "<table>"
+        f"<thead><tr>{headers}</tr></thead>"
+        f"<tbody>{''.join(rows_html)}</tbody>"
+        "</table>"
+        "</div>"
+    )
+
+    st.markdown(table_html, unsafe_allow_html=True)
+
+
+@st.cache_resource
+def ensure_portal_tables() -> bool:
+    try:
+        Base.metadata.create_all(
+            bind=engine,
+            tables=[
+                AppUser.__table__,
+                UserSubscription.__table__,
+                ComplianceConsent.__table__,
+                ComplianceAuditLog.__table__,
+            ],
+        )
+        return True
+    except Exception:
+        return False
+
+
+def _normalize_user_key(raw_value: str) -> str:
+    value = "".join(ch for ch in str(raw_value).strip().lower() if ch.isalnum() or ch in {"_", "-", "."})
+    return value or "anonymous"
+
+
+def _normalize_username(raw_value: str) -> str:
+    value = "".join(ch for ch in str(raw_value).strip().lower() if ch.isalnum() or ch in {"_", "-", "."})
+    return value
+
+
+def _hash_password(password: str, salt_hex: str | None = None) -> str:
+    salt = bytes.fromhex(salt_hex) if salt_hex else secrets.token_bytes(16)
+    digest = hashlib.pbkdf2_hmac(
+        "sha256",
+        password.encode("utf-8"),
+        salt,
+        PASSWORD_ITERATIONS,
+    )
+    return f"pbkdf2_sha256${PASSWORD_ITERATIONS}${salt.hex()}${digest.hex()}"
+
+
+def _verify_password(password: str, stored_hash: str) -> bool:
+    try:
+        algorithm, iter_text, salt_hex, digest_hex = stored_hash.split("$")
+        if algorithm != "pbkdf2_sha256":
+            return False
+        iterations = int(iter_text)
+        candidate = hashlib.pbkdf2_hmac(
+            "sha256",
+            password.encode("utf-8"),
+            bytes.fromhex(salt_hex),
+            iterations,
+        ).hex()
+        return hmac.compare_digest(candidate, digest_hex)
+    except Exception:
+        return False
+
+
+def get_user_by_username_or_email(identifier: str) -> pd.DataFrame:
+    try:
+        return pd.read_sql(
+            text(
+                """
+                SELECT id, username, email, password_hash, full_name, is_active, created_at
+                FROM app_users
+                WHERE username = :identifier OR email = :identifier
+                LIMIT 1
+                """
+            ),
+            engine,
+            params={"identifier": str(identifier).strip().lower()},
+        )
+    except Exception:
+        return pd.DataFrame()
+
+
+def get_user_by_id(user_id: int) -> pd.DataFrame:
+    try:
+        return pd.read_sql(
+            text(
+                """
+                SELECT id, username, email, full_name, is_active, created_at
+                FROM app_users
+                WHERE id = :user_id
+                LIMIT 1
+                """
+            ),
+            engine,
+            params={"user_id": int(user_id)},
+        )
+    except Exception:
+        return pd.DataFrame()
+
+
+def create_user(username: str, email: str, password: str, full_name: str | None = None) -> tuple[bool, str, int | None]:
+    username_norm = _normalize_username(username)
+    email_norm = str(email).strip().lower()
+
+    if len(username_norm) < 3:
+        return False, "Username must be at least 3 characters.", None
+    if "@" not in email_norm or "." not in email_norm:
+        return False, "Enter a valid email address.", None
+    if len(password) < 8:
+        return False, "Password must be at least 8 characters.", None
+
+    password_hash = _hash_password(password)
+
+    try:
+        with engine.begin() as conn:
+            inserted = conn.execute(
+                text(
+                    """
+                    INSERT INTO app_users (username, email, password_hash, full_name, is_active, created_at)
+                    VALUES (:username, :email, :password_hash, :full_name, true, :created_at)
+                    RETURNING id
+                    """
+                ),
+                {
+                    "username": username_norm,
+                    "email": email_norm,
+                    "password_hash": password_hash,
+                    "full_name": (full_name or "").strip() or None,
+                    "created_at": datetime.utcnow(),
+                },
+            ).fetchone()
+
+            user_id = int(inserted[0])
+            conn.execute(
+                text(
+                    """
+                    INSERT INTO user_subscriptions (user_id, plan_name, status, start_at, end_at, payment_reference, created_at)
+                    VALUES (:user_id, :plan_name, 'inactive', NULL, NULL, NULL, :created_at)
+                    ON CONFLICT (user_id)
+                    DO NOTHING
+                    """
+                ),
+                {
+                    "user_id": user_id,
+                    "plan_name": SUBSCRIPTION_PLAN_NAME,
+                    "created_at": datetime.utcnow(),
+                },
+            )
+        return True, "Registration completed. Please login.", user_id
+    except Exception:
+        return False, "Registration failed. Username or email may already exist.", None
+
+
+def authenticate_user(identifier: str, password: str) -> tuple[bool, dict | None, str]:
+    user_df = get_user_by_username_or_email(identifier)
+    if user_df.empty:
+        return False, None, "User not found."
+
+    user = user_df.iloc[0]
+    if not bool(user.get("is_active", False)):
+        return False, None, "Your account is inactive."
+
+    if not _verify_password(password, str(user["password_hash"])):
+        return False, None, "Invalid password."
+
+    user_payload = {
+        "id": int(user["id"]),
+        "username": str(user["username"]),
+        "email": str(user["email"]),
+        "full_name": str(user["full_name"]) if pd.notna(user.get("full_name")) else "",
+    }
+    return True, user_payload, "Login successful."
+
+
+def get_subscription_for_user(user_id: int) -> pd.DataFrame:
+    try:
+        return pd.read_sql(
+            text(
+                """
+                SELECT user_id, plan_name, status, start_at, end_at, payment_reference, created_at
+                FROM user_subscriptions
+                WHERE user_id = :user_id
+                ORDER BY created_at DESC, user_id DESC
+                LIMIT 1
+                """
+            ),
+            engine,
+            params={"user_id": int(user_id)},
+        )
+    except Exception:
+        return pd.DataFrame()
+
+
+def subscription_is_active(subscription_df: pd.DataFrame) -> bool:
+    if subscription_df.empty:
+        return False
+    row = subscription_df.iloc[0]
+    status = str(row.get("status") or "").strip().lower()
+    if status != "active":
+        return False
+    end_at = pd.to_datetime(row.get("end_at"), errors="coerce")
+    if pd.notna(end_at):
+        if getattr(end_at, "tzinfo", None) is not None:
+            end_at = end_at.tz_convert(None)
+        if end_at < pd.Timestamp(datetime.utcnow()):
+            return False
+    return True
+
+
+def activate_subscription(user_id: int, payment_reference: str) -> None:
+    now = datetime.utcnow()
+    with engine.begin() as conn:
+        conn.execute(
+            text(
+                """
+                INSERT INTO user_subscriptions (user_id, plan_name, status, start_at, end_at, payment_reference, created_at)
+                VALUES (:user_id, :plan_name, 'active', :start_at, :end_at, :payment_reference, :created_at)
+                ON CONFLICT (user_id)
+                DO UPDATE SET
+                    plan_name = EXCLUDED.plan_name,
+                    status = EXCLUDED.status,
+                    start_at = EXCLUDED.start_at,
+                    end_at = EXCLUDED.end_at,
+                    payment_reference = EXCLUDED.payment_reference
+                """
+            ),
+            {
+                "user_id": int(user_id),
+                "plan_name": SUBSCRIPTION_PLAN_NAME,
+                "start_at": now,
+                "end_at": now + timedelta(days=SUBSCRIPTION_DURATION_DAYS),
+                "payment_reference": payment_reference[:80],
+                "created_at": now,
+            },
+        )
+
+
+def load_latest_compliance_consent(user_key: str) -> pd.DataFrame:
+    try:
+        return pd.read_sql(
+            text(
+                """
+                SELECT user_key, disclaimer_version, accepted_at, app_version
+                FROM compliance_consents
+                WHERE user_key = :user_key
+                  AND disclaimer_version = :disclaimer_version
+                ORDER BY accepted_at DESC, id DESC
+                LIMIT 1
+                """
+            ),
+            engine,
+            params={
+                "user_key": user_key,
+                "disclaimer_version": COMPLIANCE_DISCLAIMER_VERSION,
+            },
+        )
+    except Exception:
+        return pd.DataFrame()
+
+
+def save_compliance_consent(user_key: str, app_version: str = APP_VERSION) -> None:
+    with engine.begin() as conn:
+        conn.execute(
+            text(
+                """
+                INSERT INTO compliance_consents (user_key, disclaimer_version, accepted_at, app_version, created_at)
+                VALUES (:user_key, :disclaimer_version, :accepted_at, :app_version, :created_at)
+                ON CONFLICT (user_key, disclaimer_version)
+                DO UPDATE SET
+                    accepted_at = EXCLUDED.accepted_at,
+                    app_version = EXCLUDED.app_version
+                """
+            ),
+            {
+                "user_key": user_key,
+                "disclaimer_version": COMPLIANCE_DISCLAIMER_VERSION,
+                "accepted_at": datetime.utcnow(),
+                "app_version": app_version,
+                "created_at": datetime.utcnow(),
+            },
+        )
+
+
+def save_compliance_audit_event(user_key: str, event_type: str, symbol: str, payload: dict | None = None) -> None:
+    try:
+        with engine.begin() as conn:
+            conn.execute(
+                text(
+                    """
+                    INSERT INTO compliance_audit_logs (user_key, event_type, symbol, payload, created_at)
+                    VALUES (:user_key, :event_type, :symbol, :payload, :created_at)
+                    """
+                ),
+                {
+                    "user_key": user_key,
+                    "event_type": event_type,
+                    "symbol": symbol,
+                    "payload": json.dumps(payload or {}, ensure_ascii=True),
+                    "created_at": datetime.utcnow(),
+                },
+            )
+    except Exception:
+        pass
+
+
+@st.dialog("Register New User")
+def show_registration_dialog() -> None:
+    with st.form("register_user_form", clear_on_submit=False):
+        full_name = st.text_input("Full Name")
+        username = st.text_input("Username")
+        email = st.text_input("Email")
+        password = st.text_input("Password", type="password")
+        confirm_password = st.text_input("Confirm Password", type="password")
+        submitted = st.form_submit_button("Create Account", use_container_width=True)
+
+    if not submitted:
+        return
+
+    if password != confirm_password:
+        st.error("Passwords do not match.")
+        return
+
+    ok, message, user_id = create_user(
+        username=username,
+        email=email,
+        password=password,
+        full_name=full_name,
+    )
+    if ok:
+        user_df = get_user_by_id(int(user_id)) if user_id is not None else pd.DataFrame()
+        if not user_df.empty:
+            user_row = user_df.iloc[0]
+            st.session_state["auth_user"] = {
+                "id": int(user_row["id"]),
+                "username": str(user_row["username"]),
+                "email": str(user_row["email"]),
+                "full_name": str(user_row["full_name"]) if pd.notna(user_row.get("full_name")) else "",
+            }
+            st.session_state["auth_feedback"] = "Registration completed and login successful."
+        else:
+            st.session_state["auth_feedback"] = message
+        st.session_state["show_registration_dialog"] = False
+        if user_id is not None:
+            save_compliance_audit_event(
+                _normalize_user_key(username),
+                "user_registered",
+                "",
+                {"user_id": user_id, "email": str(email).strip().lower()},
+            )
+            save_compliance_audit_event(
+                _normalize_user_key(username),
+                "user_login",
+                "",
+                {"user_id": user_id, "source": "post_registration"},
+            )
+        st.rerun()
+    else:
+        st.error(message)
+
+
+def _clear_auth_session() -> None:
+    st.session_state["auth_user"] = None
+    st.session_state["show_registration_dialog"] = False
+
+
+def require_authenticated_user(schema_ready: bool) -> dict:
+    st.session_state.setdefault("auth_user", None)
+    st.session_state.setdefault("show_registration_dialog", False)
+    st.session_state.setdefault("auth_feedback", "")
+
+    if not schema_ready:
+        st.error("Portal tables are unavailable. Run the pipeline once to initialize schema.")
+        st.stop()
+
+    auth_user = st.session_state.get("auth_user")
+    if auth_user:
+        current_user_df = get_user_by_id(int(auth_user["id"]))
+        if not current_user_df.empty and bool(current_user_df.iloc[0]["is_active"]):
+            return auth_user
+        _clear_auth_session()
+        st.warning("Session expired. Please login again.")
+
+    st.subheader("Portal Access")
+    st.caption("Only registered users can access the dashboard.")
+    feedback = st.session_state.get("auth_feedback")
+    if feedback:
+        st.success(feedback)
+        st.session_state["auth_feedback"] = ""
+
+    with st.form("login_form", clear_on_submit=False):
+        identifier = st.text_input("Username or Email")
+        password = st.text_input("Password", type="password")
+        login_submitted = st.form_submit_button("Login", use_container_width=True)
+
+    login_col, reg_col = st.columns([1, 1], gap="small")
+    with reg_col:
+        if st.button("Register", use_container_width=True):
+            st.session_state["show_registration_dialog"] = True
+
+    if st.session_state.get("show_registration_dialog"):
+        show_registration_dialog()
+
+    if login_submitted:
+        ok, user_payload, message = authenticate_user(identifier, password)
+        if ok and user_payload is not None:
+            st.session_state["auth_user"] = user_payload
+            st.session_state["show_registration_dialog"] = False
+            save_compliance_audit_event(
+                _normalize_user_key(user_payload["username"]),
+                "user_login",
+                "",
+                {"user_id": user_payload["id"]},
+            )
+            st.rerun()
+        st.error(message)
+        if message == "User not found.":
+            st.session_state["show_registration_dialog"] = True
+            show_registration_dialog()
+
+    with login_col:
+        st.info("If you are a new user, click Register.")
+    st.stop()
+
 st.markdown(
     """
     <div class="app-title">
@@ -738,7 +1890,7 @@ st.markdown(
 # Sidebar
 # ----------------------------------
 
-@st.cache_data
+@st.cache_data(ttl=3600)
 def load_symbols():
     symbols_df = pd.read_sql(
         """
@@ -768,7 +1920,7 @@ def load_symbols():
 # Load Data
 # ----------------------------------
 
-@st.cache_data
+@st.cache_data(ttl=120)
 def load_prices(sym):
 
     return pd.read_sql(f"""
@@ -779,7 +1931,7 @@ def load_prices(sym):
     """, engine)
 
 
-@st.cache_data
+@st.cache_data(ttl=120)
 def load_news(sym):
 
     return pd.read_sql(f"""
@@ -791,7 +1943,7 @@ def load_news(sym):
     """, engine)
 
 
-@st.cache_data
+@st.cache_data(ttl=120)
 def load_latest_prediction(sym):
 
     try:
@@ -809,7 +1961,7 @@ def load_latest_prediction(sym):
         return pd.DataFrame()
 
 
-@st.cache_data
+@st.cache_data(ttl=120)
 def load_model_predictions(sym):
     try:
         df = pd.read_sql(
@@ -831,7 +1983,7 @@ def load_model_predictions(sym):
         return pd.DataFrame()
 
 
-@st.cache_data
+@st.cache_data(ttl=120)
 def load_backtest_results(sym):
     try:
         df = pd.read_sql(
@@ -856,6 +2008,13 @@ def load_backtest_results(sym):
 # ----------------------------------
 # Sidebar
 # ----------------------------------
+
+portal_schema_ready = ensure_portal_tables()
+authenticated_user = require_authenticated_user(portal_schema_ready)
+user_id = int(authenticated_user["id"])
+username = str(authenticated_user["username"])
+display_name = str(authenticated_user.get("full_name") or username)
+compliance_user_key = _normalize_user_key(username)
 
 symbols_df = load_symbols()
 
@@ -888,6 +2047,108 @@ selected_label = st.sidebar.selectbox(
 )
 symbol = label_to_symbol[selected_label]
 
+st.sidebar.markdown("### Account")
+st.sidebar.caption(f"Signed in as: `{display_name}`")
+st.sidebar.caption(f"Username: `{username}`")
+if st.sidebar.button("Logout", use_container_width=True):
+    save_compliance_audit_event(
+        compliance_user_key,
+        "user_logout",
+        symbol,
+        {"user_id": user_id},
+    )
+    _clear_auth_session()
+    st.rerun()
+
+subscription_df = get_subscription_for_user(user_id)
+subscription_active = subscription_is_active(subscription_df)
+subscription_status_text = "INACTIVE"
+subscription_end_text = "-"
+if not subscription_df.empty:
+    sub_row = subscription_df.iloc[0]
+    subscription_status_text = str(sub_row.get("status") or "inactive").upper()
+    sub_end = pd.to_datetime(sub_row.get("end_at"), errors="coerce")
+    if pd.notna(sub_end):
+        subscription_end_text = sub_end.strftime("%Y-%m-%d %H:%M:%S")
+if subscription_active:
+    subscription_status_text = "ACTIVE"
+
+st.sidebar.markdown("### Subscription")
+st.sidebar.caption(f"Plan: `{SUBSCRIPTION_PLAN_NAME}`")
+st.sidebar.caption(f"Status: `{subscription_status_text}`")
+st.sidebar.caption(f"Valid Until: `{subscription_end_text}`")
+if not subscription_active:
+    st.sidebar.warning("Predictions are locked until paid subscription is active.")
+    payment_reference = st.sidebar.text_input("Payment Reference", key="payment_reference")
+    redeem_code = st.sidebar.text_input("Subscription Code", key="subscription_redeem_code")
+    if st.sidebar.button("Activate Subscription", use_container_width=True):
+        if not SUBSCRIPTION_REDEEM_CODE:
+            st.sidebar.error("Subscription activation is disabled. Contact admin.")
+        elif redeem_code.strip() != SUBSCRIPTION_REDEEM_CODE:
+            st.sidebar.error("Invalid subscription code.")
+            save_compliance_audit_event(
+                compliance_user_key,
+                "subscription_activation_failed",
+                symbol,
+                {"reason": "invalid_code"},
+            )
+        elif not payment_reference.strip():
+            st.sidebar.error("Enter payment reference.")
+        else:
+            activate_subscription(user_id, payment_reference.strip())
+            save_compliance_audit_event(
+                compliance_user_key,
+                "subscription_activated",
+                symbol,
+                {
+                    "payment_reference": payment_reference.strip(),
+                    "duration_days": SUBSCRIPTION_DURATION_DAYS,
+                },
+            )
+            st.rerun()
+
+consent_df = (
+    load_latest_compliance_consent(compliance_user_key)
+    if portal_schema_ready
+    else pd.DataFrame()
+)
+compliance_ready = portal_schema_ready and not consent_df.empty
+consent_time_text = "-"
+if compliance_ready:
+    consent_time = pd.to_datetime(consent_df.iloc[0]["accepted_at"], errors="coerce")
+    if pd.notna(consent_time):
+        consent_time_text = consent_time.strftime("%Y-%m-%d %H:%M:%S")
+
+st.sidebar.caption(f"Policy Version: `{COMPLIANCE_DISCLAIMER_VERSION}`")
+if compliance_ready:
+    st.sidebar.success(f"Consent active for `{compliance_user_key}`")
+    st.sidebar.caption(f"Accepted at: {consent_time_text}")
+else:
+    if portal_schema_ready:
+        st.sidebar.warning("Predictions are locked until compliance consent is accepted.")
+        accept_key = f"accept_compliance_{compliance_user_key}"
+        accept_checked = st.sidebar.checkbox(
+            "I understand this is educational analytics, not assured returns.",
+            key=accept_key,
+        )
+        if st.sidebar.button("Accept & Unlock Predictions", use_container_width=True):
+            if accept_checked:
+                save_compliance_consent(compliance_user_key)
+                save_compliance_audit_event(
+                    compliance_user_key,
+                    "consent_accepted",
+                    symbol,
+                    {
+                        "policy_version": COMPLIANCE_DISCLAIMER_VERSION,
+                        "user_id": user_id,
+                    },
+                )
+                st.rerun()
+            else:
+                st.sidebar.error("Enable the checkbox before unlocking predictions.")
+    else:
+        st.sidebar.error("Compliance table setup failed. Run pipeline once to initialize schema.")
+
 
 # ----------------------------------
 # Fetch
@@ -898,6 +2159,28 @@ news = load_news(symbol)
 prediction_df = load_latest_prediction(symbol)
 model_predictions_df = load_model_predictions(symbol)
 backtest_df = load_backtest_results(symbol)
+
+predictions_unlocked = compliance_ready and subscription_active
+lock_reasons: list[str] = []
+if not compliance_ready:
+    lock_reasons.append("compliance consent pending")
+if not subscription_active:
+    lock_reasons.append("subscription inactive")
+lock_reason_text = ", ".join(lock_reasons) if lock_reasons else "all checks passed"
+
+access_event_key = f"portal_access_{compliance_user_key}_{symbol}_{int(predictions_unlocked)}"
+if not st.session_state.get(access_event_key):
+    save_compliance_audit_event(
+        compliance_user_key,
+        "dashboard_access_unlocked" if predictions_unlocked else "dashboard_access_locked",
+        symbol,
+        {
+            "policy_version": COMPLIANCE_DISCLAIMER_VERSION,
+            "subscription_active": subscription_active,
+            "reason": lock_reason_text,
+        },
+    )
+    st.session_state[access_event_key] = True
 
 if prices.empty:
     st.warning(f"No market data found for {symbol}.")
@@ -915,6 +2198,17 @@ prediction_target = "-"
 next_close_text = "Not available"
 next_close_target = "-"
 next_close_price = "-"
+
+if not predictions_unlocked:
+    prediction_df = pd.DataFrame()
+    model_predictions_df = pd.DataFrame()
+    backtest_df = pd.DataFrame()
+    prediction_text = "LOCKED"
+    next_close_text = "LOCKED"
+    prediction_target = lock_reason_text.title()
+    next_close_target = lock_reason_text.title()
+    next_close_price = "-"
+
 if not prediction_df.empty:
     p = prediction_df.iloc[0]
     pred_ret = float(p["predicted_return"]) * 100.0 if pd.notna(p["predicted_return"]) else 0.0
@@ -997,6 +2291,22 @@ elif "NEUTRAL" in indicator_summary or "INSUFFICIENT" in indicator_summary:
 bull_count = int((indicator_rows["Signal"] == "Bullish").sum()) if not indicator_rows.empty else 0
 bear_count = int((indicator_rows["Signal"] == "Bearish").sum()) if not indicator_rows.empty else 0
 neutral_count = int((indicator_rows["Signal"] == "Neutral").sum()) if not indicator_rows.empty else 0
+decision_label = str(indicator_summary).replace("_", " ").title()
+if decision_label == "Strong Bullish":
+    decision_label = "Strongly Bullish"
+elif decision_label == "Strong Bearish":
+    decision_label = "Strongly Bearish"
+segment_count = 28
+segment_colors = _build_sentiment_segment_colors(segment_count)
+segment_html = "".join(
+    f"<span class=\"technical-seg\" style=\"background:{color};\"></span>"
+    for color in segment_colors
+)
+if indicator_count > 0:
+    pointer_position_pct = ((indicator_score + indicator_count) / (2.0 * indicator_count)) * 100.0
+else:
+    pointer_position_pct = 50.0
+pointer_position_pct = max(2.0, min(98.0, pointer_position_pct))
 
 model_snapshot_rows = []
 if not model_predictions_df.empty:
@@ -1031,7 +2341,7 @@ if not model_predictions_df.empty:
                 "Model": next_close_model_label.get(model_name, model_name),
                 "Signal": direction,
                 "Pred Return (%)": round(pred_ret, 2),
-                "Pred Close": round(pred_close, 2) if pd.notna(pred_close) else "-",
+                "Pred Close": round(pred_close, 2) if pd.notna(pred_close) else np.nan,
                 "Target": target_dt,
             }
         )
@@ -1053,6 +2363,29 @@ if not backtest_df.empty:
             }
         )
 
+compliance_banner_class = "active" if predictions_unlocked else "pending"
+compliance_status_text = (
+    f"Access active for `{compliance_user_key}`. Compliance accepted at {consent_time_text}; subscription is active."
+    if predictions_unlocked
+    else f"Predictions locked for `{compliance_user_key}`: {lock_reason_text}."
+)
+st.markdown(
+    dedent(
+        f"""
+        <div class="compliance-banner {compliance_banner_class}">
+            <div class="compliance-title">Compliance Status</div>
+            <div class="compliance-text">{compliance_status_text}</div>
+            <div class="compliance-text">No assured returns. Analytics are for research/education workflow unless you are fully SEBI-registered and operationally compliant.</div>
+            <div class="compliance-links">
+                Grievance channels: <a href="https://scores.sebi.gov.in/" target="_blank">SCORES</a> |
+                <a href="https://smartodr.in/" target="_blank">ODR</a>
+            </div>
+        </div>
+        """
+    ),
+    unsafe_allow_html=True,
+)
+
 st.subheader("Decision Board")
 decision_col, metric_col = st.columns([1.2, 1.0], gap="small")
 
@@ -1060,14 +2393,44 @@ with decision_col:
     st.markdown(
         dedent(
             f"""
+            <div class="technical-summary-card">
+                <div class="technical-summary-title">Based on technicals, this stock is</div>
+                <div class="technical-summary-signal" style="color:{final_color};">{decision_label}</div>
+                <div class="technical-summary-grid">
+                    <div class="technical-track-wrap">
+                        <div class="technical-track">
+                            {segment_html}
+                        </div>
+                        <div class="technical-pointer" style="left:{pointer_position_pct:.2f}%;"></div>
+                    </div>
+                    <div class="technical-legend">
+                        <div class="technical-legend-item">
+                            <div class="technical-legend-head">
+                                <span class="technical-dot" style="background:#ff6b4a;"></span>Bearish
+                            </div>
+                            <div class="technical-legend-val">{bear_count}</div>
+                        </div>
+                        <div class="technical-legend-item">
+                            <div class="technical-legend-head">
+                                <span class="technical-dot" style="background:#8b9098;"></span>Neutral
+                            </div>
+                            <div class="technical-legend-val">{neutral_count}</div>
+                        </div>
+                        <div class="technical-legend-item">
+                            <div class="technical-legend-head">
+                                <span class="technical-dot" style="background:#10b981;"></span>Bullish
+                            </div>
+                            <div class="technical-legend-val">{bull_count}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="decision-card">
-                <div class="snapshot-label">Primary Decision Signal</div>
-                <div class="snapshot-value" style="color:{final_color}; font-size:1.28rem;">{indicator_summary}</div>
+                <div class="snapshot-label">Signal Diagnostics</div>
                 <div class="news-meta">As of: {latest_date_text}</div>
                 <div class="news-meta">Next-Bar ML: {prediction_text}</div>
                 <div class="news-meta">Next-Day Close ML: {next_close_text}</div>
                 <div class="news-meta">Composite: {indicator_score:+d} / {indicator_count} | Confidence: {indicator_conf:.1f}%</div>
-                <div class="news-meta">Bullish: {bull_count} | Bearish: {bear_count} | Neutral: {neutral_count}</div>
             </div>
             """
         ),
@@ -1139,40 +2502,27 @@ with main_col:
         decreasing_fillcolor="rgba(220,38,38,0.35)",
     ))
     fig.update_layout(
-        template="plotly_white",
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="#f8fbff",
-        font=dict(color="#0f172a", family="Source Sans 3"),
+        paper_bgcolor="#111111",
+        plot_bgcolor="#0b0b0b",
+        font=dict(color="#ececec", family="Source Sans 3"),
         xaxis_rangeslider_visible=False,
         margin=dict(l=8, r=8, t=8, b=8),
         height=360,
     )
-    fig.update_xaxes(gridcolor="rgba(148,163,184,0.22)", linecolor="rgba(148,163,184,0.35)", tickfont=dict(size=12))
-    fig.update_yaxes(gridcolor="rgba(148,163,184,0.24)", linecolor="rgba(148,163,184,0.35)", tickfont=dict(size=12))
+    fig.update_xaxes(
+        gridcolor="rgba(120,120,120,0.20)",
+        linecolor="rgba(160,160,160,0.30)",
+        tickfont=dict(size=12, color="#d4d4d4"),
+        showline=True,
+    )
+    fig.update_yaxes(
+        gridcolor="rgba(120,120,120,0.20)",
+        linecolor="rgba(160,160,160,0.30)",
+        tickfont=dict(size=12, color="#d4d4d4"),
+        showline=True,
+    )
     st.plotly_chart(fig, use_container_width=True)
 
-with side_col:
-    st.subheader("Next-Bar Models")
-    if model_snapshot_rows:
-        st.dataframe(pd.DataFrame(model_snapshot_rows), use_container_width=True, hide_index=True)
-    else:
-        st.info("No model predictions available.")
-
-    st.subheader("Next-Day Close Models")
-    if next_close_snapshot_rows:
-        st.dataframe(pd.DataFrame(next_close_snapshot_rows), use_container_width=True, hide_index=True)
-    else:
-        st.info("No next-day close model predictions available.")
-
-    st.subheader("Backtest Snapshot")
-    if backtest_snapshot_rows:
-        st.dataframe(pd.DataFrame(backtest_snapshot_rows), use_container_width=True, hide_index=True)
-    else:
-        st.info("No backtest results available.")
-
-bottom_col1, bottom_col2 = st.columns([1.25, 0.75], gap="small")
-
-with bottom_col1:
     st.subheader("Indicator Breakdown")
     if not indicator_rows.empty:
         indicator_cards = []
@@ -1202,32 +2552,80 @@ with bottom_col1:
             unsafe_allow_html=True,
         )
 
-with bottom_col2:
-    st.subheader("News Snapshot")
-    if not news.empty:
-        for _, row in news.head(2).iterrows():
-            sentiment = (row.get("sentiment_label") or "neutral").lower()
-            score = row.get("sentiment_score")
-            color_map = {"positive": "#15803d", "negative": "#b91c1c", "neutral": "#ca8a04"}
-            color = color_map.get(sentiment, "#ca8a04")
-            score_text = f"{float(score):.2f}" if pd.notna(score) else "0.00"
-            st.markdown(
-                dedent(
-                    f"""
-                    <div class="news-card">
-                        <div class="news-title">{row['title']}</div>
-                        <div class="news-meta">Source: {row['source']}</div>
-                        <div class="news-meta">
-                            Sentiment: <span style="color:{color}; font-weight:700;">{sentiment.title()} ({score_text})</span>
-                        </div>
-                        <a class="news-link" href="{row['url']}" target="_blank">Read More</a>
-                    </div>
-                    """
-                ),
-                unsafe_allow_html=True,
-            )
+with side_col:
+    st.subheader("Next-Bar Models")
+    if model_snapshot_rows:
+        model_snapshot_df = pd.DataFrame(model_snapshot_rows)
+        render_themed_table(
+            model_snapshot_df,
+            format_map={"Pred Return (%)": "{:+.2f}"},
+        )
     else:
-        st.info("No recent news")
+        st.info(
+            f"Predictions locked: {lock_reason_text}."
+            if not predictions_unlocked
+            else "No model predictions available."
+        )
+
+    st.subheader("Next-Day Close Models")
+    if next_close_snapshot_rows:
+        next_close_snapshot_df = pd.DataFrame(next_close_snapshot_rows)
+        render_themed_table(
+            next_close_snapshot_df,
+            format_map={
+                "Pred Return (%)": "{:+.2f}",
+                "Pred Close": "{:,.2f}",
+            },
+        )
+    else:
+        st.info(
+            f"Next-day close predictions locked: {lock_reason_text}."
+            if not predictions_unlocked
+            else "No next-day close model predictions available."
+        )
+
+    st.subheader("Backtest Snapshot")
+    if backtest_snapshot_rows:
+        backtest_snapshot_df = pd.DataFrame(backtest_snapshot_rows)
+        render_themed_table(
+            backtest_snapshot_df,
+            format_map={
+                "Hit Rate (%)": "{:.1f}",
+                "Strategy (%)": "{:+.2f}",
+            },
+        )
+    else:
+        st.info(
+            f"Backtest metrics locked: {lock_reason_text}."
+            if not predictions_unlocked
+            else "No backtest results available."
+        )
+
+st.subheader("News Snapshot")
+if not news.empty:
+    for _, row in news.head(2).iterrows():
+        sentiment = (row.get("sentiment_label") or "neutral").lower()
+        score = row.get("sentiment_score")
+        color_map = {"positive": "#15803d", "negative": "#b91c1c", "neutral": "#ca8a04"}
+        color = color_map.get(sentiment, "#ca8a04")
+        score_text = f"{float(score):.2f}" if pd.notna(score) else "0.00"
+        st.markdown(
+            dedent(
+                f"""
+                <div class="news-card">
+                    <div class="news-title">{row['title']}</div>
+                    <div class="news-meta">Source: {row['source']}</div>
+                    <div class="news-meta">
+                        Sentiment: <span style="color:{color}; font-weight:700;">{sentiment.title()} ({score_text})</span>
+                    </div>
+                    <a class="news-link" href="{row['url']}" target="_blank">Read More</a>
+                </div>
+                """
+            ),
+            unsafe_allow_html=True,
+        )
+else:
+    st.info("No recent news")
 
 with st.expander("Detailed Backtest Metrics", expanded=False):
     if not backtest_df.empty:
@@ -1240,24 +2638,34 @@ with st.expander("Detailed Backtest Metrics", expanded=False):
         backtest_view["strategy_return"] = (
             pd.to_numeric(backtest_view["strategy_return"], errors="coerce") * 100.0
         ).round(2)
-        st.dataframe(
-            backtest_view[["model_name", "run_date", "sample_count", "directional_accuracy", "mae", "rmse", "strategy_return"]]
-            .rename(
-                columns={
-                    "model_name": "Model",
-                    "run_date": "Run Date",
-                    "sample_count": "Samples",
-                    "directional_accuracy": "Hit Rate (%)",
-                    "mae": "MAE",
-                    "rmse": "RMSE",
-                    "strategy_return": "Strategy Return (%)",
-                }
-            ),
-            use_container_width=True,
-            hide_index=True,
+        backtest_detail_df = backtest_view[
+            ["model_name", "run_date", "sample_count", "directional_accuracy", "mae", "rmse", "strategy_return"]
+        ].rename(
+            columns={
+                "model_name": "Model",
+                "run_date": "Run Date",
+                "sample_count": "Samples",
+                "directional_accuracy": "Hit Rate (%)",
+                "mae": "MAE",
+                "rmse": "RMSE",
+                "strategy_return": "Strategy Return (%)",
+            }
+        )
+        render_themed_table(
+            backtest_detail_df,
+            format_map={
+                "Hit Rate (%)": "{:.2f}",
+                "MAE": "{:.5f}",
+                "RMSE": "{:.5f}",
+                "Strategy Return (%)": "{:+.2f}",
+            },
         )
     else:
-        st.info("No backtest results available yet.")
+        st.info(
+            f"Detailed backtest metrics are locked: {lock_reason_text}."
+            if not predictions_unlocked
+            else "No backtest results available yet."
+        )
 
 with st.expander("More News", expanded=False):
     if not news.empty and len(news) > 2:

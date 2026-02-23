@@ -3,7 +3,15 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy import func
 
-from .models import SymbolMaster, MarketData, News, StockPrediction, ModelBacktestResult
+from .models import (
+    SymbolMaster,
+    MarketData,
+    News,
+    StockPrediction,
+    ModelBacktestResult,
+    ComplianceConsent,
+    ComplianceAuditLog,
+)
 
 
 # ---------------- SYMBOL MASTER ----------------
@@ -200,3 +208,54 @@ def save_model_backtest_result(session, result):
     except Exception as e:
         session.rollback()
         logger.error(f"Backtest save failed: {e}")
+
+
+def save_compliance_consent(session, consent):
+
+    if not consent:
+        return
+
+    stmt = pg_insert(ComplianceConsent).values([consent])
+    stmt = stmt.on_conflict_do_update(
+        index_elements=["user_key", "disclaimer_version"],
+        set_={
+            "accepted_at": stmt.excluded.accepted_at,
+            "app_version": stmt.excluded.app_version,
+        },
+    )
+
+    try:
+        session.execute(stmt)
+        session.commit()
+        logger.info(
+            f"Saved compliance consent for {consent.get('user_key')} ({consent.get('disclaimer_version')})"
+        )
+    except Exception as e:
+        session.rollback()
+        logger.error(f"Compliance consent save failed: {e}")
+
+
+def get_latest_compliance_consent(session, user_key, disclaimer_version):
+
+    return (
+        session.query(ComplianceConsent)
+        .filter(ComplianceConsent.user_key == user_key)
+        .filter(ComplianceConsent.disclaimer_version == disclaimer_version)
+        .order_by(ComplianceConsent.accepted_at.desc(), ComplianceConsent.id.desc())
+        .first()
+    )
+
+
+def save_compliance_audit_log(session, audit_event):
+
+    if not audit_event:
+        return
+
+    obj = ComplianceAuditLog(**audit_event)
+    session.add(obj)
+
+    try:
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        logger.error(f"Compliance audit save failed: {e}")

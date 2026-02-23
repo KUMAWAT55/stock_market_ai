@@ -10,6 +10,7 @@ A Python-based intraday analytics platform for NSE symbols that combines:
 This repository is optimized for fast experimentation and iterative model updates on short-horizon market data.
 
 ## 1. Scope and What the Project Does
+https://app.eraser.io/workspace/n3p718P4tKA18NW737ZS?diagram=ZHK8-Xp1pkm5A-eAKd9X8
 
 TradeIQ runs a full data-to-dashboard workflow:
 1. Pull selected NSE symbol metadata.

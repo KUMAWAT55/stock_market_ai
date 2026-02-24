@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
+"""Utility script to generate daily Kite access token from request token."""
 
 import argparse
 import os
@@ -10,6 +11,7 @@ from kiteconnect import KiteConnect
 
 
 def parse_args() -> argparse.Namespace:
+    """Parse token-generation CLI arguments."""
     parser = argparse.ArgumentParser(
         description="Generate Kite access token from request token."
     )
@@ -25,6 +27,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> int:
+    """Interactive/CLI flow to produce export-ready Kite credentials."""
     args = parse_args()
 
     if not args.api_key:

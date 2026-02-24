@@ -1,4 +1,5 @@
 from __future__ import annotations
+"""Model artifact metadata and active-version resolution logic."""
 
 import json
 from dataclasses import dataclass
@@ -14,6 +15,8 @@ from database.db_manager import DatabaseManager
 
 @dataclass(slots=True)
 class ModelDescriptor:
+    """Serializable metadata required to load and run a model artifact."""
+
     model_name: str
     timeframe: str
     version: str
@@ -32,6 +35,7 @@ class ModelRegistry:
         self.artifact_dir.mkdir(parents=True, exist_ok=True)
 
     def build_version(self, model_name: str, timeframe: str) -> str:
+        """Create monotonic UTC timestamp-based model version string."""
         ts = datetime.utcnow().strftime("%Y%m%d%H%M%S")
         return f"{model_name}_{timeframe}_{ts}"
 
@@ -44,6 +48,7 @@ class ModelRegistry:
         metrics: dict[str, Any],
         feature_list: list[str],
     ) -> ModelDescriptor:
+        """Persist model metadata locally and in DB registry, then mark active."""
         descriptor = ModelDescriptor(
             model_name=model_name,
             timeframe=timeframe,
@@ -81,6 +86,7 @@ class ModelRegistry:
         return descriptor
 
     def get_active(self, timeframe: str) -> ModelDescriptor | None:
+        """Resolve active model from DB, with local artifact fallback."""
         row = self.db_manager.get_active_model(timeframe)
         if row:
             return ModelDescriptor(
@@ -99,6 +105,7 @@ class ModelRegistry:
         return fallback
 
     def _find_latest_local_artifact(self, timeframe: str) -> ModelDescriptor | None:
+        """Best-effort fallback for local-only operation when DB registry is empty."""
         candidates = sorted(self.artifact_dir.glob(f"*_direction_{timeframe}_*.pkl"))
         if not candidates:
             candidates = sorted(self.artifact_dir.glob(f"*_{timeframe}_*.pkl"))

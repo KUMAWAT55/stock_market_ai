@@ -1,4 +1,5 @@
 from __future__ import annotations
+"""Kite Connect adapters for websocket ticks and historical candles."""
 
 from datetime import datetime
 from typing import Any, Callable
@@ -49,7 +50,9 @@ class KiteRealtimeClient:
         return self._connected
 
     def _bind_callbacks(self) -> None:
+        """Attach lifecycle callbacks and enrich observability on WS events."""
         def on_connect(ws: Any, _response: Any) -> None:
+            # Subscription mode is configurable (`full`, `quote`, `ltp`) via env.
             mode = getattr(ws, f"MODE_{self.settings.subscribe_mode.upper()}", ws.MODE_FULL)
             ws.subscribe(self.instrument_tokens)
             ws.set_mode(mode, self.instrument_tokens)
@@ -107,6 +110,7 @@ class KiteHistoricalClient:
 
     @staticmethod
     def _to_kite_interval(timeframe: str) -> str:
+        """Translate internal timeframe labels to Kite historical API intervals."""
         mapping = {
             "1m": "minute",
             "5m": "5minute",
@@ -126,6 +130,7 @@ class KiteHistoricalClient:
         from_dt: datetime,
         to_dt: datetime,
     ) -> pd.DataFrame:
+        """Load candles from Kite and normalize to project-wide OHLCV columns."""
         interval = self._to_kite_interval(timeframe)
         rows = self.client.historical_data(
             instrument_token=instrument_token,

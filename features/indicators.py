@@ -1,10 +1,12 @@
 from __future__ import annotations
+"""Technical indicator computations shared by training and realtime inference."""
 
 import numpy as np
 import pandas as pd
 
 
 def _rsi(series: pd.Series, period: int = 14) -> pd.Series:
+    """Compute RSI using exponential smoothing (Wilder-style approximation)."""
     delta = series.diff()
     gain = delta.clip(lower=0.0)
     loss = -delta.clip(upper=0.0)
@@ -15,6 +17,7 @@ def _rsi(series: pd.Series, period: int = 14) -> pd.Series:
 
 
 def _atr(df: pd.DataFrame, period: int = 14) -> pd.Series:
+    """Compute Average True Range for volatility normalization."""
     high = df["high"]
     low = df["low"]
     close = df["close"]
@@ -65,6 +68,7 @@ def add_indicators(candles: pd.DataFrame) -> pd.DataFrame:
     df["bb_lower"] = df["sma_20"] - 2.0 * bb_std
     df["bb_width"] = (df["bb_upper"] - df["bb_lower"]) / df["close"].replace(0.0, np.nan)
 
+    # Session progress features encode intraday seasonality into cyclical terms.
     ts = pd.to_datetime(df["candle_end"])
     minute = ts.dt.hour * 60 + ts.dt.minute
     day_progress = (minute - (9 * 60 + 15)) / (6 * 60 + 15)
@@ -96,6 +100,7 @@ def add_indicators(candles: pd.DataFrame) -> pd.DataFrame:
         "minute_cos",
     ]
 
+    # Standardize numeric dtypes and sanitize non-finite values for ML compatibility.
     for col in numeric_cols:
         df[col] = pd.to_numeric(df[col], errors="coerce")
     df[numeric_cols] = df[numeric_cols].replace([np.inf, -np.inf], np.nan)

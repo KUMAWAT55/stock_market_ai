@@ -1,4 +1,5 @@
 from __future__ import annotations
+"""Central SEBI-oriented disclaimer content used across API and dashboard."""
 
 from dataclasses import dataclass
 
@@ -8,12 +9,15 @@ DISCLAIMER_VERSION = "sebi_research_signal_v1_2026-02-23"
 
 @dataclass(frozen=True, slots=True)
 class ComplianceDisclaimer:
+    """Structured disclaimer payload for consistent rendering."""
+
     title: str
     body: str
     risk_disclosure: str
 
 
 def get_disclaimer() -> ComplianceDisclaimer:
+    """Return immutable research-only disclaimer and risk disclosure text."""
     return ComplianceDisclaimer(
         title="SEBI Compliance Notice",
         body=(

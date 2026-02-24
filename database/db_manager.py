@@ -136,6 +136,53 @@ class DatabaseManager:
         with self._engine.begin() as conn:
             conn.execute(query, asdict(candle))
 
+    def upsert_candles_bulk(self, candles: list[CandleRow]) -> int:
+        if not candles:
+            return 0
+        query = text(
+            """
+            INSERT INTO ohlcv_candles (
+                symbol,
+                timeframe,
+                candle_start,
+                candle_end,
+                open,
+                high,
+                low,
+                close,
+                volume,
+                tick_count,
+                is_partial
+            ) VALUES (
+                :symbol,
+                :timeframe,
+                :candle_start,
+                :candle_end,
+                :open,
+                :high,
+                :low,
+                :close,
+                :volume,
+                :tick_count,
+                :is_partial
+            )
+            ON CONFLICT (symbol, timeframe, candle_start)
+            DO UPDATE SET
+                candle_end = EXCLUDED.candle_end,
+                open = EXCLUDED.open,
+                high = EXCLUDED.high,
+                low = EXCLUDED.low,
+                close = EXCLUDED.close,
+                volume = EXCLUDED.volume,
+                tick_count = EXCLUDED.tick_count,
+                is_partial = EXCLUDED.is_partial
+            """
+        )
+        payload = [asdict(candle) for candle in candles]
+        with self._engine.begin() as conn:
+            conn.execute(query, payload)
+        return len(payload)
+
     def get_recent_candles(self, symbol: str, timeframe: str, limit: int = 300) -> pd.DataFrame:
         query = text(
             """

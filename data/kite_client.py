@@ -10,9 +10,11 @@ from config.config import get_settings
 
 try:
     from kiteconnect import KiteConnect, KiteTicker
+    from kiteconnect.exceptions import TokenException
 except Exception:  # pragma: no cover - optional runtime dependency for docs/static checks
     KiteConnect = None
     KiteTicker = None
+    TokenException = Exception
 
 
 TickCallback = Callable[[Any, list[dict[str, Any]]], None]
@@ -60,6 +62,10 @@ class KiteRealtimeClient:
 
         def on_error(_ws: Any, code: int, reason: str) -> None:
             logger.error("Kite websocket error: code={} reason={}", code, reason)
+            if "403" in str(reason):
+                logger.error(
+                    "Kite WS 403 detected. Usually caused by expired/invalid access token or inactive Kite Connect subscription."
+                )
 
         def on_reconnect(_ws: Any, attempts_count: int) -> None:
             logger.warning("Kite websocket reconnect attempt #{}", attempts_count)
@@ -138,3 +144,7 @@ class KiteHistoricalClient:
         frame["candle_start"] = pd.to_datetime(frame["candle_start"], utc=True)
         frame["candle_end"] = frame["candle_start"]
         return frame[["candle_start", "candle_end", "open", "high", "low", "close", "volume"]]
+
+    def profile(self) -> dict[str, Any]:
+        """Validate session by fetching Kite profile."""
+        return self.client.profile()

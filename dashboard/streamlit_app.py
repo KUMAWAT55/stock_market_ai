@@ -33,6 +33,19 @@ def _get(path: str, params: dict[str, Any] | None = None) -> dict[str, Any] | No
         return None
 
 
+def _post(path: str, params: dict[str, Any] | None = None) -> dict[str, Any] | None:
+    try:
+        resp = requests.post(f"{API_BASE_URL}{path}", params=params, timeout=30)
+        if resp.status_code >= 400:
+            try:
+                return {"error": resp.json()}
+            except Exception:
+                return {"error": {"status_code": resp.status_code, "text": resp.text}}
+        return resp.json()
+    except Exception as exc:
+        return {"error": {"message": str(exc)}}
+
+
 def _build_chart(candles_df: pd.DataFrame) -> go.Figure:
     frame = add_indicators(candles_df)
     fig = go.Figure()
@@ -61,19 +74,35 @@ def main() -> None:
         st.warning(f"{disclaimer['title']} | {disclaimer['body']}")
         st.info(disclaimer["risk_disclosure"])
 
-    col1, col2, col3, col4 = st.columns([2, 1, 1, 1])
+    col1, col2, col3, col4, col5 = st.columns([2, 1, 1, 1, 1])
     with col1:
         symbol = st.text_input("Symbol", value="RELIANCE").upper().strip()
     with col2:
-        timeframe = st.selectbox("Timeframe", ["15m", "1d"], index=0)
+        timeframe = st.selectbox("Timeframe", ["1m", "5m", "15m", "1h", "1d"], index=2)
     with col3:
         candle_limit = st.number_input("Candles", min_value=100, max_value=1000, value=300, step=50)
     with col4:
         refresh_secs = st.number_input("Refresh (sec, 0=off)", min_value=0, max_value=60, value=5)
+    with col5:
+        backfill_days = st.number_input("Backfill days", min_value=1, max_value=2000, value=30, step=5)
+        backfill_clicked = st.button("Backfill", use_container_width=True)
+
+    if backfill_clicked:
+        backfill_result = _post(
+            "/historical/backfill",
+            params={"symbol": symbol, "timeframe": timeframe, "days": int(backfill_days)},
+        )
+        if backfill_result and not backfill_result.get("error"):
+            st.success(
+                f"Backfill complete: inserted {backfill_result.get('inserted', 0)} candles "
+                f"for {symbol} {timeframe}"
+            )
+        else:
+            st.error(f"Backfill failed: {backfill_result}")
 
     candle_payload = _get("/candles", params={"symbol": symbol, "timeframe": timeframe, "limit": int(candle_limit)})
     history_payload = _get("/signals/history", params={"symbol": symbol, "timeframe": timeframe, "limit": 200})
-    backtest_payload = _get("/backtest/latest", params={"symbol": symbol, "timeframe": timeframe})
+    backtest_payload = _get("/backtest/latest", params={"symbol": symbol, "timeframe": timeframe}) if timeframe in {"15m", "1d"} else None
 
     left, right = st.columns([2.2, 1.2])
 
@@ -86,7 +115,7 @@ def main() -> None:
             fig = _build_chart(candles_df)
             st.plotly_chart(fig, use_container_width=True)
         else:
-            st.error("No candle data available")
+            st.error("No candle data available. Use Backfill to preload candles or wait for live market ticks.")
 
     with right:
         st.subheader("Current Prediction")
@@ -106,7 +135,10 @@ def main() -> None:
                 st.markdown("**Risk/Governance**")
                 st.json(risk_snapshot)
         else:
-            st.info("Prediction not available yet.")
+            if timeframe in {"15m", "1d"}:
+                st.info("Prediction not available yet.")
+            else:
+                st.info("Prediction engine currently runs on 15m and 1d; this view is candle-only.")
 
     st.subheader("Historical Signals")
     if history_payload and history_payload.get("rows"):

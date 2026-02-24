@@ -1,0 +1,33 @@
+{
+  "model_name": "xgboost_direction",
+  "timeframe": "1d",
+  "version": "xgboost_direction_1d_20260223203949",
+  "artifact_path": "/Users/rohkumaw/Documents/stock_market_ai/models/artifacts/RELIANCE_xgboost_direction_1d_xgboost_direction_1d_20260223203949.pkl",
+  "metrics": {
+    "accuracy": 0.5217391304347826,
+    "precision": 0.5294117647058824,
+    "recall": 0.75,
+    "f1": 0.6206896551724138,
+    "roc_auc": 0.5151515151515151,
+    "wf_points": 0.0,
+    "wf_accuracy": 0.0
+  },
+  "feature_list": [
+    "ret_1",
+    "ret_3",
+    "ret_5",
+    "ret_15",
+    "macd",
+    "macd_signal",
+    "macd_hist",
+    "rsi_14",
+    "atr_pct",
+    "volatility_20",
+    "volume_zscore_20",
+    "bb_width",
+    "session_progress",
+    "minute_sin",
+    "minute_cos"
+  ],
+  "created_at": "2026-02-23T20:39:49.334587"
+}

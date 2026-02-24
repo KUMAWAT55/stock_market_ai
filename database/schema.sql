@@ -123,3 +123,60 @@ CREATE TABLE IF NOT EXISTS engine_heartbeat (
     details JSONB,
     created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
+
+
+CREATE TABLE IF NOT EXISTS app_users (
+    id BIGSERIAL PRIMARY KEY,
+    username VARCHAR(64) NOT NULL UNIQUE,
+    email VARCHAR(256) NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL,
+    full_name VARCHAR(128),
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_app_users_username
+    ON app_users(username);
+
+CREATE INDEX IF NOT EXISTS idx_app_users_email
+    ON app_users(email);
+
+
+CREATE TABLE IF NOT EXISTS user_subscriptions (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL REFERENCES app_users(id) ON DELETE CASCADE,
+    plan_name VARCHAR(64) NOT NULL DEFAULT 'TradeIQ Pro',
+    status VARCHAR(32) NOT NULL DEFAULT 'active',
+    start_at TIMESTAMP,
+    end_at TIMESTAMP,
+    payment_reference VARCHAR(128),
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    UNIQUE(user_id)
+);
+
+
+CREATE TABLE IF NOT EXISTS compliance_consents (
+    id BIGSERIAL PRIMARY KEY,
+    user_key VARCHAR(128) NOT NULL,
+    disclaimer_version VARCHAR(64) NOT NULL,
+    accepted_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    app_version VARCHAR(64),
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    UNIQUE(user_key, disclaimer_version)
+);
+
+CREATE INDEX IF NOT EXISTS idx_compliance_consents_user_key
+    ON compliance_consents(user_key);
+
+
+CREATE TABLE IF NOT EXISTS compliance_audit_logs (
+    id BIGSERIAL PRIMARY KEY,
+    user_key VARCHAR(128) NOT NULL,
+    event_type VARCHAR(128) NOT NULL,
+    symbol VARCHAR(64),
+    payload JSONB,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_compliance_audit_logs_user_key
+    ON compliance_audit_logs(user_key, created_at DESC);

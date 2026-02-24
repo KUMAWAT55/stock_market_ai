@@ -1,4 +1,5 @@
 from __future__ import annotations
+"""Runtime model loading and signal inference helpers."""
 
 import pickle
 from dataclasses import dataclass
@@ -15,6 +16,8 @@ from models.model_registry import ModelDescriptor
 
 @dataclass(slots=True)
 class PredictionResult:
+    """Normalized prediction payload consumed by realtime engine."""
+
     signal: str
     confidence: float
     prob_up: float
@@ -23,6 +26,7 @@ class PredictionResult:
 
 
 def _extract_estimator(model: Any) -> Any:
+    """Extract final estimator from optional sklearn Pipeline wrapper."""
     if hasattr(model, "named_steps") and model.named_steps:
         # Use the last estimator in a sklearn pipeline.
         return list(model.named_steps.values())[-1]
@@ -31,11 +35,13 @@ def _extract_estimator(model: Any) -> Any:
 
 @lru_cache(maxsize=16)
 def load_model(artifact_path: str) -> Any:
+    """Load model artifact once and cache in-process."""
     with Path(artifact_path).open("rb") as f:
         return pickle.load(f)
 
 
 def _predict_proba(model: Any, features: pd.DataFrame) -> tuple[float, float]:
+    """Return (prob_up, prob_down) across heterogeneous estimator types."""
     if hasattr(model, "predict_proba"):
         probs = model.predict_proba(features)
         prob_down = float(probs[0][0])
@@ -53,6 +59,7 @@ def _predict_proba(model: Any, features: pd.DataFrame) -> tuple[float, float]:
 
 
 def _signal_from_prob(prob_up: float, buy_threshold: float, sell_threshold: float) -> str:
+    """Apply configured probability thresholds to map into BUY/SELL/HOLD."""
     if prob_up >= buy_threshold:
         return "BUY"
     if prob_up <= sell_threshold:
@@ -66,6 +73,7 @@ def _explainability(
     feature_columns: list[str],
     top_k: int = 8,
 ) -> dict[str, float]:
+    """Approximate local feature contribution using coefficient/importance weighting."""
     estimator = _extract_estimator(model)
 
     if hasattr(estimator, "feature_importances_"):
@@ -102,6 +110,7 @@ def predict_signal(
     features_row: dict[str, Any],
     feature_columns: list[str],
 ) -> PredictionResult:
+    """Run end-to-end inference and emit probability, signal, and explainability."""
     settings = get_settings()
     frame = pd.DataFrame([{col: features_row.get(col, 0.0) for col in feature_columns}])
     model = load_model(descriptor.artifact_path)

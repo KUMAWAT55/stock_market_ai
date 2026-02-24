@@ -1,4 +1,5 @@
 from __future__ import annotations
+"""Realtime orchestration engine from tick ingestion to prediction persistence."""
 
 import asyncio
 from dataclasses import asdict
@@ -55,6 +56,7 @@ class RealtimePredictionEngine:
         self.latest_signal_cache: dict[tuple[str, str], dict[str, Any]] = {}
 
     async def start(self) -> None:
+        """Initialize dependencies, start websocket, and launch worker loops."""
         if self._tasks and any(not task.done() for task in self._tasks):
             logger.info("Realtime engine already running")
             return
@@ -91,6 +93,7 @@ class RealtimePredictionEngine:
         logger.info("Realtime engine started")
 
     async def stop(self) -> None:
+        """Stop worker loops and websocket connection cleanly."""
         if not self._tasks:
             return
 
@@ -111,6 +114,7 @@ class RealtimePredictionEngine:
         logger.info("Realtime engine stopped")
 
     def _load_models(self) -> None:
+        """Load active model descriptors for configured prediction timeframes."""
         self._model_by_timeframe.clear()
         for timeframe in self.settings.model_timeframes:
             descriptor = self.registry.get_active(timeframe)
@@ -126,6 +130,7 @@ class RealtimePredictionEngine:
             )
 
     def _warm_from_db(self) -> None:
+        """Preload recent candles so indicators/prediction can start immediately."""
         token_map = self.settings.load_symbol_token_map()
         symbols = sorted(set(token_map.values()))
         warm_candles: list[Candle] = []
@@ -155,6 +160,7 @@ class RealtimePredictionEngine:
             logger.info("Warm-loaded {} candles from DB", len(warm_candles))
 
     async def _consume_ticks_loop(self) -> None:
+        """Main worker: drain tick queue, persist ticks, aggregate candles, trigger predictions."""
         while not self._stop.is_set():
             try:
                 batch = await self.tick_handler.get_batch(max_batch_size=1500, timeout=0.7)
@@ -181,6 +187,7 @@ class RealtimePredictionEngine:
                 await asyncio.sleep(1.0)
 
     async def _handle_candle_close(self, candle: Candle) -> None:
+        """Persist closed candle and run prediction+governance for modelled timeframes."""
         await asyncio.to_thread(
             self.db.upsert_candle,
             CandleRow(
@@ -202,6 +209,7 @@ class RealtimePredictionEngine:
         if descriptor is None:
             return
 
+        # Feature calculation always uses most recent rolling history for stability.
         history = self.aggregator.recent_candles(candle.symbol, candle.timeframe, limit=500)
         frame = pd.DataFrame(
             [
@@ -289,6 +297,7 @@ class RealtimePredictionEngine:
         self.latest_signal_cache[(candle.symbol, candle.timeframe)] = payload
 
     def _target_ts_from_candle(self, candle: Candle) -> datetime:
+        """Compute forecast target timestamp, skipping weekends/holidays for daily bars."""
         timeframe_minutes = self.settings.timeframe_minutes
         if candle.timeframe in timeframe_minutes and candle.timeframe != "1d":
             return candle.candle_end + timedelta(minutes=timeframe_minutes[candle.timeframe])
@@ -299,12 +308,14 @@ class RealtimePredictionEngine:
         return next_day
 
     def _timeframe_delta(self, timeframe: str) -> timedelta:
+        """Convert timeframe label into timedelta for backfilled candle_end computation."""
         minutes = self.settings.timeframe_minutes.get(timeframe)
         if minutes is None:
             raise ValueError(f"Unsupported timeframe: {timeframe}")
         return timedelta(minutes=minutes)
 
     async def backfill_historical(self, symbol: str, timeframe: str, days: int = 30) -> dict[str, Any]:
+        """Backfill historical candles from Kite, persist, and warm in-memory history."""
         symbol = symbol.upper().strip()
         if timeframe not in self.settings.candle_timeframes:
             raise ValueError(f"Unsupported timeframe: {timeframe}")
@@ -403,6 +414,7 @@ class RealtimePredictionEngine:
         }
 
     async def _heartbeat_loop(self) -> None:
+        """Periodic liveness and health telemetry writer."""
         while not self._stop.is_set():
             try:
                 details = {

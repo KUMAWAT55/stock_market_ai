@@ -1,4 +1,5 @@
 from __future__ import annotations
+"""Feature vector assembly for realtime inference and offline model training."""
 
 from dataclasses import dataclass
 from typing import Any
@@ -29,6 +30,8 @@ FEATURE_COLUMNS: list[str] = [
 
 @dataclass(slots=True)
 class FeatureResult:
+    """Container for model features and aligned source candle metadata."""
+
     features: dict[str, Any]
     latest_candle: dict[str, Any]
 
@@ -40,9 +43,11 @@ class FeaturePipeline:
         self.minimum_rows = minimum_rows
 
     def transform(self, candles: pd.DataFrame) -> pd.DataFrame:
+        """Apply indicator stack and return enriched dataframe."""
         return add_indicators(candles)
 
     def latest_feature_row(self, candles: pd.DataFrame) -> FeatureResult | None:
+        """Return the most recent fully-populated feature row, if enough history exists."""
         frame = self.transform(candles)
         if frame.empty or len(frame) < self.minimum_rows:
             return None

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
+"""Archive non-active PostgreSQL tables into a timestamped backup schema."""
 
 import argparse
 import os
@@ -23,6 +24,7 @@ DEFAULT_ACTIVE_TABLES = {
 
 
 def parse_args() -> argparse.Namespace:
+    """Parse archive script options."""
     parser = argparse.ArgumentParser(
         description=(
             "Move legacy public tables into a backup schema while keeping active realtime tables in public."
@@ -71,6 +73,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def load_active_tables_from_schema_file() -> set[str]:
+    """Infer active table set from `database/schema.sql` to protect current schema."""
     schema_path = Path(__file__).resolve().parents[1] / "database" / "schema.sql"
     if not schema_path.exists():
         return set(DEFAULT_ACTIVE_TABLES)
@@ -88,6 +91,7 @@ def load_active_tables_from_schema_file() -> set[str]:
 
 
 def list_tables(engine: Engine, schema: str) -> list[str]:
+    """List all tables for a schema."""
     query = text(
         """
         SELECT tablename
@@ -102,6 +106,7 @@ def list_tables(engine: Engine, schema: str) -> list[str]:
 
 
 def list_owned_sequences(engine: Engine, schema: str, table: str) -> list[tuple[str, str]]:
+    """Find sequences owned by a table so they can be moved with it."""
     query = text(
         """
         SELECT seq_ns.nspname AS sequence_schema, seq.relname AS sequence_name
@@ -133,6 +138,7 @@ def move_tables(
     backup_schema: str,
     tables: list[str],
 ) -> None:
+    """Move tables into backup schema."""
     with engine.begin() as conn:
         conn.execute(text(f'CREATE SCHEMA IF NOT EXISTS "{backup_schema}"'))
         for table in tables:
@@ -144,6 +150,7 @@ def move_sequences(
     backup_schema: str,
     owned_sequences: list[tuple[str, str]],
 ) -> None:
+    """Move owned sequences into backup schema."""
     if not owned_sequences:
         return
     with engine.begin() as conn:
@@ -154,6 +161,7 @@ def move_sequences(
 
 
 def main() -> int:
+    """CLI entrypoint for dry-run or execute archive migration."""
     args = parse_args()
     if not args.database_url:
         print("Error: missing database URL. Pass --database-url or set DATABASE_URL.")

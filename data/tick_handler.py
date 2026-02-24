@@ -1,4 +1,5 @@
 from __future__ import annotations
+"""Thread-safe tick ingestion bridge from Kite callbacks to asyncio workers."""
 
 import asyncio
 from dataclasses import dataclass
@@ -11,6 +12,8 @@ from loguru import logger
 
 @dataclass(slots=True)
 class NormalizedTick:
+    """Canonical tick schema used everywhere after websocket ingestion."""
+
     instrument_token: int
     symbol: str
     ts: datetime
@@ -36,6 +39,7 @@ class TickHandler:
         return self._dropped_ticks
 
     def on_ticks(self, _ws: Any, ticks: list[dict[str, Any]]) -> None:
+        """Normalize raw ticks and enqueue without blocking websocket callback thread."""
         if not ticks:
             return
         for raw in ticks:
@@ -50,6 +54,7 @@ class TickHandler:
                     logger.warning("Dropped {} ticks due to queue saturation", self._dropped_ticks)
 
     def _normalize(self, tick: dict[str, Any]) -> NormalizedTick | None:
+        """Convert provider payload to NormalizedTick; drop tokens not in allowlist."""
         token = int(tick.get("instrument_token", 0))
         symbol = self.token_symbol_map.get(token)
         if not symbol:
@@ -72,6 +77,7 @@ class TickHandler:
         )
 
     async def get_batch(self, max_batch_size: int = 2000, timeout: float = 0.5) -> list[NormalizedTick]:
+        """Drain up to `max_batch_size` ticks with an initial blocking wait."""
         def _drain() -> list[NormalizedTick]:
             items: list[NormalizedTick] = []
             try:

@@ -1,4 +1,5 @@
 from __future__ import annotations
+"""Database access layer for ticks, candles, predictions, risk, and audit logs."""
 
 import json
 from contextlib import contextmanager
@@ -18,6 +19,8 @@ from config.config import get_settings
 
 @dataclass(slots=True)
 class CandleRow:
+    """DB-ready candle row used by upsert operations."""
+
     symbol: str
     timeframe: str
     candle_start: datetime
@@ -43,6 +46,7 @@ class DatabaseManager:
 
     @contextmanager
     def session_scope(self) -> Iterator[Session]:
+        """Transactional session context manager for ORM-style operations."""
         session = self._session_factory()
         try:
             yield session
@@ -54,6 +58,7 @@ class DatabaseManager:
             session.close()
 
     def init_schema(self) -> None:
+        """Create/upgrade required tables from `database/schema.sql`."""
         ddl = self._schema_path.read_text(encoding="utf-8")
         with self._engine.begin() as conn:
             for stmt in [s.strip() for s in ddl.split(";") if s.strip()]:
@@ -61,6 +66,7 @@ class DatabaseManager:
         logger.info("Database schema initialized")
 
     def insert_ticks(self, rows: list[dict[str, Any]]) -> None:
+        """Persist raw normalized ticks for auditability and debugging."""
         if not rows:
             return
         query = text(
@@ -94,6 +100,7 @@ class DatabaseManager:
             conn.execute(query, rows)
 
     def upsert_candle(self, candle: CandleRow) -> None:
+        """Insert or update one candle by unique key (symbol, timeframe, candle_start)."""
         query = text(
             """
             INSERT INTO ohlcv_candles (
@@ -137,6 +144,7 @@ class DatabaseManager:
             conn.execute(query, asdict(candle))
 
     def upsert_candles_bulk(self, candles: list[CandleRow]) -> int:
+        """Bulk upsert candles and return number of processed rows."""
         if not candles:
             return 0
         query = text(
@@ -184,6 +192,7 @@ class DatabaseManager:
         return len(payload)
 
     def get_recent_candles(self, symbol: str, timeframe: str, limit: int = 300) -> pd.DataFrame:
+        """Fetch recent candles ordered ascending for charting/feature generation."""
         query = text(
             """
             SELECT symbol, timeframe, candle_start, candle_end, open, high, low, close, volume, tick_count
@@ -201,6 +210,7 @@ class DatabaseManager:
         return df.sort_values("candle_start").reset_index(drop=True)
 
     def insert_prediction(self, payload: dict[str, Any]) -> None:
+        """Persist model output with full feature/risk/explainability snapshots."""
         query = text(
             """
             INSERT INTO prediction_events (
@@ -246,6 +256,7 @@ class DatabaseManager:
             conn.execute(query, row)
 
     def insert_risk_event(self, symbol: str, timeframe: str, event_type: str, payload: dict[str, Any]) -> None:
+        """Record governance interventions such as throttling or drawdown blocks."""
         query = text(
             """
             INSERT INTO risk_events (symbol, timeframe, event_ts, event_type, payload)
@@ -272,6 +283,7 @@ class DatabaseManager:
         timeframe: str | None = None,
         actor: str = "system",
     ) -> None:
+        """Append immutable compliance audit event."""
         query = text(
             """
             INSERT INTO compliance_audit_trail (event_ts, event_type, actor, symbol, timeframe, details)
@@ -300,6 +312,7 @@ class DatabaseManager:
         metrics: dict[str, Any],
         feature_list: list[str],
     ) -> None:
+        """Store model metadata and mark a version active for its timeframe."""
         query = text(
             """
             INSERT INTO model_registry (
@@ -341,6 +354,7 @@ class DatabaseManager:
             )
 
     def get_active_model(self, timeframe: str) -> dict[str, Any] | None:
+        """Return latest active model metadata for a timeframe."""
         query = text(
             """
             SELECT model_name, timeframe, version, artifact_path, metrics, feature_list, created_at
@@ -356,6 +370,7 @@ class DatabaseManager:
         return dict(row) if row else None
 
     def list_recent_predictions(self, symbol: str, timeframe: str, limit: int = 100) -> list[dict[str, Any]]:
+        """Return recent prediction history for one symbol/timeframe."""
         query = text(
             """
             SELECT
@@ -385,6 +400,7 @@ class DatabaseManager:
         return [dict(row) for row in rows]
 
     def get_latest_predictions(self, limit: int = 200) -> list[dict[str, Any]]:
+        """Return latest prediction per (symbol, timeframe)."""
         query = text(
             """
             SELECT DISTINCT ON (symbol, timeframe)
@@ -416,6 +432,7 @@ class DatabaseManager:
         model_version: str,
         metrics: dict[str, Any],
     ) -> None:
+        """Store simulated backtest metrics from training pipeline."""
         query = text(
             """
             INSERT INTO simulated_backtest_metrics (
@@ -451,6 +468,7 @@ class DatabaseManager:
             )
 
     def get_latest_backtest_metrics(self, symbol: str, timeframe: str) -> dict[str, Any] | None:
+        """Fetch most recent simulated backtest metrics for dashboard display."""
         query = text(
             """
             SELECT model_name, model_version, run_ts, metrics, is_simulated
@@ -465,6 +483,7 @@ class DatabaseManager:
         return dict(row) if row else None
 
     def write_heartbeat(self, service_name: str, status: str, details: dict[str, Any] | None = None) -> None:
+        """Write liveness heartbeat for monitoring realtime engine health."""
         query = text(
             """
             INSERT INTO engine_heartbeat (service_name, status, heartbeat_ts, details)

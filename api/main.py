@@ -1,4 +1,5 @@
 from __future__ import annotations
+"""FastAPI surface for dashboard, engine control, and compliance-safe data access."""
 
 import asyncio
 import os
@@ -33,6 +34,7 @@ _engine_lock = asyncio.Lock()
 
 
 async def _ensure_engine() -> RealtimePredictionEngine:
+    """Lazily initialize singleton realtime engine."""
     global _engine
     if _engine is None:
         _engine = RealtimePredictionEngine()
@@ -41,6 +43,7 @@ async def _ensure_engine() -> RealtimePredictionEngine:
 
 @app.on_event("startup")
 async def startup_event() -> None:
+    """Initialize schema and optionally auto-start realtime engine on app boot."""
     db.init_schema()
     auto_start = os.getenv("AUTO_START_ENGINE", "true").lower() == "true"
     if not auto_start:
@@ -57,6 +60,7 @@ async def startup_event() -> None:
 
 @app.on_event("shutdown")
 async def shutdown_event() -> None:
+    """Stop realtime engine gracefully on API shutdown."""
     if _engine is None:
         return
 
@@ -67,6 +71,7 @@ async def shutdown_event() -> None:
 
 @app.get("/health")
 async def health() -> dict[str, Any]:
+    """Basic health endpoint for service checks."""
     return {
         "status": "ok",
         "app": settings.app_name,
@@ -77,6 +82,7 @@ async def health() -> dict[str, Any]:
 
 @app.get("/kite/auth-check")
 async def kite_auth_check() -> dict[str, Any]:
+    """Validate current Kite credentials via profile probe."""
     try:
         profile = await asyncio.to_thread(KiteHistoricalClient().profile)
         return {
@@ -94,6 +100,7 @@ async def kite_auth_check() -> dict[str, Any]:
 
 @app.get("/compliance/disclaimer")
 async def compliance_disclaimer() -> dict[str, str]:
+    """Expose disclaimer text for UI clients."""
     disclaimer = get_disclaimer()
     return {
         "version": DISCLAIMER_VERSION,
@@ -105,6 +112,7 @@ async def compliance_disclaimer() -> dict[str, str]:
 
 @app.post("/engine/start")
 async def start_engine() -> dict[str, str]:
+    """Manually start realtime engine."""
     async with _engine_lock:
         engine = await _ensure_engine()
         await engine.start()
@@ -113,6 +121,7 @@ async def start_engine() -> dict[str, str]:
 
 @app.post("/engine/stop")
 async def stop_engine() -> dict[str, str]:
+    """Manually stop realtime engine."""
     global _engine
     async with _engine_lock:
         if _engine is None:
@@ -124,6 +133,7 @@ async def stop_engine() -> dict[str, str]:
 
 @app.get("/signals/latest")
 async def latest_signals(limit: int = Query(default=100, ge=1, le=1000)) -> dict[str, Any]:
+    """Return latest signal snapshot across symbols/timeframes."""
     rows = db.get_latest_predictions(limit=limit)
     return {"count": len(rows), "rows": rows}
 
@@ -134,6 +144,7 @@ async def signal_history(
     timeframe: str = Query(pattern="^(1m|5m|15m|1h|1d)$"),
     limit: int = Query(default=100, ge=1, le=1000),
 ) -> dict[str, Any]:
+    """Return historical prediction records for one symbol/timeframe."""
     rows = db.list_recent_predictions(symbol=symbol, timeframe=timeframe, limit=limit)
     return {"count": len(rows), "rows": rows}
 
@@ -144,6 +155,7 @@ async def candles(
     timeframe: str = Query(pattern="^(1m|5m|15m|1h|1d)$"),
     limit: int = Query(default=300, ge=10, le=2000),
 ) -> dict[str, Any]:
+    """Return recent candles for dashboard charting."""
     frame = db.get_recent_candles(symbol=symbol, timeframe=timeframe, limit=limit)
     if frame.empty:
         raise HTTPException(status_code=404, detail="No candles found")
@@ -155,6 +167,7 @@ async def candles(
 
 @app.get("/backtest/latest")
 async def latest_backtest(symbol: str, timeframe: str = Query(pattern="^(15m|1d)$")) -> dict[str, Any]:
+    """Fetch latest simulated backtest metrics."""
     row = db.get_latest_backtest_metrics(symbol=symbol, timeframe=timeframe)
     if row is None:
         raise HTTPException(status_code=404, detail="No backtest metrics found")
@@ -167,6 +180,7 @@ async def historical_backfill(
     timeframe: str = Query(pattern="^(1m|5m|15m|1h|1d)$"),
     days: int = Query(default=30, ge=1, le=2000),
 ) -> dict[str, Any]:
+    """Trigger historical backfill through realtime engine."""
     async with _engine_lock:
         engine = await _ensure_engine()
         try:

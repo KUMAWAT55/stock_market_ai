@@ -1,4 +1,5 @@
 from __future__ import annotations
+"""Simulation-only risk guardrails for generated model signals."""
 
 from dataclasses import dataclass
 from datetime import datetime, timedelta
@@ -10,6 +11,8 @@ from config.config import get_settings
 
 @dataclass(slots=True)
 class RiskDecision:
+    """Final governance decision produced for one model signal."""
+
     approved_signal: str
     position_size: float
     stop_loss_price: float | None
@@ -36,6 +39,7 @@ class RiskManager:
         last_price: float,
         realized_return: float | None = None,
     ) -> RiskDecision:
+        """Apply throttling, drawdown, sizing, and stop-loss governance checks."""
         key = (symbol, timeframe)
         now = datetime.utcnow()
 
@@ -43,6 +47,7 @@ class RiskManager:
             throttled = self._is_throttled(key=key, now=now)
             drawdown_pct = self._update_drawdown(key=key, realized_return=realized_return)
 
+            # Hard block when simulated drawdown breaches configured limit.
             if drawdown_pct >= self.settings.max_drawdown_pct:
                 return RiskDecision(
                     approved_signal="HOLD",
@@ -53,6 +58,7 @@ class RiskManager:
                     throttled=throttled,
                 )
 
+            # Cooldown prevents excessive signal churn/overtrading behavior.
             if throttled:
                 return RiskDecision(
                     approved_signal="HOLD",
@@ -63,6 +69,7 @@ class RiskManager:
                     throttled=True,
                 )
 
+            # Neutral model output should not allocate capital.
             if signal == "HOLD":
                 return RiskDecision(
                     approved_signal="HOLD",
@@ -94,6 +101,7 @@ class RiskManager:
             )
 
     def _is_throttled(self, key: tuple[str, str], now: datetime) -> bool:
+        """Check signal cooldown window per symbol/timeframe."""
         last = self._last_signal_time.get(key)
         if last is None:
             return False
@@ -101,6 +109,7 @@ class RiskManager:
         return now < (last + cooldown)
 
     def _update_drawdown(self, key: tuple[str, str], realized_return: float | None) -> float:
+        """Update per-series equity curve and return current drawdown."""
         curve = self._equity_curve.setdefault(key, [1.0])
         if realized_return is not None:
             curve.append(curve[-1] * (1.0 + realized_return))
@@ -113,6 +122,7 @@ class RiskManager:
 
     @staticmethod
     def to_payload(decision: RiskDecision) -> dict[str, Any]:
+        """Serialize RiskDecision for DB storage and dashboard display."""
         return {
             "approved_signal": decision.approved_signal,
             "position_size": decision.position_size,

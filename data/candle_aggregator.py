@@ -1,4 +1,5 @@
 from __future__ import annotations
+"""Tick-to-candle aggregation with market-session awareness."""
 
 from collections import defaultdict, deque
 from dataclasses import dataclass
@@ -13,6 +14,8 @@ from data.tick_handler import NormalizedTick
 
 @dataclass(slots=True)
 class Candle:
+    """Immutable candle payload emitted to storage/prediction layers."""
+
     symbol: str
     timeframe: str
     candle_start: datetime
@@ -28,6 +31,8 @@ class Candle:
 
 @dataclass(slots=True)
 class _CandleState:
+    """Mutable in-progress candle state for a symbol+timeframe bucket."""
+
     symbol: str
     timeframe: str
     candle_start: datetime
@@ -40,6 +45,7 @@ class _CandleState:
     tick_count: int
 
     def update(self, price: float, volume: int) -> None:
+        """Update OHLCV using the latest tick."""
         self.high = max(self.high, price)
         self.low = min(self.low, price)
         self.close = price
@@ -47,6 +53,7 @@ class _CandleState:
         self.tick_count += 1
 
     def to_candle(self, is_partial: bool = False) -> Candle:
+        """Freeze mutable state into immutable Candle object."""
         return Candle(
             symbol=self.symbol,
             timeframe=self.timeframe,
@@ -92,6 +99,7 @@ class CandleAggregator:
                 current = self._states.get(key)
 
                 if current is None:
+                    # First tick for this symbol+timeframe initializes current bucket.
                     self._states[key] = _CandleState(
                         symbol=tick.symbol,
                         timeframe=timeframe,
@@ -107,6 +115,7 @@ class CandleAggregator:
                     continue
 
                 if bucket_start > current.candle_start:
+                    # Time bucket rolled over: finalize old candle and start a new one.
                     finalized = current.to_candle(is_partial=False)
                     closed.append(finalized)
                     self._history[key].append(finalized)
@@ -147,6 +156,7 @@ class CandleAggregator:
                 self._history[key].append(candle)
 
     def recent_candles(self, symbol: str, timeframe: str, limit: int = 300) -> list[Candle]:
+        """Return persisted history plus current partial candle for charting/features."""
         key = (symbol, timeframe)
         with self._lock:
             candles = list(self._history.get(key, deque()))
@@ -158,11 +168,13 @@ class CandleAggregator:
         return candles[-limit:]
 
     def _to_market_tz(self, ts: datetime) -> datetime:
+        """Normalize timestamps into configured market timezone."""
         if ts.tzinfo is None:
             return ts.replace(tzinfo=self._tz)
         return ts.astimezone(self._tz)
 
     def _bucket_bounds(self, ts: datetime, timeframe: str) -> tuple[datetime, datetime]:
+        """Compute candle start/end boundaries for the given timestamp/timeframe."""
         if timeframe.endswith("m") and timeframe[:-1].isdigit():
             market_open_dt = datetime.combine(ts.date(), self._market_open, self._tz)
             market_close_dt = datetime.combine(ts.date(), self._close_time_for_day(ts.date()), self._tz)
@@ -190,6 +202,7 @@ class CandleAggregator:
         raise ValueError(f"Unsupported timeframe for candle aggregation: {timeframe}")
 
     def _is_trading_time(self, ts: datetime) -> bool:
+        """Guardrail to ignore weekends/holidays/out-of-session ticks."""
         trading_day = ts.date()
         if trading_day.weekday() >= 5:
             return False
@@ -201,6 +214,7 @@ class CandleAggregator:
         return start <= ts <= end
 
     def _close_time_for_day(self, day: date) -> time:
+        """Resolve regular vs configured partial-day market close time."""
         close_override = self._partial_market_closes.get(day.isoformat())
         if not close_override:
             return self._default_market_close

@@ -1,4 +1,5 @@
 from __future__ import annotations
+"""Offline training entrypoint for directional models using historical candles."""
 
 import argparse
 import pickle
@@ -33,6 +34,8 @@ except Exception:  # pragma: no cover
 
 @dataclass(slots=True)
 class TrainOutput:
+    """Training result summary with artifact location and evaluation metrics."""
+
     artifact_path: Path
     model_name: str
     version: str
@@ -45,6 +48,7 @@ def _default_min_rows(timeframe: str) -> int:
 
 
 def _make_model(seed: int = 42) -> tuple[str, Any]:
+    """Build preferred estimator; fallback to RandomForest if XGBoost unavailable."""
     if XGBClassifier is not None:
         model = XGBClassifier(
             n_estimators=300,
@@ -72,6 +76,7 @@ def _make_model(seed: int = 42) -> tuple[str, Any]:
 
 
 def _evaluate(y_true: np.ndarray, y_pred: np.ndarray, prob_up: np.ndarray) -> dict[str, float]:
+    """Compute core classification metrics for simulated performance reporting."""
     metrics = {
         "accuracy": float(accuracy_score(y_true, y_pred)),
         "precision": float(precision_score(y_true, y_pred, zero_division=0)),
@@ -90,6 +95,7 @@ def walk_forward_validation(
     min_train_rows: int = 160,
     step: int = 5,
 ) -> dict[str, float]:
+    """Approximate live performance via expanding-window walk-forward evaluation."""
     if len(x) <= min_train_rows + 1:
         return {"wf_points": 0.0, "wf_accuracy": 0.0}
 
@@ -124,6 +130,7 @@ def train_from_candles(
     candles: pd.DataFrame,
     min_rows: int | None = None,
 ) -> TrainOutput:
+    """Train a model from prepared candles, register artifact, and persist metrics."""
     settings = get_settings()
     db_manager = DatabaseManager()
     registry = ModelRegistry(db_manager)
@@ -141,6 +148,7 @@ def train_from_candles(
     x = frame[FEATURE_COLUMNS].astype(float)
     y = frame["target_up"].astype(int)
 
+    # Time-ordered split avoids leakage for sequential market data.
     split_idx = int(len(frame) * 0.8)
     x_train, x_test = x.iloc[:split_idx], x.iloc[split_idx:]
     y_train, y_test = y.iloc[:split_idx], y.iloc[split_idx:]
@@ -198,6 +206,7 @@ def train_from_kite(
     lookback_days: int = 180,
     min_rows: int | None = None,
 ) -> TrainOutput:
+    """Fetch historical candles from Kite and delegate to local training routine."""
     historical = KiteHistoricalClient()
     end_dt = datetime.now()
     start_dt = end_dt - timedelta(days=lookback_days)
@@ -212,6 +221,7 @@ def train_from_kite(
 
 
 def _parse_args() -> argparse.Namespace:
+    """Parse CLI arguments for local training runs."""
     parser = argparse.ArgumentParser(description="Train direction model from Kite historical candles")
     parser.add_argument("--symbol", required=True)
     parser.add_argument("--instrument-token", type=int, required=True)
@@ -227,6 +237,7 @@ def _parse_args() -> argparse.Namespace:
 
 
 def main() -> None:
+    """CLI entrypoint."""
     args = _parse_args()
     out = train_from_kite(
         symbol=args.symbol,

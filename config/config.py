@@ -1,4 +1,10 @@
 from __future__ import annotations
+"""Centralized runtime configuration for the realtime research platform.
+
+This module is intentionally environment-driven so local, staging, and production
+setups can use the same code path with different env vars.
+"""
+
 import json
 import os
 from dataclasses import dataclass, field
@@ -12,11 +18,13 @@ ROOT_DIR = Path(__file__).resolve().parents[1]
 
 
 def _parse_csv_env(value: str, default: list[str]) -> list[str]:
+    """Parse comma-separated env values into normalized lowercase tokens."""
     cleaned = [item.strip().lower() for item in value.split(",") if item.strip()]
     return cleaned if cleaned else [item.lower() for item in default]
 
 
 def _parse_int_csv_env(value: str) -> list[int]:
+    """Parse comma-separated integers and ignore invalid tokens."""
     out: list[int] = []
     for token in value.split(","):
         token = token.strip()
@@ -83,6 +91,7 @@ class Settings:
 
     @property
     def timeframe_minutes(self) -> dict[str, int]:
+        """Map configured timeframe labels to minute duration for scheduling math."""
         mapping: dict[str, int] = {}
         for timeframe in self.candle_timeframes:
             if timeframe.endswith("m") and timeframe[:-1].isdigit():
@@ -144,6 +153,7 @@ class Settings:
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:
+    """Return a singleton settings object and ensure required local paths exist."""
     settings = Settings()
     settings.model_artifact_dir.mkdir(parents=True, exist_ok=True)
     settings.log_path.parent.mkdir(parents=True, exist_ok=True)

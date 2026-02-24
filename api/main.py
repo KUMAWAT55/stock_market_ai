@@ -9,8 +9,14 @@ from loguru import logger
 
 from compliance.disclaimer import DISCLAIMER_VERSION, get_disclaimer
 from config.config import get_settings
+from data.kite_client import KiteHistoricalClient
 from database.db_manager import DatabaseManager
 from realtime.realtime_engine import RealtimePredictionEngine
+
+try:
+    from kiteconnect.exceptions import TokenException
+except Exception:  # pragma: no cover
+    TokenException = Exception
 
 
 settings = get_settings()
@@ -69,6 +75,23 @@ async def health() -> dict[str, Any]:
     }
 
 
+@app.get("/kite/auth-check")
+async def kite_auth_check() -> dict[str, Any]:
+    try:
+        profile = await asyncio.to_thread(KiteHistoricalClient().profile)
+        return {
+            "status": "ok",
+            "user_id": profile.get("user_id"),
+            "user_name": profile.get("user_name"),
+            "email": profile.get("email"),
+            "user_type": profile.get("user_type"),
+        }
+    except TokenException as exc:
+        raise HTTPException(status_code=401, detail=f"Kite auth failed: {exc}") from exc
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"Kite auth probe failed: {exc}") from exc
+
+
 @app.get("/compliance/disclaimer")
 async def compliance_disclaimer() -> dict[str, str]:
     disclaimer = get_disclaimer()
@@ -108,7 +131,7 @@ async def latest_signals(limit: int = Query(default=100, ge=1, le=1000)) -> dict
 @app.get("/signals/history")
 async def signal_history(
     symbol: str,
-    timeframe: str = Query(pattern="^(15m|1d)$"),
+    timeframe: str = Query(pattern="^(1m|5m|15m|1h|1d)$"),
     limit: int = Query(default=100, ge=1, le=1000),
 ) -> dict[str, Any]:
     rows = db.list_recent_predictions(symbol=symbol, timeframe=timeframe, limit=limit)
@@ -118,7 +141,7 @@ async def signal_history(
 @app.get("/candles")
 async def candles(
     symbol: str,
-    timeframe: str = Query(pattern="^(15m|1d)$"),
+    timeframe: str = Query(pattern="^(1m|5m|15m|1h|1d)$"),
     limit: int = Query(default=300, ge=10, le=2000),
 ) -> dict[str, Any]:
     frame = db.get_recent_candles(symbol=symbol, timeframe=timeframe, limit=limit)
@@ -136,3 +159,24 @@ async def latest_backtest(symbol: str, timeframe: str = Query(pattern="^(15m|1d)
     if row is None:
         raise HTTPException(status_code=404, detail="No backtest metrics found")
     return row
+
+
+@app.post("/historical/backfill")
+async def historical_backfill(
+    symbol: str,
+    timeframe: str = Query(pattern="^(1m|5m|15m|1h|1d)$"),
+    days: int = Query(default=30, ge=1, le=2000),
+) -> dict[str, Any]:
+    async with _engine_lock:
+        engine = await _ensure_engine()
+        try:
+            result = await engine.backfill_historical(symbol=symbol, timeframe=timeframe, days=days)
+        except TokenException as exc:
+            logger.warning("Backfill auth failure: {}", exc)
+            raise HTTPException(status_code=401, detail=f"Kite auth failed: {exc}") from exc
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        except Exception as exc:
+            logger.exception("Backfill failed for {} {} {}d", symbol, timeframe, days)
+            raise HTTPException(status_code=500, detail=f"Backfill failed: {exc}") from exc
+    return result

@@ -239,7 +239,7 @@ Defined in `database/schema.sql`.
 
 ### Core tables
 - `realtime_ticks`: raw normalized ticks
-- `ohlcv_candles`: 15m/1d candle store
+- `ohlcv_candles`: candle store for `1m/5m/15m/1h/1d`
 - `prediction_events`: complete signal event log
 - `model_registry`: active model metadata
 - `simulated_backtest_metrics`: training/backtest snapshots
@@ -257,13 +257,15 @@ Defined in `database/schema.sql`.
 Source: `api/main.py`
 
 - `GET /health`
+- `GET /kite/auth-check`
 - `GET /compliance/disclaimer`
 - `POST /engine/start`
 - `POST /engine/stop`
 - `GET /signals/latest?limit=...`
-- `GET /signals/history?symbol=...&timeframe=15m|1d&limit=...`
-- `GET /candles?symbol=...&timeframe=15m|1d&limit=...`
+- `GET /signals/history?symbol=...&timeframe=1m|5m|15m|1h|1d&limit=...`
+- `GET /candles?symbol=...&timeframe=1m|5m|15m|1h|1d&limit=...`
 - `GET /backtest/latest?symbol=...&timeframe=15m|1d`
+- `POST /historical/backfill?symbol=...&timeframe=1m|5m|15m|1h|1d&days=30`
 
 ## 13. Dashboard Behavior
 
@@ -272,10 +274,16 @@ Source: `dashboard/streamlit_app.py`
 Shows:
 - SEBI disclaimer and risk disclosure (from API)
 - symbol/timeframe/candle count/refresh controls
+- one-click historical backfill control in UI
 - live candlestick chart with EMA12/EMA26 overlays
 - current prediction + confidence + prob_up + model version
 - historical signal table
 - latest simulated backtest metrics
+
+Note:
+- model inference is currently configured for `15m` and `1d`.
+- `1m/5m/1h` are available as candle streams and chart timeframes.
+- to enable prediction on additional frames, train those models and set `MODEL_TIMEFRAMES` (e.g. `1m,5m,15m,1h,1d`).
 
 Polling model:
 - pulls from API every `Refresh` seconds (or disabled with `0`).
@@ -293,11 +301,14 @@ Source: `config/config.py` and `.env.example`
 - `AUTO_START_ENGINE` (default `true`)
 - `LOG_PATH`
 - `KITE_SUBSCRIBE_MODE` (default `full`)
+- `CANDLE_TIMEFRAMES` (default `1m,5m,15m,1h,1d`)
+- `MODEL_TIMEFRAMES` (default `15m,1d`)
 - `SIGNAL_BUY_THRESHOLD`, `SIGNAL_SELL_THRESHOLD`
 - `SIGNAL_COOLDOWN_SECONDS`
 - `MAX_CAPITAL_ALLOCATION_PCT`, `STOP_LOSS_PCT`, `MAX_DRAWDOWN_PCT`
 - `SYMBOL_TOKEN_MAP_FILE` (default `config/instruments.json`)
 - `MARKET_HOLIDAY_FILE` (default `config/market_holidays.json`)
+- `PARTIAL_MARKET_CLOSES_JSON` (default `{}`)
 
 ### Files
 - `config/instruments.json`: token-symbol map used for subscriptions
@@ -366,6 +377,13 @@ python3 -m models.train --symbol RELIANCE --instrument-token 738561 --timeframe 
 python3 -m models.train --symbol RELIANCE --instrument-token 738561 --timeframe 1d --lookback-days 720
 ```
 
+Optional intraday variants:
+```bash
+python3 -m models.train --symbol RELIANCE --instrument-token 738561 --timeframe 1m --lookback-days 30
+python3 -m models.train --symbol RELIANCE --instrument-token 738561 --timeframe 5m --lookback-days 120
+python3 -m models.train --symbol RELIANCE --instrument-token 738561 --timeframe 1h --lookback-days 365
+```
+
 If daily data is sparse:
 ```bash
 python3 -m models.train --symbol RELIANCE --instrument-token 738561 --timeframe 1d --lookback-days 720 --min-rows 40
@@ -380,6 +398,15 @@ uvicorn api.main:app --host 127.0.0.1 --port 8000 --reload
 Terminal 2:
 ```bash
 streamlit run dashboard/streamlit_app.py
+```
+
+Optional: backfill historical candles (outside market hours or for immediate charts):
+```bash
+curl -X POST \"http://127.0.0.1:8000/historical/backfill?symbol=RELIANCE&timeframe=1m&days=10\"
+curl -X POST \"http://127.0.0.1:8000/historical/backfill?symbol=RELIANCE&timeframe=5m&days=30\"
+curl -X POST \"http://127.0.0.1:8000/historical/backfill?symbol=RELIANCE&timeframe=15m&days=90\"
+curl -X POST \"http://127.0.0.1:8000/historical/backfill?symbol=RELIANCE&timeframe=1h&days=120\"
+curl -X POST \"http://127.0.0.1:8000/historical/backfill?symbol=RELIANCE&timeframe=1d&days=365\"
 ```
 
 ## 16. Daily Operator Checklist
@@ -413,6 +440,7 @@ streamlit run dashboard/streamlit_app.py
 ### `No candle data available` in dashboard
 - market closed, no closed candles yet, or token-symbol mismatch.
 - check `config/instruments.json` and API logs.
+- run `/historical/backfill` for the selected symbol/timeframe to preload candles.
 
 ### `Insufficient rows for training ...`
 - increase `--lookback-days` or lower `--min-rows`.

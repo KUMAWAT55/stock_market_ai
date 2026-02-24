@@ -215,7 +215,7 @@ def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Train direction model from Kite historical candles")
     parser.add_argument("--symbol", required=True)
     parser.add_argument("--instrument-token", type=int, required=True)
-    parser.add_argument("--timeframe", choices=["15m", "1d"], required=True)
+    parser.add_argument("--timeframe", choices=["1m", "5m", "15m", "1h", "1d"], required=True)
     parser.add_argument("--lookback-days", type=int, default=240)
     parser.add_argument(
         "--min-rows",

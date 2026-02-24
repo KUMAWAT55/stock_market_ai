@@ -63,10 +63,11 @@ class _CandleState:
 
 
 class CandleAggregator:
-    """Aggregates live ticks into 15m and daily candles in a thread-safe way."""
+    """Aggregates live ticks into configured candles in a thread-safe way."""
 
     def __init__(self, history_size: int = 500) -> None:
         settings = get_settings()
+        self._timeframes = list(settings.candle_timeframes)
         self._tz = ZoneInfo(settings.market_timezone)
         self._market_open = settings.market_open
         self._default_market_close = settings.market_close
@@ -85,7 +86,7 @@ class CandleAggregator:
             return closed
 
         with self._lock:
-            for timeframe in ("15m", "1d"):
+            for timeframe in self._timeframes:
                 bucket_start, bucket_end = self._bucket_bounds(tick_ts, timeframe)
                 key = (tick.symbol, timeframe)
                 current = self._states.get(key)
@@ -162,17 +163,31 @@ class CandleAggregator:
         return ts.astimezone(self._tz)
 
     def _bucket_bounds(self, ts: datetime, timeframe: str) -> tuple[datetime, datetime]:
-        if timeframe == "15m":
+        if timeframe.endswith("m") and timeframe[:-1].isdigit():
             market_open_dt = datetime.combine(ts.date(), self._market_open, self._tz)
+            market_close_dt = datetime.combine(ts.date(), self._close_time_for_day(ts.date()), self._tz)
             minutes_from_open = int((ts - market_open_dt).total_seconds() // 60)
-            bucket_index = max(minutes_from_open, 0) // 15
-            start = market_open_dt + timedelta(minutes=bucket_index * 15)
-            end = start + timedelta(minutes=15)
+            duration_minutes = int(timeframe[:-1])
+            bucket_index = max(minutes_from_open, 0) // duration_minutes
+            start = market_open_dt + timedelta(minutes=bucket_index * duration_minutes)
+            end = min(start + timedelta(minutes=duration_minutes), market_close_dt)
+            return start, end
+        if timeframe.endswith("h") and timeframe[:-1].isdigit():
+            market_open_dt = datetime.combine(ts.date(), self._market_open, self._tz)
+            market_close_dt = datetime.combine(ts.date(), self._close_time_for_day(ts.date()), self._tz)
+            minutes_from_open = int((ts - market_open_dt).total_seconds() // 60)
+            duration_minutes = int(timeframe[:-1]) * 60
+            bucket_index = max(minutes_from_open, 0) // duration_minutes
+            start = market_open_dt + timedelta(minutes=bucket_index * duration_minutes)
+            end = min(start + timedelta(minutes=duration_minutes), market_close_dt)
             return start, end
 
-        day_start = datetime.combine(ts.date(), self._market_open, self._tz)
-        day_end = datetime.combine(ts.date(), self._close_time_for_day(ts.date()), self._tz)
-        return day_start, day_end
+        if timeframe == "1d":
+            day_start = datetime.combine(ts.date(), self._market_open, self._tz)
+            day_end = datetime.combine(ts.date(), self._close_time_for_day(ts.date()), self._tz)
+            return day_start, day_end
+
+        raise ValueError(f"Unsupported timeframe for candle aggregation: {timeframe}")
 
     def _is_trading_time(self, ts: datetime) -> bool:
         trading_day = ts.date()

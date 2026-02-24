@@ -11,6 +11,20 @@ from typing import Any
 ROOT_DIR = Path(__file__).resolve().parents[1]
 
 
+def _parse_csv_env(value: str, default: list[str]) -> list[str]:
+    cleaned = [item.strip().lower() for item in value.split(",") if item.strip()]
+    return cleaned if cleaned else [item.lower() for item in default]
+
+
+def _parse_int_csv_env(value: str) -> list[int]:
+    out: list[int] = []
+    for token in value.split(","):
+        token = token.strip()
+        if token.isdigit():
+            out.append(int(token))
+    return out
+
+
 @dataclass(slots=True)
 class Settings:
     """Application settings loaded from environment variables with sane local defaults."""
@@ -31,12 +45,26 @@ class Settings:
     model_artifact_dir: Path = Path(os.getenv("MODEL_ARTIFACT_DIR", ROOT_DIR / "models/artifacts"))
 
     subscribe_mode: str = os.getenv("KITE_SUBSCRIBE_MODE", "full")
-    instrument_tokens: list[int] = field(default_factory=list)
+    instrument_tokens: list[int] = field(default_factory=lambda: _parse_int_csv_env(os.getenv("INSTRUMENT_TOKENS", "")))
+    candle_timeframes: list[str] = field(
+        default_factory=lambda: _parse_csv_env(
+            os.getenv("CANDLE_TIMEFRAMES", "1m,5m,15m,1h,1d"),
+            default=["1m", "5m", "15m", "1h", "1d"],
+        )
+    )
+    model_timeframes: list[str] = field(
+        default_factory=lambda: _parse_csv_env(
+            os.getenv("MODEL_TIMEFRAMES", "15m,1d"),
+            default=["15m", "1d"],
+        )
+    )
 
     market_timezone: str = os.getenv("MARKET_TIMEZONE", "Asia/Kolkata")
     market_open: time = time(9, 15)
     market_close: time = time(15, 30)
-    partial_market_closes: dict[str, str] = field(default_factory=dict)
+    partial_market_closes: dict[str, str] = field(
+        default_factory=lambda: json.loads(os.getenv("PARTIAL_MARKET_CLOSES_JSON", "{}"))
+    )
 
     signal_buy_threshold: float = float(os.getenv("SIGNAL_BUY_THRESHOLD", "0.6"))
     signal_sell_threshold: float = float(os.getenv("SIGNAL_SELL_THRESHOLD", "0.4"))
@@ -55,7 +83,17 @@ class Settings:
 
     @property
     def timeframe_minutes(self) -> dict[str, int]:
-        return {"15m": 15, "1d": 24 * 60}
+        mapping: dict[str, int] = {}
+        for timeframe in self.candle_timeframes:
+            if timeframe.endswith("m") and timeframe[:-1].isdigit():
+                mapping[timeframe] = int(timeframe[:-1])
+                continue
+            if timeframe.endswith("h") and timeframe[:-1].isdigit():
+                mapping[timeframe] = int(timeframe[:-1]) * 60
+                continue
+            if timeframe.endswith("d") and timeframe[:-1].isdigit():
+                mapping[timeframe] = int(timeframe[:-1]) * 24 * 60
+        return mapping
 
     def load_symbol_token_map(self) -> dict[int, str]:
         """Return token->symbol map from a local JSON file if present."""

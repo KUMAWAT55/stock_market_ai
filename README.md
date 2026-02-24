@@ -30,6 +30,8 @@ This repository provides an end-to-end **local** pipeline that:
 
 ## 3. High-Level Architecture
 
+![High-Level Flow Diagram](docs/images/flow.png)
+
 ```text
 Kite WebSocket ticks
     -> TickHandler (thread-safe queue)
@@ -463,6 +465,25 @@ curl -X POST \"http://127.0.0.1:8000/historical/backfill?symbol=RELIANCE&timefra
 4. Add stronger explainability (SHAP) for tree models.
 5. Add multi-symbol training orchestration and model selection policy.
 
-## 20. License / Usage
+## 20. Database Housekeeping (Archive Legacy Tables)
+
+Use the archive utility to keep `public` schema clean without dropping old tables.
+
+Dry run:
+```bash
+python3 scripts/archive_legacy_tables.py --database-url \"$DATABASE_URL\" --dry-run
+```
+
+Execute archive move:
+```bash
+python3 scripts/archive_legacy_tables.py --database-url \"$DATABASE_URL\" --execute
+```
+
+Behavior:
+- keeps active realtime tables from `database/schema.sql` in `public`
+- moves other `public` tables to a timestamped schema like `backup_archive_YYYYMMDD_HHMMSS`
+- non-destructive: data remains queryable in backup schema
+
+## 21. License / Usage
 
 Internal research project template. Ensure legal/compliance review before external user distribution.

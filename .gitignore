@@ -35,6 +35,11 @@ htmlcov/
 logs/
 *.log
 
+# Model artifacts
+models/artifacts/
+*.pkl
+*.joblib
+
 # IDE/editor
 .idea/
 .vscode/

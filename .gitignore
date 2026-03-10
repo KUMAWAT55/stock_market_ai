@@ -18,6 +18,7 @@ dist/
 webapp/dist/
 *.egg-info/
 .eggs/
+coverage/
 
 # Test and coverage outputs
 .pytest_cache/
@@ -38,11 +39,25 @@ logs/
 .idea/
 .vscode/
 .slingshot/
-webapp/node_modules/
+node_modules/
+
+# OS/editor temp files
+*.swp
+*.swo
+*~
+*.tmp
+*.bak
+.cache/
 
 # Environment and local config
 .env
 .env.*
 *.local
+.envrc
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
 
 helpers.sh

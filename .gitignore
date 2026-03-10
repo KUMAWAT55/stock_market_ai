@@ -30,6 +30,8 @@ htmlcov/
 .mypy_cache/
 .ruff_cache/
 .pyre/
+*.tsbuildinfo
+.eslintcache
 
 # Logs
 logs/

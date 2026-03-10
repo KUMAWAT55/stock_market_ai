@@ -1,0 +1,472 @@
+{
+  "info": {
+    "_postman_id": "9f5ca624-dcd6-4ec6-b963-08f012f06783",
+    "name": "TradeIQ Realtime Signal API",
+    "description": "Collection for validating all TradeIQ FastAPI endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "event": [
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.test('Status is not 5xx', function () {",
+          "  pm.expect(pm.response.code).to.be.below(500);",
+          "});"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:8000"
+    },
+    {
+      "key": "symbol",
+      "value": "RELIANCE"
+    },
+    {
+      "key": "timeframe",
+      "value": "15m"
+    },
+    {
+      "key": "timeframes",
+      "value": "1m,5m,15m,1h,1d"
+    },
+    {
+      "key": "limit",
+      "value": "100"
+    },
+    {
+      "key": "historyLimit",
+      "value": "200"
+    },
+    {
+      "key": "candleLimit",
+      "value": "300"
+    },
+    {
+      "key": "days",
+      "value": "30"
+    },
+    {
+      "key": "ensureWait",
+      "value": "false"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "health"
+          ]
+        },
+        "description": "Service health check"
+      }
+    },
+    {
+      "name": "Kite Auth Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/kite/auth-check",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "kite",
+            "auth-check"
+          ]
+        },
+        "description": "Checks Kite credentials and session validity"
+      }
+    },
+    {
+      "name": "Compliance Disclaimer",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/compliance/disclaimer",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "compliance",
+            "disclaimer"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Engine",
+      "item": [
+        {
+          "name": "Start Engine",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/engine/start",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "engine",
+                "start"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Engine Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/engine/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "engine",
+                "status"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Stop Engine",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/engine/stop",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "engine",
+                "stop"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Rules",
+      "item": [
+        {
+          "name": "Timeframe Rules",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rules/timeframe?timeframe={{timeframe}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rules",
+                "timeframe"
+              ],
+              "query": [
+                {
+                  "key": "timeframe",
+                  "value": "{{timeframe}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Signals",
+      "item": [
+        {
+          "name": "Latest Signals",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/signals/latest?limit={{limit}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "signals",
+                "latest"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "{{limit}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Signal History",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/signals/history?symbol={{symbol}}&timeframe={{timeframe}}&limit={{historyLimit}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "signals",
+                "history"
+              ],
+              "query": [
+                {
+                  "key": "symbol",
+                  "value": "{{symbol}}"
+                },
+                {
+                  "key": "timeframe",
+                  "value": "{{timeframe}}"
+                },
+                {
+                  "key": "limit",
+                  "value": "{{historyLimit}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Probability Vector",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/signals/probability-vector?symbol={{symbol}}&timeframes={{timeframes}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "signals",
+                "probability-vector"
+              ],
+              "query": [
+                {
+                  "key": "symbol",
+                  "value": "{{symbol}}"
+                },
+                {
+                  "key": "timeframes",
+                  "value": "{{timeframes}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Market Data",
+      "item": [
+        {
+          "name": "Candles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/candles?symbol={{symbol}}&timeframe={{timeframe}}&limit={{candleLimit}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "candles"
+              ],
+              "query": [
+                {
+                  "key": "symbol",
+                  "value": "{{symbol}}"
+                },
+                {
+                  "key": "timeframe",
+                  "value": "{{timeframe}}"
+                },
+                {
+                  "key": "limit",
+                  "value": "{{candleLimit}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Live Price",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/price/live?symbol={{symbol}}&timeframe={{timeframe}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "price",
+                "live"
+              ],
+              "query": [
+                {
+                  "key": "symbol",
+                  "value": "{{symbol}}"
+                },
+                {
+                  "key": "timeframe",
+                  "value": "{{timeframe}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Historical",
+      "item": [
+        {
+          "name": "Ensure Historical Coverage",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/historical/ensure?symbol={{symbol}}&timeframe={{timeframe}}&wait={{ensureWait}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "historical",
+                "ensure"
+              ],
+              "query": [
+                {
+                  "key": "symbol",
+                  "value": "{{symbol}}"
+                },
+                {
+                  "key": "timeframe",
+                  "value": "{{timeframe}}"
+                },
+                {
+                  "key": "wait",
+                  "value": "{{ensureWait}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Ensure Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/historical/ensure/status?symbol={{symbol}}&timeframe={{timeframe}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "historical",
+                "ensure",
+                "status"
+              ],
+              "query": [
+                {
+                  "key": "symbol",
+                  "value": "{{symbol}}"
+                },
+                {
+                  "key": "timeframe",
+                  "value": "{{timeframe}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Backfill Historical",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/historical/backfill?symbol={{symbol}}&timeframe={{timeframe}}&days={{days}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "historical",
+                "backfill"
+              ],
+              "query": [
+                {
+                  "key": "symbol",
+                  "value": "{{symbol}}"
+                },
+                {
+                  "key": "timeframe",
+                  "value": "{{timeframe}}"
+                },
+                {
+                  "key": "days",
+                  "value": "{{days}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Backtest",
+      "item": [
+        {
+          "name": "Latest Backtest",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/backtest/latest?symbol={{symbol}}&timeframe={{timeframe}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "backtest",
+                "latest"
+              ],
+              "query": [
+                {
+                  "key": "symbol",
+                  "value": "{{symbol}}"
+                },
+                {
+                  "key": "timeframe",
+                  "value": "{{timeframe}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

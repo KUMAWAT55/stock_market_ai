@@ -1,0 +1,77 @@
+{
+  "random_seed": 42,
+  "correlation_threshold": 0.97,
+  "oof_splits": 5,
+  "train_fraction": 0.6,
+  "calibration_fraction": 0.2,
+  "plans": {
+    "1m": {
+      "base_models": ["lightgbm", "logreg"],
+      "strategy": "soft_voting",
+      "meta_model": null,
+      "calibration": "isotonic",
+      "min_rows": 2500
+    },
+    "5m": {
+      "base_models": ["xgboost", "lightgbm", "logreg"],
+      "strategy": "stacking",
+      "meta_model": "logreg",
+      "calibration": "isotonic",
+      "min_rows": 1800
+    },
+    "15m": {
+      "base_models": ["xgboost", "lightgbm", "lstm"],
+      "strategy": "stacking",
+      "meta_model": "lightgbm",
+      "calibration": "isotonic",
+      "min_rows": 1200
+    },
+    "1h": {
+      "base_models": ["lstm", "xgboost", "lightgbm"],
+      "strategy": "stacking",
+      "meta_model": "lightgbm",
+      "calibration": "platt",
+      "min_rows": 700
+    },
+    "1d": {
+      "base_models": ["lstm_attention", "xgboost", "lightgbm"],
+      "strategy": "stacking",
+      "meta_model": "lightgbm",
+      "calibration": "platt",
+      "min_rows": 300
+    }
+  },
+  "model_params": {
+    "logreg": {
+      "max_iter": 2500,
+      "C": 1.0
+    },
+    "xgboost": {
+      "n_estimators": 450,
+      "max_depth": 6,
+      "learning_rate": 0.035,
+      "subsample": 0.9,
+      "colsample_bytree": 0.85,
+      "reg_lambda": 1.5
+    },
+    "lightgbm": {
+      "n_estimators": 450,
+      "num_leaves": 64,
+      "learning_rate": 0.03,
+      "subsample": 0.9,
+      "colsample_bytree": 0.85
+    },
+    "lstm": {
+      "units": 48,
+      "epochs": 12,
+      "batch_size": 128,
+      "dropout": 0.15
+    },
+    "lstm_attention": {
+      "units": 72,
+      "epochs": 14,
+      "batch_size": 96,
+      "dropout": 0.2
+    }
+  }
+}

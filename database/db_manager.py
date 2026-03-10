@@ -10,7 +10,7 @@ from typing import Any, Iterator
 
 import pandas as pd
 from loguru import logger
-from sqlalchemy import create_engine, text
+from sqlalchemy import bindparam, create_engine, text
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session, sessionmaker
 
@@ -195,7 +195,7 @@ class DatabaseManager:
         """Fetch recent candles ordered ascending for charting/feature generation."""
         query = text(
             """
-            SELECT symbol, timeframe, candle_start, candle_end, open, high, low, close, volume, tick_count
+            SELECT symbol, timeframe, candle_start, candle_end, open, high, low, close, volume, tick_count, is_partial
             FROM ohlcv_candles
             WHERE symbol = :symbol
               AND timeframe = :timeframe
@@ -208,6 +208,54 @@ class DatabaseManager:
         if df.empty:
             return df
         return df.sort_values("candle_start").reset_index(drop=True)
+
+    def get_candle_stats(self, symbol: str, timeframe: str) -> dict[str, Any]:
+        """Return count and latest timestamps for one symbol/timeframe candle stream."""
+        query = text(
+            """
+            SELECT
+                COUNT(*) AS candle_count,
+                MIN(candle_start) AS earliest_candle_start,
+                MAX(candle_end) AS latest_candle_end
+            FROM ohlcv_candles
+            WHERE symbol = :symbol
+              AND timeframe = :timeframe
+            """
+        )
+        with self._engine.begin() as conn:
+            row = conn.execute(query, {"symbol": symbol, "timeframe": timeframe}).mappings().first()
+        return dict(row) if row else {"candle_count": 0, "earliest_candle_start": None, "latest_candle_end": None}
+
+    def get_latest_tick(self, symbol: str) -> dict[str, Any] | None:
+        """Return most recent tick snapshot for one symbol."""
+        query = text(
+            """
+            SELECT symbol, ts, last_price, source
+            FROM realtime_ticks
+            WHERE symbol = :symbol
+            ORDER BY ts DESC
+            LIMIT 1
+            """
+        )
+        with self._engine.begin() as conn:
+            row = conn.execute(query, {"symbol": symbol}).mappings().first()
+        return dict(row) if row else None
+
+    def get_latest_candle_close(self, symbol: str, timeframe: str) -> dict[str, Any] | None:
+        """Return most recent candle close for one symbol/timeframe."""
+        query = text(
+            """
+            SELECT symbol, timeframe, candle_end, close, is_partial
+            FROM ohlcv_candles
+            WHERE symbol = :symbol
+              AND timeframe = :timeframe
+            ORDER BY candle_end DESC
+            LIMIT 1
+            """
+        )
+        with self._engine.begin() as conn:
+            row = conn.execute(query, {"symbol": symbol, "timeframe": timeframe}).mappings().first()
+        return dict(row) if row else None
 
     def insert_prediction(self, payload: dict[str, Any]) -> None:
         """Persist model output with full feature/risk/explainability snapshots."""
@@ -424,6 +472,86 @@ class DatabaseManager:
             rows = conn.execute(query, {"limit": limit}).mappings().all()
         return [dict(row) for row in rows]
 
+    def get_probability_vector(self, symbol: str, timeframes: list[str]) -> dict[str, dict[str, Any]]:
+        """Return latest probability snapshot per requested timeframe for one symbol."""
+        query = text(
+            """
+            SELECT symbol, timeframe, prediction_ts, target_ts, signal, prob_up, prob_down, confidence, model_version
+            FROM prediction_events
+            WHERE symbol = :symbol
+            ORDER BY timeframe, prediction_ts DESC
+            """
+        )
+        with self._engine.begin() as conn:
+            rows = conn.execute(query, {"symbol": symbol}).mappings().all()
+
+        allowed = set(timeframes)
+        out: dict[str, dict[str, Any]] = {}
+        for row in rows:
+            tf = str(row["timeframe"])
+            if tf not in allowed or tf in out:
+                continue
+            out[tf] = dict(row)
+        return out
+
+    def get_latest_predictions_by_timeframe(
+        self,
+        symbol: str,
+        timeframes: list[str] | None = None,
+    ) -> list[dict[str, Any]]:
+        """Return latest prediction row per timeframe for one symbol."""
+        params: dict[str, Any] = {"symbol": symbol}
+        if timeframes:
+            query = text(
+                """
+                SELECT
+                    timeframe,
+                    prediction_ts,
+                    target_ts,
+                    signal,
+                    confidence,
+                    prob_up,
+                    prob_down,
+                    model_name,
+                    model_version,
+                    risk_snapshot
+                FROM prediction_events
+                WHERE symbol = :symbol
+                  AND timeframe IN :timeframes
+                ORDER BY timeframe, prediction_ts DESC
+                """
+            ).bindparams(bindparam("timeframes", expanding=True))
+            params["timeframes"] = list(timeframes)
+        else:
+            query = text(
+                """
+                SELECT
+                    timeframe,
+                    prediction_ts,
+                    target_ts,
+                    signal,
+                    confidence,
+                    prob_up,
+                    prob_down,
+                    model_name,
+                    model_version,
+                    risk_snapshot
+                FROM prediction_events
+                WHERE symbol = :symbol
+                ORDER BY timeframe, prediction_ts DESC
+                """
+            )
+
+        with self._engine.begin() as conn:
+            rows = conn.execute(query, params).mappings().all()
+
+        latest_by_tf: dict[str, dict[str, Any]] = {}
+        for row in rows:
+            timeframe = str(row["timeframe"])
+            if timeframe not in latest_by_tf:
+                latest_by_tf[timeframe] = dict(row)
+        return list(latest_by_tf.values())
+
     def insert_backtest_metrics(
         self,
         symbol: str,
@@ -498,5 +626,108 @@ class DatabaseManager:
                     "status": status,
                     "heartbeat_ts": datetime.utcnow(),
                     "details": json.dumps(details or {}, default=str),
+                },
+            )
+
+    def get_app_user_by_identifier(self, identifier: str) -> dict[str, Any] | None:
+        """Fetch one app user by username or email (case-insensitive)."""
+        query = text(
+            """
+            SELECT id, username, email, password_hash, full_name, is_active, created_at
+            FROM app_users
+            WHERE lower(username) = :identifier OR lower(email) = :identifier
+            LIMIT 1
+            """
+        )
+        with self._engine.begin() as conn:
+            row = conn.execute(query, {"identifier": identifier.strip().lower()}).mappings().first()
+        return dict(row) if row else None
+
+    def get_app_user_by_id(self, user_id: int) -> dict[str, Any] | None:
+        """Fetch one app user by primary key."""
+        query = text(
+            """
+            SELECT id, username, email, full_name, is_active, created_at
+            FROM app_users
+            WHERE id = :user_id
+            LIMIT 1
+            """
+        )
+        with self._engine.begin() as conn:
+            row = conn.execute(query, {"user_id": int(user_id)}).mappings().first()
+        return dict(row) if row else None
+
+    def create_app_user(
+        self,
+        *,
+        username: str,
+        email: str,
+        password_hash: str,
+        full_name: str | None,
+    ) -> dict[str, Any]:
+        """Create app user and return profile row."""
+        with self._engine.begin() as conn:
+            row = conn.execute(
+                text(
+                    """
+                    INSERT INTO app_users (username, email, password_hash, full_name, is_active, created_at)
+                    VALUES (:username, :email, :password_hash, :full_name, TRUE, :created_at)
+                    RETURNING id, username, email, full_name, is_active, created_at
+                    """
+                ),
+                {
+                    "username": username.strip().lower(),
+                    "email": email.strip().lower(),
+                    "password_hash": password_hash,
+                    "full_name": (full_name or "").strip() or None,
+                    "created_at": datetime.utcnow(),
+                },
+            ).mappings().first()
+
+            if row is None:
+                raise RuntimeError("Unable to create user")
+
+            conn.execute(
+                text(
+                    """
+                    INSERT INTO user_subscriptions (user_id, status, start_at, created_at)
+                    VALUES (:user_id, 'active', :start_at, :created_at)
+                    ON CONFLICT (user_id) DO NOTHING
+                    """
+                ),
+                {
+                    "user_id": int(row["id"]),
+                    "start_at": datetime.utcnow(),
+                    "created_at": datetime.utcnow(),
+                },
+            )
+        return dict(row)
+
+    def insert_contact_message(
+        self,
+        *,
+        full_name: str,
+        email: str,
+        subject: str,
+        message: str,
+        source: str = "webapp",
+    ) -> None:
+        """Store contact message submitted from public website pages."""
+        query = text(
+            """
+            INSERT INTO contact_messages (full_name, email, subject, message, source, created_at)
+            VALUES (:full_name, :email, :subject, :message, :source, :created_at)
+            """
+        )
+        with self._engine.begin() as conn:
+            conn.execute(
+                query,
+                {
+                    "full_name": full_name.strip(),
+                    "email": email.strip().lower(),
+                    "subject": subject.strip(),
+                    "message": message.strip(),
+                    "source": source.strip() or "webapp",
+                    "created_at": datetime.utcnow(),
                 },
             )

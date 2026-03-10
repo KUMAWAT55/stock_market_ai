@@ -1,145 +1,104 @@
-# Developer Guide (Micro-Level)
+# Developer Guide (FastAPI + React)
 
-This guide explains the repository module-by-module so a new developer can
-understand data flow quickly without reverse-engineering every file.
+This guide explains the runtime and module responsibilities after the React dashboard migration.
 
 ## 1. Runtime Data Flow
 
-1. `api/main.py` starts the FastAPI app and optionally auto-starts realtime engine.
-2. `realtime/realtime_engine.py` starts websocket + worker loops.
-3. `data/kite_client.py` receives raw Kite ticks.
-4. `data/tick_handler.py` normalizes and queues ticks safely across threads.
-5. `data/candle_aggregator.py` builds OHLCV candles (`1m/5m/15m/1h/1d`).
-6. `features/feature_pipeline.py` + `features/indicators.py` build model features.
-7. `models/predict.py` loads active model artifact and predicts probability/signal.
-8. `compliance/risk_manager.py` applies simulation-only governance constraints.
-9. `database/db_manager.py` persists ticks, candles, predictions, risk events, audits.
-10. `dashboard/streamlit_app.py` reads API + DB-backed auth/compliance and renders UI.
+1. `api/main.py` starts FastAPI and initializes DB schema.
+2. `realtime/realtime_engine.py` starts websocket + async workers.
+3. `data/kite_client.py` streams ticks from Kite.
+4. `data/tick_handler.py` normalizes/queues ticks.
+5. `data/candle_aggregator.py` builds multi-timeframe candles.
+6. `features/feature_pipeline.py` + `features/indicators.py` produce model features.
+7. `models/predict.py` runs model inference from active model registry.
+8. `compliance/risk_manager.py` applies simulation-only controls.
+9. `database/db_manager.py` writes ticks/candles/predictions/risk/audit/heartbeat.
+10. React app (`webapp/`) polls FastAPI consolidated snapshot endpoints.
 
-## 2. Module Responsibilities
+## 2. Backend Module Responsibilities
 
-### `config/`
+### `api/main.py`
+- Service lifecycle endpoints (`/health`, `/engine/start`, `/engine/stop`, `/engine/status`).
+- Data APIs (`/candles`, `/signals/history`, `/signals/latest`, `/price/live`).
+- Analytics APIs for web app:
+  - `/dashboard/snapshot`
+  - `/analytics/model-matrix`
+  - `/analytics/indicator-heatmap`
+  - `/analytics/backtest/model`
+  - `/analytics/backtest/strategy`
+  - `/scanner/intraday`
+- Historical sync APIs (`/historical/backfill`, `/historical/ensure`).
+- CORS middleware for React frontend.
 
-- `config/config.py`
-  - Defines `Settings` dataclass and env-driven configuration defaults.
-  - Parses timeframe lists, instrument token list, and market calendar settings.
-  - Provides helper methods for symbol map loading, holiday loading, and JSON-safe feature serialization.
-  - `get_settings()` is cached and ensures required directories exist.
+### `api/analytics.py`
+- Computes indicator heatmaps by timeframe.
+- Builds model matrix and cross-timeframe consensus.
+- Computes prediction-event backtest metrics.
+- Runs quick indicator-strategy backtests (Streak-style exploration).
 
-### `data/`
+### `realtime/realtime_engine.py`
+- Live ingestion orchestration.
+- Tick persistence.
+- Candle close handling.
+- Feature extraction and model inference.
+- Risk decisioning.
+- Prediction/audit persistence.
+- Historical backfill support.
 
-- `data/kite_client.py`
-  - `KiteRealtimeClient`: websocket wrapper with reconnect callbacks + subscriptions.
-  - `KiteHistoricalClient`: historical candle loader and Kite profile auth check.
+### `database/db_manager.py`
+- SQLAlchemy-based data access for all core entities.
+- Added helper for latest predictions by timeframe.
 
-- `data/tick_handler.py`
-  - `NormalizedTick`: canonical tick schema.
-  - `TickHandler`: converts raw ticks to `NormalizedTick` and pushes to bounded queue.
-  - Async batch drain method (`get_batch`) bridges thread callback -> asyncio loop.
+## 3. Frontend (`webapp/`)
 
-- `data/candle_aggregator.py`
-  - `Candle` and `_CandleState` for immutable/mutable candle representations.
-  - Aggregates ticks into configured time buckets with trading-hours validation.
-  - Supports history warming and partial candle snapshots for charts.
+### Stack
+- Vite + React + TypeScript
+- Plotly candlestick rendering (`react-plotly.js`)
+- React Router (`react-router-dom`) for full website navigation
 
-### `features/`
+### Key files
+- `webapp/src/App.tsx`: app shell + route mapping.
+- `webapp/src/pages/HomePage.tsx`, `AboutPage.tsx`, `ContactPage.tsx`: public site pages.
+- `webapp/src/pages/LoginPage.tsx`, `RegisterPage.tsx`: account flow pages.
+- `webapp/src/pages/DashboardPage.tsx`: protected trading dashboard.
+- `webapp/src/auth.tsx`: auth provider + token/session lifecycle.
+- `webapp/src/api.ts`: typed fetch clients for backend endpoints.
+- `webapp/src/types.ts`: API payload interfaces.
+- `webapp/src/styles.css`: responsive layout and visual system.
 
-- `features/indicators.py`
-  - Computes returns, EMA/MACD, RSI, ATR%, Bollinger width, volatility, volume z-score.
-  - Adds session-progress cyclical features (`minute_sin`, `minute_cos`).
+## 4. Local Run Commands
 
-- `features/feature_pipeline.py`
-  - Defines `FEATURE_COLUMNS` contract used by training + inference.
-  - `FeaturePipeline.latest_feature_row()` returns latest fully valid feature vector.
-  - `build_training_frame()` adds supervised target (`target_up`).
+## 4.1 Backend
 
-### `models/`
+```bash
+source .venv/bin/activate
+uvicorn api.main:app --host 127.0.0.1 --port 8000 --reload
+```
 
-- `models/train.py`
-  - Offline training pipeline from candles or directly from Kite historical API.
-  - Uses time-ordered train/test split + walk-forward validation.
-  - Registers model version and stores simulated metrics.
+## 4.2 Frontend
 
-- `models/predict.py`
-  - Cached model loading.
-  - Probability extraction across different estimator capabilities.
-  - Signal mapping with configured thresholds + lightweight explainability.
+```bash
+cd webapp
+npm install
+npm run dev
+```
 
-- `models/model_registry.py`
-  - Manages versioning metadata and active model resolution.
-  - Writes local `.meta.json` beside model artifacts and syncs DB registry.
+If API is on a different host/port:
 
-### `compliance/`
+```bash
+export VITE_API_BASE_URL='http://127.0.0.1:8000'
+```
 
-- `compliance/disclaimer.py`
-  - Single source of disclaimer/risk disclosure text and version constant.
+## 5. Debugging Entry Points
 
-- `compliance/risk_manager.py`
-  - Simulation-only guardrails: cooldown throttling, drawdown checks, stop-loss and position sizing logic.
-  - Produces structured risk payload included in each prediction event.
+- No live updates: check `/engine/status` and websocket connectivity in payload.
+- Empty charts: verify `/dashboard/snapshot` has `candles.rows`.
+- No model matrix rows: verify models are active in `model_registry` for requested timeframes.
+- Weak backtests: inspect `prediction_events` coverage and symbol/timeframe alignment.
+- Scanner empty: lower `min_confidence` or switch scanner timeframe.
 
-### `database/`
+## 6. Migration Notes
 
-- `database/schema.sql`
-  - DDL for realtime + governance tables.
-
-- `database/db_manager.py`
-  - Thin SQLAlchemy access layer (no business logic).
-  - Writes and reads candles/predictions/backtests/risk/compliance/heartbeat.
-  - All JSON payloads are serialized explicitly before insert.
-
-### `realtime/`
-
-- `realtime/realtime_engine.py`
-  - Core orchestrator:
-    - Starts websocket client.
-    - Drains tick queue.
-    - Writes ticks.
-    - Aggregates candles.
-    - Computes features.
-    - Runs model inference.
-    - Applies risk governance.
-    - Persists prediction + compliance audit.
-  - Includes backfill API support and heartbeat writer.
-
-### `api/`
-
-- `api/main.py`
-  - FastAPI endpoints for:
-    - health/auth checks
-    - engine start/stop
-    - candles and signal history
-    - simulated backtest retrieval
-    - historical backfill trigger
-
-### `dashboard/`
-
-- `dashboard/streamlit_app.py`
-  - Auth + registration + consent flow.
-  - SEBI disclaimer gating and audit logging.
-  - Controls for symbol/timeframe/backfill.
-  - Live chart + current prediction + historical signals + simulated metrics.
-  - Custom dark theme CSS for readability.
-
-### `scripts/`
-
-- `scripts/generate_kite_token.py`
-  - CLI helper to generate daily Kite access token from request token.
-
-- `scripts/archive_legacy_tables.py`
-  - Utility to move inactive DB tables into backup schema (dry-run supported).
-
-## 3. Where To Start As New Developer
-
-1. Read `README.md` for setup and run commands.
-2. Read `realtime/realtime_engine.py` for runtime orchestration.
-3. Read `database/db_manager.py` to understand persisted artifacts.
-4. Read `dashboard/streamlit_app.py` for user-facing flow and controls.
-5. Read `models/train.py` to understand retraining and evaluation policy.
-
-## 4. Debugging Entry Points
-
-- No live candles: check websocket auth and `engine_heartbeat`.
-- No predictions: verify active model in `model_registry` for selected timeframe.
-- Missing dashboard data: verify `/candles` and `/signals/history` endpoints first.
-- Backfill errors: validate instrument token map and Kite access token validity.
+- Streamlit dashboard is now legacy (`dashboard/streamlit_app.py`).
+- Primary UX surface is `webapp/` + FastAPI APIs.
+- Keep API contracts stable; frontend relies on consolidated `/dashboard/snapshot` for speed.

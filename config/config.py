@@ -7,6 +7,7 @@ setups can use the same code path with different env vars.
 
 import json
 import os
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from datetime import date, time
 from functools import lru_cache
@@ -15,6 +16,16 @@ from typing import Any
 
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
+
+
+def _parse_json_env(value: str | None, default: Any) -> Any:
+    """Parse optional JSON env var and fall back to provided default."""
+    if not value:
+        return default
+    try:
+        return json.loads(value)
+    except Exception:
+        return default
 
 
 def _parse_csv_env(value: str, default: list[str]) -> list[str]:
@@ -62,8 +73,8 @@ class Settings:
     )
     model_timeframes: list[str] = field(
         default_factory=lambda: _parse_csv_env(
-            os.getenv("MODEL_TIMEFRAMES", "15m,1d"),
-            default=["15m", "1d"],
+            os.getenv("MODEL_TIMEFRAMES", "1m,5m,15m,1h,1d"),
+            default=["1m", "5m", "15m", "1h", "1d"],
         )
     )
 
@@ -77,6 +88,100 @@ class Settings:
     signal_buy_threshold: float = float(os.getenv("SIGNAL_BUY_THRESHOLD", "0.6"))
     signal_sell_threshold: float = float(os.getenv("SIGNAL_SELL_THRESHOLD", "0.4"))
     signal_cooldown_seconds: int = int(os.getenv("SIGNAL_COOLDOWN_SECONDS", "120"))
+    signal_thresholds_by_timeframe: dict[str, dict[str, float]] = field(
+        default_factory=lambda: _parse_json_env(
+            os.getenv("SIGNAL_THRESHOLDS_BY_TIMEFRAME_JSON"),
+            {
+                "1m": {"buy": 0.62, "sell": 0.38},
+                "5m": {"buy": 0.60, "sell": 0.40},
+                "15m": {"buy": 0.58, "sell": 0.42},
+                "1h": {"buy": 0.56, "sell": 0.44},
+                "1d": {"buy": 0.54, "sell": 0.46},
+            },
+        )
+    )
+    risk_rules_by_timeframe: dict[str, dict[str, float]] = field(
+        default_factory=lambda: _parse_json_env(
+            os.getenv("RISK_RULES_BY_TIMEFRAME_JSON"),
+            {
+                "1m": {
+                    "min_confidence": 0.58,
+                    "cooldown_seconds": 180,
+                    "max_capital_allocation_pct": 0.08,
+                    "stop_loss_pct": 0.005,
+                    "max_drawdown_pct": 0.04,
+                },
+                "5m": {
+                    "min_confidence": 0.56,
+                    "cooldown_seconds": 240,
+                    "max_capital_allocation_pct": 0.10,
+                    "stop_loss_pct": 0.0075,
+                    "max_drawdown_pct": 0.05,
+                },
+                "15m": {
+                    "min_confidence": 0.55,
+                    "cooldown_seconds": 360,
+                    "max_capital_allocation_pct": 0.14,
+                    "stop_loss_pct": 0.01,
+                    "max_drawdown_pct": 0.06,
+                },
+                "1h": {
+                    "min_confidence": 0.53,
+                    "cooldown_seconds": 900,
+                    "max_capital_allocation_pct": 0.18,
+                    "stop_loss_pct": 0.015,
+                    "max_drawdown_pct": 0.08,
+                },
+                "1d": {
+                    "min_confidence": 0.52,
+                    "cooldown_seconds": 3600,
+                    "max_capital_allocation_pct": 0.20,
+                    "stop_loss_pct": 0.02,
+                    "max_drawdown_pct": 0.10,
+                },
+            },
+        )
+    )
+    auto_backfill_days_by_timeframe: dict[str, int] = field(
+        default_factory=lambda: _parse_json_env(
+            os.getenv("AUTO_BACKFILL_DAYS_BY_TIMEFRAME_JSON"),
+            {"1m": 7, "5m": 30, "15m": 90, "1h": 365, "1d": 1460},
+        )
+    )
+    auto_backfill_min_candles_by_timeframe: dict[str, int] = field(
+        default_factory=lambda: _parse_json_env(
+            os.getenv("AUTO_BACKFILL_MIN_CANDLES_BY_TIMEFRAME_JSON"),
+            {"1m": 420, "5m": 420, "15m": 260, "1h": 200, "1d": 120},
+        )
+    )
+    auto_backfill_freshness_minutes_by_timeframe: dict[str, int] = field(
+        default_factory=lambda: _parse_json_env(
+            os.getenv("AUTO_BACKFILL_FRESHNESS_MINUTES_BY_TIMEFRAME_JSON"),
+            {"1m": 20, "5m": 45, "15m": 120, "1h": 480, "1d": 4320},
+        )
+    )
+    auto_historical_ensure_enabled: bool = os.getenv("AUTO_HISTORICAL_ENSURE_ENABLED", "true").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
+    auto_historical_ensure_interval_seconds: int = int(os.getenv("AUTO_HISTORICAL_ENSURE_INTERVAL_SECONDS", "300"))
+    auto_historical_ensure_max_jobs_per_sweep: int = int(
+        os.getenv("AUTO_HISTORICAL_ENSURE_MAX_JOBS_PER_SWEEP", "8")
+    )
+    forward_return_thresholds: dict[str, float] = field(
+        default_factory=lambda: json.loads(
+            os.getenv(
+                "FORWARD_RETURN_THRESHOLDS_JSON",
+                '{"1m":0.00015,"5m":0.0003,"15m":0.0006,"1h":0.0015,"1d":0.003}',
+            )
+        )
+    )
+    market_index_symbol: str = os.getenv("MARKET_INDEX_SYMBOL", "NIFTY 50")
+    sector_map_file: Path = Path(
+        os.getenv("SECTOR_MAP_FILE", ROOT_DIR / "config/sectors.json")
+    )
 
     max_capital_allocation_pct: float = float(os.getenv("MAX_CAPITAL_ALLOCATION_PCT", "0.2"))
     stop_loss_pct: float = float(os.getenv("STOP_LOSS_PCT", "0.02"))
@@ -87,6 +192,9 @@ class Settings:
     )
     market_holiday_file: Path = Path(
         os.getenv("MARKET_HOLIDAY_FILE", ROOT_DIR / "config/market_holidays.json")
+    )
+    model_hyperparams_file: Path = Path(
+        os.getenv("MODEL_HYPERPARAMS_FILE", ROOT_DIR / "config/model_hyperparams.json")
     )
 
     @property
@@ -136,6 +244,105 @@ class Settings:
                 except ValueError:
                     continue
         return holidays
+
+    def load_sector_map(self) -> dict[str, str]:
+        """Load optional symbol->sector map for cross-sectional momentum features."""
+        if not self.sector_map_file.exists():
+            return {}
+        with self.sector_map_file.open("r", encoding="utf-8") as f:
+            raw = json.load(f)
+        if not isinstance(raw, Mapping):
+            return {}
+        out: dict[str, str] = {}
+        for symbol, sector in raw.items():
+            if symbol and sector:
+                out[str(symbol).upper()] = str(sector).upper()
+        return out
+
+    def forward_return_threshold(self, timeframe: str) -> float:
+        """Return configured forward-return threshold used to define binary target."""
+        raw = self.forward_return_thresholds.get(timeframe)
+        if raw is None:
+            return 0.0
+        return float(raw)
+
+    def signal_thresholds_for_timeframe(self, timeframe: str) -> tuple[float, float]:
+        """Return validated (buy, sell) thresholds for one timeframe."""
+        fallback_buy = float(self.signal_buy_threshold)
+        fallback_sell = float(self.signal_sell_threshold)
+        profile = self.signal_thresholds_by_timeframe.get(timeframe, {})
+
+        buy = float(profile.get("buy", fallback_buy))
+        sell = float(profile.get("sell", fallback_sell))
+        buy = min(1.0, max(0.0, buy))
+        sell = min(1.0, max(0.0, sell))
+        if sell >= buy:
+            return fallback_buy, fallback_sell
+        return buy, sell
+
+    def risk_rules_for_timeframe(self, timeframe: str) -> dict[str, float]:
+        """Return validated risk control profile for one timeframe."""
+        defaults: dict[str, float] = {
+            "min_confidence": 0.5,
+            "cooldown_seconds": float(self.signal_cooldown_seconds),
+            "max_capital_allocation_pct": float(self.max_capital_allocation_pct),
+            "stop_loss_pct": float(self.stop_loss_pct),
+            "max_drawdown_pct": float(self.max_drawdown_pct),
+        }
+        raw = self.risk_rules_by_timeframe.get(timeframe)
+        if isinstance(raw, Mapping):
+            for key in defaults:
+                try:
+                    defaults[key] = float(raw.get(key, defaults[key]))
+                except Exception:
+                    continue
+
+        defaults["min_confidence"] = min(1.0, max(0.0, defaults["min_confidence"]))
+        defaults["cooldown_seconds"] = max(0.0, defaults["cooldown_seconds"])
+        defaults["max_capital_allocation_pct"] = min(1.0, max(0.01, defaults["max_capital_allocation_pct"]))
+        defaults["stop_loss_pct"] = min(1.0, max(0.0001, defaults["stop_loss_pct"]))
+        defaults["max_drawdown_pct"] = min(1.0, max(0.01, defaults["max_drawdown_pct"]))
+        return defaults
+
+    def auto_backfill_days(self, timeframe: str) -> int:
+        """Return lookback days used for automatic historical sync."""
+        value = self.auto_backfill_days_by_timeframe.get(timeframe, 30)
+        return max(1, int(value))
+
+    def auto_backfill_min_candles(self, timeframe: str) -> int:
+        """Return minimum candles required for robust feature generation."""
+        value = self.auto_backfill_min_candles_by_timeframe.get(timeframe, 200)
+        return max(30, int(value))
+
+    def auto_backfill_freshness_minutes(self, timeframe: str) -> int:
+        """Return staleness threshold in minutes before automatic resync."""
+        value = self.auto_backfill_freshness_minutes_by_timeframe.get(timeframe, 120)
+        return max(5, int(value))
+
+    def auto_ensure_interval_seconds(self) -> int:
+        """Return frequency of backend auto ensure sweeps in seconds."""
+        return max(30, int(self.auto_historical_ensure_interval_seconds))
+
+    def auto_ensure_max_jobs_per_sweep(self) -> int:
+        """Return max number of backfill jobs spawned in one sweep."""
+        return max(1, int(self.auto_historical_ensure_max_jobs_per_sweep))
+
+    def timeframe_rule_profile(self, timeframe: str) -> dict[str, float]:
+        """Return merged signal+risk+sync profile used by inference and dashboard."""
+        buy, sell = self.signal_thresholds_for_timeframe(timeframe)
+        risk = self.risk_rules_for_timeframe(timeframe)
+        return {
+            "signal_buy_threshold": buy,
+            "signal_sell_threshold": sell,
+            "min_confidence": risk["min_confidence"],
+            "cooldown_seconds": risk["cooldown_seconds"],
+            "max_capital_allocation_pct": risk["max_capital_allocation_pct"],
+            "stop_loss_pct": risk["stop_loss_pct"],
+            "max_drawdown_pct": risk["max_drawdown_pct"],
+            "auto_backfill_days": float(self.auto_backfill_days(timeframe)),
+            "auto_backfill_min_candles": float(self.auto_backfill_min_candles(timeframe)),
+            "auto_backfill_freshness_minutes": float(self.auto_backfill_freshness_minutes(timeframe)),
+        }
 
     @staticmethod
     def serialize_features(features: dict[str, Any]) -> dict[str, Any]:

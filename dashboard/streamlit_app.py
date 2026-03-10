@@ -8,7 +8,7 @@ import os
 import secrets
 import sys
 import time
-from datetime import datetime
+from datetime import UTC, datetime
 from html import escape
 from pathlib import Path
 from typing import Any
@@ -31,9 +31,32 @@ from config.config import get_settings
 from features.indicators import add_indicators
 
 
-API_BASE_URL = os.getenv("API_BASE_URL", "http://127.0.0.1:8000")
+def _resolve_api_base_url() -> str:
+    """Resolve API base URL from env/secrets with a local-safe default."""
+    env_value = os.getenv("API_BASE_URL", "").strip()
+    if env_value:
+        return env_value.rstrip("/")
+    try:
+        secret_value = str(st.secrets.get("API_BASE_URL", "")).strip()
+    except Exception:
+        secret_value = ""
+    return (secret_value or "http://127.0.0.1:8000").rstrip("/")
+
+
+API_BASE_URL = _resolve_api_base_url()
 APP_VERSION = "tradeiq_dashboard_auth_v1_2026-02-24"
 PASSWORD_ITERATIONS = 260000
+AUTO_BACKFILL_COOLDOWN_SECONDS = int(os.getenv("AUTO_BACKFILL_COOLDOWN_SECONDS", "180"))
+API_RETRY_ATTEMPTS = int(os.getenv("API_RETRY_ATTEMPTS", "3"))
+API_RETRY_BACKOFF_SECONDS = float(os.getenv("API_RETRY_BACKOFF_SECONDS", "0.6"))
+API_CONNECT_TIMEOUT_SECONDS = float(os.getenv("API_CONNECT_TIMEOUT_SECONDS", "3"))
+API_GET_READ_TIMEOUT_SECONDS = float(os.getenv("API_GET_READ_TIMEOUT_SECONDS", "8"))
+API_POST_READ_TIMEOUT_SECONDS = float(os.getenv("API_POST_READ_TIMEOUT_SECONDS", "40"))
+API_FRAGMENT_REQUEST_ATTEMPTS = int(os.getenv("API_FRAGMENT_REQUEST_ATTEMPTS", "1"))
+API_FRAGMENT_CONNECT_TIMEOUT_SECONDS = float(os.getenv("API_FRAGMENT_CONNECT_TIMEOUT_SECONDS", "0.6"))
+API_FRAGMENT_GET_READ_TIMEOUT_SECONDS = float(os.getenv("API_FRAGMENT_GET_READ_TIMEOUT_SECONDS", "2"))
+API_FRAGMENT_POST_READ_TIMEOUT_SECONDS = float(os.getenv("API_FRAGMENT_POST_READ_TIMEOUT_SECONDS", "2"))
+MARKET_TZ_NAME = get_settings().market_timezone
 
 
 def _apply_theme() -> None:
@@ -566,7 +589,7 @@ def _audit_log(engine: Engine, user_key: str, event_type: str, symbol: str | Non
                 "event_type": event_type,
                 "symbol": symbol,
                 "payload": json.dumps(payload or {}, default=str),
-                "created_at": datetime.utcnow(),
+                "created_at": datetime.now(UTC),
             },
         )
 
@@ -600,7 +623,7 @@ def _create_user(engine: Engine, username: str, email: str, password: str, full_
                     "email": email,
                     "password_hash": password_hash,
                     "full_name": full_name or None,
-                    "created_at": datetime.utcnow(),
+                    "created_at": datetime.now(UTC),
                 },
             ).scalar_one()
 
@@ -614,8 +637,8 @@ def _create_user(engine: Engine, username: str, email: str, password: str, full_
                 ),
                 {
                     "user_id": int(user_id),
-                    "start_at": datetime.utcnow(),
-                    "created_at": datetime.utcnow(),
+                    "start_at": datetime.now(UTC),
+                    "created_at": datetime.now(UTC),
                 },
             )
         return True, "Registration successful. Please login."
@@ -712,9 +735,9 @@ def _save_consent(engine: Engine, user_key: str) -> None:
             {
                 "user_key": user_key,
                 "disclaimer_version": DISCLAIMER_VERSION,
-                "accepted_at": datetime.utcnow(),
+                "accepted_at": datetime.now(UTC),
                 "app_version": APP_VERSION,
-                "created_at": datetime.utcnow(),
+                "created_at": datetime.now(UTC),
             },
         )
 
@@ -727,29 +750,69 @@ def _load_symbols() -> list[str]:
     return symbols or ["RELIANCE"]
 
 
-def _get(path: str, params: dict[str, Any] | None = None) -> dict[str, Any] | None:
+def _get(
+    path: str,
+    params: dict[str, Any] | None = None,
+    *,
+    attempts: int | None = None,
+    connect_timeout_seconds: float | None = None,
+    read_timeout_seconds: float | None = None,
+) -> dict[str, Any] | None:
     """HTTP GET helper for local API with fail-safe `None` on error."""
-    try:
-        resp = requests.get(f"{API_BASE_URL}{path}", params=params, timeout=8)
-        if resp.status_code >= 400:
-            return None
-        return resp.json()
-    except Exception:
-        return None
+    max_attempts = attempts if attempts is not None else API_RETRY_ATTEMPTS
+    connect_timeout = connect_timeout_seconds if connect_timeout_seconds is not None else API_CONNECT_TIMEOUT_SECONDS
+    timeout = (
+        connect_timeout,
+        read_timeout_seconds if read_timeout_seconds is not None else API_GET_READ_TIMEOUT_SECONDS,
+    )
+    for attempt in range(1, max_attempts + 1):
+        try:
+            resp = requests.get(
+                f"{API_BASE_URL}{path}",
+                params=params,
+                timeout=timeout,
+            )
+            if resp.status_code >= 400:
+                return None
+            return resp.json()
+        except Exception:
+            if attempt >= max_attempts:
+                return None
+            time.sleep(API_RETRY_BACKOFF_SECONDS * attempt)
+    return None
 
 
-def _post(path: str, params: dict[str, Any] | None = None) -> dict[str, Any] | None:
+def _post(
+    path: str,
+    params: dict[str, Any] | None = None,
+    *,
+    attempts: int | None = None,
+    connect_timeout_seconds: float | None = None,
+    read_timeout_seconds: float | None = None,
+) -> dict[str, Any] | None:
     """HTTP POST helper for local API with structured error payload."""
-    try:
-        resp = requests.post(f"{API_BASE_URL}{path}", params=params, timeout=40)
-        if resp.status_code >= 400:
-            try:
-                return {"error": resp.json()}
-            except Exception:
-                return {"error": {"status_code": resp.status_code, "text": resp.text}}
-        return resp.json()
-    except Exception as exc:
-        return {"error": {"message": str(exc)}}
+    last_error: Exception | None = None
+    max_attempts = attempts if attempts is not None else API_RETRY_ATTEMPTS
+    connect_timeout = connect_timeout_seconds if connect_timeout_seconds is not None else API_CONNECT_TIMEOUT_SECONDS
+    timeout = (
+        connect_timeout,
+        read_timeout_seconds if read_timeout_seconds is not None else API_POST_READ_TIMEOUT_SECONDS,
+    )
+    for attempt in range(1, max_attempts + 1):
+        try:
+            resp = requests.post(f"{API_BASE_URL}{path}", params=params, timeout=timeout)
+            if resp.status_code >= 400:
+                try:
+                    return {"error": resp.json()}
+                except Exception:
+                    return {"error": {"status_code": resp.status_code, "text": resp.text}}
+            return resp.json()
+        except Exception as exc:
+            last_error = exc
+            if attempt >= max_attempts:
+                break
+            time.sleep(API_RETRY_BACKOFF_SECONDS * attempt)
+    return {"error": {"message": str(last_error) if last_error else "API request failed"}}
 
 
 def _render_json_block(payload: Any) -> None:
@@ -773,6 +836,76 @@ def _render_signals_table(frame: pd.DataFrame) -> None:
     st.markdown(f'<div class="table-wrap">{html_table}</div>', unsafe_allow_html=True)
 
 
+def _safe_pct(value: Any) -> str:
+    try:
+        return f"{100.0 * float(value):.2f}%"
+    except Exception:
+        return "N/A"
+
+
+def _safe_float(value: Any, default: float = 0.0) -> float:
+    try:
+        return float(value)
+    except Exception:
+        return default
+
+
+def _format_market_ts(value: Any) -> str:
+    ts = pd.to_datetime(value, errors="coerce")
+    if pd.isna(ts):
+        return "N/A"
+    if ts.tzinfo is None:
+        ts = ts.tz_localize(MARKET_TZ_NAME)
+    else:
+        ts = ts.tz_convert(MARKET_TZ_NAME)
+    return ts.strftime("%Y-%m-%d %H:%M:%S %Z")
+
+
+def _render_timeframe_rules_panel(rules_payload: dict[str, Any] | None, timeframe: str) -> None:
+    st.markdown(f"**Active {timeframe} Rules**")
+    if not rules_payload or not isinstance(rules_payload.get("rules"), dict):
+        st.caption("Rule profile unavailable.")
+        return
+
+    rules = rules_payload["rules"]
+    c1, c2 = st.columns(2)
+    c1.metric("Buy >= ", _safe_pct(rules.get("signal_buy_threshold")))
+    c2.metric("Sell <= ", _safe_pct(rules.get("signal_sell_threshold")))
+
+    c3, c4 = st.columns(2)
+    c3.metric("Min Confidence", _safe_pct(rules.get("min_confidence")))
+    c4.metric("Cooldown (sec)", f"{int(_safe_float(rules.get('cooldown_seconds'), 0.0))}")
+
+    st.caption(
+        "Auto sync: "
+        f"{int(_safe_float(rules.get('auto_backfill_days'), 30.0))}d lookback, "
+        f"min {int(_safe_float(rules.get('auto_backfill_min_candles'), 200.0))} candles, "
+        f"resync if stale > {int(_safe_float(rules.get('auto_backfill_freshness_minutes'), 120.0))}m."
+    )
+
+
+def _render_probability_vector(probability_payload: dict[str, Any] | None, order: list[str]) -> None:
+    """Render per-timeframe final ensemble probabilities."""
+    st.subheader("Probability Vector (Ensemble)")
+    if not probability_payload or not isinstance(probability_payload.get("probabilities"), dict):
+        st.info("Probability vector not available yet.")
+        return
+
+    probabilities = probability_payload["probabilities"]
+    cols = st.columns(len(order))
+    for idx, timeframe in enumerate(order):
+        item = probabilities.get(timeframe)
+        with cols[idx]:
+            if not item:
+                st.metric(f"P_{timeframe}", "N/A")
+                st.caption("No signal")
+                continue
+            st.metric(f"P_{timeframe}", _safe_pct(item.get("prob_up")))
+            signal = str(item.get("signal", "N/A"))
+            confidence = _safe_pct(item.get("confidence"))
+            st.caption(f"{signal} | {confidence}")
+
+
 def _build_chart(candles_df: pd.DataFrame) -> go.Figure:
     """Build candlestick chart with EMA overlays."""
     frame = add_indicators(candles_df)
@@ -789,6 +922,19 @@ def _build_chart(candles_df: pd.DataFrame) -> go.Figure:
     )
     fig.add_trace(go.Scatter(x=frame["candle_start"], y=frame["ema_12"], name="EMA12", line=dict(width=1.2)))
     fig.add_trace(go.Scatter(x=frame["candle_start"], y=frame["ema_26"], name="EMA26", line=dict(width=1.2)))
+    if "is_partial" in frame.columns:
+        partial_mask = frame["is_partial"].fillna(False).astype(bool)
+        if partial_mask.any():
+            partial_rows = frame.loc[partial_mask]
+            fig.add_trace(
+                go.Scatter(
+                    x=partial_rows["candle_start"],
+                    y=partial_rows["close"],
+                    mode="markers",
+                    marker=dict(size=8, symbol="diamond", color="#fbbf24"),
+                    name="Live (partial)",
+                )
+            )
     fig.update_layout(
         template="plotly_dark",
         height=500,
@@ -954,7 +1100,7 @@ def main() -> None:
     symbols = _load_symbols()
     default_symbol_idx = symbols.index("RELIANCE") if "RELIANCE" in symbols else 0
 
-    col1, col2, col3, col4, col5 = st.columns([2, 1, 1, 1, 1])
+    col1, col2, col3, col4 = st.columns([2.2, 1, 1, 1])
     with col1:
         symbol = st.selectbox("Stock", symbols, index=default_symbol_idx)
     with col2:
@@ -963,105 +1109,311 @@ def main() -> None:
         candle_limit = st.number_input("Candles", min_value=100, max_value=1000, value=300, step=50)
     with col4:
         refresh_secs = st.number_input("Refresh (sec, 0=off)", min_value=0, max_value=60, value=5)
-    with col5:
-        backfill_days = st.number_input("Backfill days", min_value=1, max_value=2000, value=30, step=5)
-        backfill_clicked = st.button("Backfill", use_container_width=True)
+    st.caption(
+        f"Historical sync is automatic (cooldown: {AUTO_BACKFILL_COOLDOWN_SECONDS}s). "
+        "Select stock + timeframe only."
+    )
 
-    if backfill_clicked:
-        backfill_result = _post(
-            "/historical/backfill",
-            params={"symbol": symbol, "timeframe": timeframe, "days": int(backfill_days)},
+    def _render_live_sections() -> None:
+        auto_sync_ok_msg: str | None = None
+        auto_sync_err_msg: str | None = None
+        ensure_trigger_payload: dict[str, Any] | None = None
+        ensure_status_payload: dict[str, Any] | None = None
+        sync_cache = st.session_state.setdefault("auto_sync_last_run_ts", {})
+        sync_key = f"{symbol}:{timeframe}"
+        now_ts = time.time()
+        last_sync_ts = float(sync_cache.get(sync_key, 0.0))
+
+        health_payload = _get(
+            "/health",
+            attempts=API_FRAGMENT_REQUEST_ATTEMPTS,
+            connect_timeout_seconds=API_FRAGMENT_CONNECT_TIMEOUT_SECONDS,
+            read_timeout_seconds=API_FRAGMENT_GET_READ_TIMEOUT_SECONDS,
         )
-        if backfill_result and not backfill_result.get("error"):
-            _audit_log(
-                engine,
-                user_key=user_key,
-                event_type="backfill_requested",
-                symbol=symbol,
-                payload={"timeframe": timeframe, "days": int(backfill_days), "result": backfill_result},
+        if not health_payload:
+            st.error(f"API unreachable at {API_BASE_URL}. Start/restart FastAPI and retry.")
+            st.caption(
+                "If dashboard and API are deployed separately, set API_BASE_URL to the FastAPI service URL."
             )
-            st.success(
-                f"Backfill complete: inserted {backfill_result.get('inserted', 0)} candles for {symbol} {timeframe}"
+            return
+
+        if str(health_payload.get("status", "")).lower() != "ok":
+            db_error = health_payload.get("db_error")
+            st.warning("API is running in degraded mode. Some dashboard endpoints may be unavailable.")
+            if db_error:
+                st.caption(f"Database status: {db_error}")
+
+        if now_ts - last_sync_ts >= AUTO_BACKFILL_COOLDOWN_SECONDS:
+            sync_cache[sync_key] = now_ts
+            ensure_trigger_payload = _post(
+                "/historical/ensure",
+                params={"symbol": symbol, "timeframe": timeframe, "wait": "false"},
+                attempts=API_FRAGMENT_REQUEST_ATTEMPTS,
+                connect_timeout_seconds=API_FRAGMENT_CONNECT_TIMEOUT_SECONDS,
+                read_timeout_seconds=API_FRAGMENT_POST_READ_TIMEOUT_SECONDS,
             )
-        else:
-            st.error(f"Backfill failed: {backfill_result}")
+            if not ensure_trigger_payload or ensure_trigger_payload.get("error"):
+                err_blob = ensure_trigger_payload.get("error") if isinstance(ensure_trigger_payload, dict) else None
+                err_text = str(err_blob).lower()
+                if any(
+                    token in err_text
+                    for token in (
+                        "max retries exceeded",
+                        "failed to establish a new connection",
+                        "connection refused",
+                        "connect timeout",
+                        "read timed out",
+                        "name or service not known",
+                    )
+                ):
+                    auto_sync_err_msg = (
+                        f"Auto-sync skipped for {symbol} {timeframe}: API unreachable at {API_BASE_URL}. "
+                        "Start/restart the FastAPI service, then retry."
+                    )
+                else:
+                    auto_sync_err_msg = f"Auto-sync failed for {symbol} {timeframe}: {ensure_trigger_payload}"
 
-    candle_payload = _get("/candles", params={"symbol": symbol, "timeframe": timeframe, "limit": int(candle_limit)})
-    history_payload = _get("/signals/history", params={"symbol": symbol, "timeframe": timeframe, "limit": 200})
-    backtest_payload = _get("/backtest/latest", params={"symbol": symbol, "timeframe": timeframe}) if timeframe in {"15m", "1d"} else None
+        ensure_status_payload = _get(
+            "/historical/ensure/status",
+            params={"symbol": symbol, "timeframe": timeframe},
+            attempts=API_FRAGMENT_REQUEST_ATTEMPTS,
+            connect_timeout_seconds=API_FRAGMENT_CONNECT_TIMEOUT_SECONDS,
+            read_timeout_seconds=API_FRAGMENT_GET_READ_TIMEOUT_SECONDS,
+        )
 
-    left, right = st.columns([2.2, 1.2])
+        if ensure_status_payload and isinstance(ensure_status_payload.get("task"), dict):
+            task = ensure_status_payload["task"]
+            task_status = str(task.get("status", ""))
+            completion_key = f"auto_sync_last_finished:{symbol}:{timeframe}"
+            if task_status == "succeeded":
+                finished_at = str(task.get("finished_at", ""))
+                if finished_at and st.session_state.get(completion_key) != finished_at:
+                    backfill_blob = task.get("backfill") if isinstance(task.get("backfill"), dict) else {}
+                    inserted = int(_safe_float(backfill_blob.get("inserted"), 0.0))
+                    auto_sync_ok_msg = f"Auto-sync completed for {symbol} {timeframe}: inserted {inserted} candles."
+                    st.session_state[completion_key] = finished_at
+                    _audit_log(
+                        engine,
+                        user_key=user_key,
+                        event_type="auto_backfill_sync",
+                        symbol=symbol,
+                        payload={"timeframe": timeframe, "result": task},
+                    )
+            elif task_status == "failed":
+                auto_sync_err_msg = f"Auto-sync background job failed for {symbol} {timeframe}: {task.get('error')}"
 
-    with left:
-        st.subheader(f"{symbol} Candlestick ({timeframe})")
-        if candle_payload and candle_payload.get("rows"):
-            candles_df = pd.DataFrame(candle_payload["rows"])
-            candles_df["candle_start"] = pd.to_datetime(candles_df["candle_start"])
-            candles_df["candle_end"] = pd.to_datetime(candles_df["candle_end"])
-            fig = _build_chart(candles_df)
-            st.plotly_chart(fig, use_container_width=True)
-        else:
-            st.error("No candle data available. Use Backfill or wait for live market ticks.")
+        if auto_sync_ok_msg:
+            st.info(auto_sync_ok_msg)
+        if auto_sync_err_msg:
+            st.warning(auto_sync_err_msg)
 
-    with right:
-        st.subheader("Current Prediction")
-        latest_row = None
-        if history_payload and history_payload.get("rows"):
-            latest_row = history_payload["rows"][0]
+        candle_payload = _get(
+            "/candles",
+            params={"symbol": symbol, "timeframe": timeframe, "limit": int(candle_limit)},
+            attempts=API_FRAGMENT_REQUEST_ATTEMPTS,
+            connect_timeout_seconds=API_FRAGMENT_CONNECT_TIMEOUT_SECONDS,
+            read_timeout_seconds=API_FRAGMENT_GET_READ_TIMEOUT_SECONDS,
+        )
+        history_payload = _get(
+            "/signals/history",
+            params={"symbol": symbol, "timeframe": timeframe, "limit": 200},
+            attempts=API_FRAGMENT_REQUEST_ATTEMPTS,
+            connect_timeout_seconds=API_FRAGMENT_CONNECT_TIMEOUT_SECONDS,
+            read_timeout_seconds=API_FRAGMENT_GET_READ_TIMEOUT_SECONDS,
+        )
+        probability_vector_payload = _get(
+            "/signals/probability-vector",
+            params={"symbol": symbol, "timeframes": "1m,5m,15m,1h,1d"},
+            attempts=API_FRAGMENT_REQUEST_ATTEMPTS,
+            connect_timeout_seconds=API_FRAGMENT_CONNECT_TIMEOUT_SECONDS,
+            read_timeout_seconds=API_FRAGMENT_GET_READ_TIMEOUT_SECONDS,
+        )
+        engine_status_payload = _get(
+            "/engine/status",
+            attempts=API_FRAGMENT_REQUEST_ATTEMPTS,
+            connect_timeout_seconds=API_FRAGMENT_CONNECT_TIMEOUT_SECONDS,
+            read_timeout_seconds=API_FRAGMENT_GET_READ_TIMEOUT_SECONDS,
+        )
+        backtest_payload = _get(
+            "/backtest/latest",
+            params={"symbol": symbol, "timeframe": timeframe},
+            attempts=API_FRAGMENT_REQUEST_ATTEMPTS,
+            connect_timeout_seconds=API_FRAGMENT_CONNECT_TIMEOUT_SECONDS,
+            read_timeout_seconds=API_FRAGMENT_GET_READ_TIMEOUT_SECONDS,
+        )
+        live_price_payload = _get(
+            "/price/live",
+            params={"symbol": symbol, "timeframe": timeframe},
+            attempts=API_FRAGMENT_REQUEST_ATTEMPTS,
+            connect_timeout_seconds=API_FRAGMENT_CONNECT_TIMEOUT_SECONDS,
+            read_timeout_seconds=API_FRAGMENT_GET_READ_TIMEOUT_SECONDS,
+        )
+        rules_payload = _get(
+            "/rules/timeframe",
+            params={"timeframe": timeframe},
+            attempts=API_FRAGMENT_REQUEST_ATTEMPTS,
+            connect_timeout_seconds=API_FRAGMENT_CONNECT_TIMEOUT_SECONDS,
+            read_timeout_seconds=API_FRAGMENT_GET_READ_TIMEOUT_SECONDS,
+        )
 
-        if latest_row:
-            st.metric("Signal", latest_row.get("signal", "N/A"))
-            st.metric("Confidence", f"{100 * float(latest_row.get('confidence', 0.0)):.2f}%")
-            st.metric("Prob Up", f"{100 * float(latest_row.get('prob_up', 0.0)):.2f}%")
-            st.metric("Model Version", latest_row.get("model_version", "N/A"))
-            st.caption(f"Last Update: {latest_row.get('prediction_ts')}")
+        left, right = st.columns([2.2, 1.2])
 
-            risk_snapshot = latest_row.get("risk_snapshot")
-            if isinstance(risk_snapshot, dict):
-                st.markdown("**Risk/Governance**")
-                _render_json_block(risk_snapshot)
-        else:
-            if timeframe in {"15m", "1d"}:
-                st.info("Prediction not available yet.")
+        with left:
+            st.subheader(f"{symbol} Candlestick ({timeframe})")
+            if candle_payload and candle_payload.get("rows"):
+                candles_df = pd.DataFrame(candle_payload["rows"])
+                candles_df["candle_start"] = pd.to_datetime(
+                    candles_df["candle_start"],
+                    format="mixed",
+                    utc=True,
+                    errors="coerce",
+                )
+                candles_df["candle_end"] = pd.to_datetime(
+                    candles_df["candle_end"],
+                    format="mixed",
+                    utc=True,
+                    errors="coerce",
+                )
+                candles_df = candles_df.dropna(subset=["candle_start", "candle_end"])
+                if candles_df.empty:
+                    st.warning("Candle timestamps could not be parsed from API payload.")
+                else:
+                    fig = _build_chart(candles_df)
+                    st.plotly_chart(fig, use_container_width=True)
+                source = str(candle_payload.get("source", "unknown"))
+                st.caption(f"Candle source: {source}")
+                if "is_partial" in candles_df.columns and candles_df["is_partial"].fillna(False).astype(bool).any():
+                    st.caption("Live partial candle is updating between candle closes.")
             else:
-                st.info("Predictions currently active for 15m and 1d by default.")
+                st.error("No candle data available yet. Auto-sync is running in the background.")
 
-    st.subheader("Historical Signals")
-    if history_payload and history_payload.get("rows"):
-        hist_df = pd.DataFrame(history_payload["rows"])
-        display_cols = [
-            "prediction_ts",
-            "target_ts",
-            "signal",
-            "confidence",
-            "prob_up",
-            "prob_down",
-            "model_name",
-            "model_version",
-            "is_simulated",
-        ]
-        available_cols = [col for col in display_cols if col in hist_df.columns]
-        _render_signals_table(hist_df[available_cols])
-    else:
-        st.info("No historical signals yet")
+        with right:
+            st.subheader("Current Prediction")
+            if live_price_payload and live_price_payload.get("last_price") is not None:
+                st.metric("Live Price", f"INR {_safe_float(live_price_payload.get('last_price')):,.2f}")
+                st.caption(
+                    f"Price as of {_format_market_ts(live_price_payload.get('price_ts'))} "
+                    f"({live_price_payload.get('source', 'unknown')})"
+                )
 
-    st.subheader("Backtest Metrics (Simulated Performance)")
-    if backtest_payload:
-        st.caption("Simulated performance only. Not live audited returns.")
-        metrics = backtest_payload.get("metrics", {})
-        if isinstance(metrics, dict):
-            cols = st.columns(4)
-            for idx, (k, v) in enumerate(metrics.items()):
-                cols[idx % 4].metric(k, f"{float(v):.4f}" if isinstance(v, (int, float)) else str(v))
-        _render_json_block(backtest_payload)
-    else:
-        st.info("No backtest run found for this symbol/timeframe")
+            latest_row = None
+            if history_payload and history_payload.get("rows"):
+                latest_row = history_payload["rows"][0]
 
-    st.caption(f"API: {API_BASE_URL} | User: {user['username']} | Dashboard time: {datetime.now().isoformat(timespec='seconds')}")
+            if latest_row is None and probability_vector_payload and isinstance(probability_vector_payload.get("probabilities"), dict):
+                tf_item = probability_vector_payload["probabilities"].get(timeframe)
+                if tf_item:
+                    latest_row = {
+                        "signal": tf_item.get("signal"),
+                        "confidence": tf_item.get("confidence"),
+                        "prob_up": tf_item.get("prob_up"),
+                        "model_version": tf_item.get("model_version"),
+                        "prediction_ts": tf_item.get("prediction_ts"),
+                        "target_ts": tf_item.get("target_ts"),
+                    }
 
-    if refresh_secs > 0:
-        time.sleep(int(refresh_secs))
-        st.rerun()
+            if latest_row:
+                st.metric("Signal", latest_row.get("signal", "N/A"))
+                st.metric("Confidence", f"{100 * _safe_float(latest_row.get('confidence')):.2f}%")
+                st.metric("Prob Up", f"{100 * _safe_float(latest_row.get('prob_up')):.2f}%")
+                st.metric("Model Version", latest_row.get("model_version", "N/A"))
+                st.caption(f"Calculated at: {_format_market_ts(latest_row.get('prediction_ts'))}")
+                st.caption(f"Forecast target end: {_format_market_ts(latest_row.get('target_ts'))}")
+
+                risk_snapshot = latest_row.get("risk_snapshot")
+                if isinstance(risk_snapshot, dict):
+                    st.markdown("**Risk/Governance**")
+                    _render_json_block(risk_snapshot)
+            else:
+                if timeframe in {"1m", "5m", "15m", "1h", "1d"}:
+                    st.info(
+                        "Prediction not available yet. Auto-sync will keep filling data until model-ready rows are available."
+                    )
+                else:
+                    st.info("Predictions not active by default.")
+
+            _render_timeframe_rules_panel(rules_payload, timeframe)
+
+            if engine_status_payload and engine_status_payload.get("running") and isinstance(engine_status_payload.get("details"), dict):
+                details = engine_status_payload["details"]
+                loaded = details.get("loaded_model_timeframes") or []
+                ws_connected = bool(details.get("ws_connected"))
+                st.caption(f"Market websocket: {'connected' if ws_connected else 'disconnected'}")
+                if not ws_connected:
+                    st.warning("Live ticks are not streaming. Candle updates will stall until websocket reconnects.")
+                st.caption(f"Loaded model timeframes: {', '.join(loaded) if loaded else 'none'}")
+                last_bootstrap_ts = details.get("last_bootstrap_ts")
+                if last_bootstrap_ts:
+                    st.caption(f"Last bootstrap sync: {last_bootstrap_ts}")
+                if timeframe not in loaded:
+                    st.warning(f"No active loaded model for {timeframe}. Train or activate that timeframe model.")
+            elif engine_status_payload and not engine_status_payload.get("running"):
+                st.warning("Realtime engine is not running. Live candles/signals are paused.")
+
+            if ensure_status_payload and ensure_status_payload.get("policy"):
+                policy = ensure_status_payload["policy"]
+                st.caption(
+                    "Data policy: "
+                    f"lookback={int(_safe_float(policy.get('days'), 30.0))}d, "
+                    f"min_candles={int(_safe_float(policy.get('min_candles'), 200.0))}, "
+                    f"freshness={int(_safe_float(policy.get('freshness_minutes'), 120.0))}m."
+                )
+                if bool(ensure_status_payload.get("running")):
+                    task = ensure_status_payload.get("task") if isinstance(ensure_status_payload.get("task"), dict) else {}
+                    task_status = str(task.get("status", "running"))
+                    st.caption(f"Auto-sync status: {task_status} (running in background)")
+
+        _render_probability_vector(probability_vector_payload, order=["1m", "5m", "15m", "1h", "1d"])
+
+        st.subheader("Historical Signals")
+        if history_payload and history_payload.get("rows"):
+            hist_df = pd.DataFrame(history_payload["rows"])
+            for ts_col in ("prediction_ts", "target_ts"):
+                if ts_col in hist_df.columns:
+                    hist_df[ts_col] = hist_df[ts_col].map(_format_market_ts)
+            display_cols = [
+                "prediction_ts",
+                "target_ts",
+                "signal",
+                "confidence",
+                "prob_up",
+                "prob_down",
+                "model_name",
+                "model_version",
+                "is_simulated",
+            ]
+            available_cols = [col for col in display_cols if col in hist_df.columns]
+            _render_signals_table(hist_df[available_cols])
+        else:
+            st.info("No historical signals yet")
+
+        st.subheader("Backtest Metrics (Simulated Performance)")
+        if backtest_payload:
+            st.caption("Simulated performance only. Not live audited returns.")
+            if bool(backtest_payload.get("fallback_used")):
+                st.caption(
+                    f"Using GLOBAL fallback metrics for {backtest_payload.get('requested_symbol')} ({backtest_payload.get('source_symbol')})."
+                )
+            metrics = backtest_payload.get("metrics", {})
+            if isinstance(metrics, dict):
+                cols = st.columns(4)
+                for idx, (k, v) in enumerate(metrics.items()):
+                    cols[idx % 4].metric(k, f"{float(v):.4f}" if isinstance(v, (int, float)) else str(v))
+            _render_json_block(backtest_payload)
+        else:
+            st.info("No backtest run found for this symbol/timeframe")
+
+        st.caption(
+            f"API: {API_BASE_URL} | User: {user['username']} | Dashboard time: {datetime.now().isoformat(timespec='seconds')}"
+        )
+
+    refresh_interval: int | None = int(refresh_secs) if int(refresh_secs) > 0 else None
+
+    @st.fragment(run_every=refresh_interval)
+    def _live_fragment() -> None:
+        _render_live_sections()
+
+    _live_fragment()
 
 
 if __name__ == "__main__":

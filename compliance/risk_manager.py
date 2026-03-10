@@ -42,13 +42,19 @@ class RiskManager:
         """Apply throttling, drawdown, sizing, and stop-loss governance checks."""
         key = (symbol, timeframe)
         now = datetime.utcnow()
+        rules = self.settings.risk_rules_for_timeframe(timeframe)
+        cooldown_seconds = int(rules["cooldown_seconds"])
+        min_confidence = float(rules["min_confidence"])
+        max_drawdown_pct = float(rules["max_drawdown_pct"])
+        max_capital_allocation_pct = float(rules["max_capital_allocation_pct"])
+        stop_loss_pct = float(rules["stop_loss_pct"])
 
         with self._lock:
-            throttled = self._is_throttled(key=key, now=now)
+            throttled = self._is_throttled(key=key, now=now, cooldown_seconds=cooldown_seconds)
             drawdown_pct = self._update_drawdown(key=key, realized_return=realized_return)
 
             # Hard block when simulated drawdown breaches configured limit.
-            if drawdown_pct >= self.settings.max_drawdown_pct:
+            if drawdown_pct >= max_drawdown_pct:
                 return RiskDecision(
                     approved_signal="HOLD",
                     position_size=0.0,
@@ -80,14 +86,24 @@ class RiskManager:
                     throttled=False,
                 )
 
+            if confidence < min_confidence:
+                return RiskDecision(
+                    approved_signal="HOLD",
+                    position_size=0.0,
+                    stop_loss_price=None,
+                    reason="Confidence below timeframe minimum",
+                    drawdown_pct=drawdown_pct,
+                    throttled=False,
+                )
+
             size = round(
-                max(0.01, min(self.settings.max_capital_allocation_pct, confidence * self.settings.max_capital_allocation_pct)),
+                max(0.01, min(max_capital_allocation_pct, confidence * max_capital_allocation_pct)),
                 4,
             )
             stop_loss = (
-                last_price * (1.0 - self.settings.stop_loss_pct)
+                last_price * (1.0 - stop_loss_pct)
                 if signal == "BUY"
-                else last_price * (1.0 + self.settings.stop_loss_pct)
+                else last_price * (1.0 + stop_loss_pct)
             )
             self._last_signal_time[key] = now
 
@@ -100,12 +116,12 @@ class RiskManager:
                 throttled=False,
             )
 
-    def _is_throttled(self, key: tuple[str, str], now: datetime) -> bool:
+    def _is_throttled(self, key: tuple[str, str], now: datetime, cooldown_seconds: int) -> bool:
         """Check signal cooldown window per symbol/timeframe."""
         last = self._last_signal_time.get(key)
         if last is None:
             return False
-        cooldown = timedelta(seconds=self.settings.signal_cooldown_seconds)
+        cooldown = timedelta(seconds=max(0, int(cooldown_seconds)))
         return now < (last + cooldown)
 
     def _update_drawdown(self, key: tuple[str, str], realized_return: float | None) -> float:

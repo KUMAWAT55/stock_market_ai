@@ -15,6 +15,7 @@ ENV/
 # Build and packaging
 build/
 dist/
+webapp/dist/
 *.egg-info/
 .eggs/
 
@@ -37,8 +38,11 @@ logs/
 .idea/
 .vscode/
 .slingshot/
+webapp/node_modules/
 
 # Environment and local config
 .env
 .env.*
 *.local
+
+helpers.sh

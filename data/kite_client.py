@@ -1,7 +1,7 @@
 from __future__ import annotations
 """Kite Connect adapters for websocket ticks and historical candles."""
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Any, Callable
 
 import pandas as pd
@@ -98,6 +98,12 @@ class KiteRealtimeClient:
 class KiteHistoricalClient:
     """Historical candle loader for model training and warm startup."""
 
+    # Kite historical API enforces interval-specific span caps.
+    _MAX_DAYS_PER_REQUEST: dict[str, int] = {
+        "5m": 100,
+        "15m": 200,
+    }
+
     def __init__(self) -> None:
         settings = get_settings()
         if KiteConnect is None:
@@ -130,25 +136,62 @@ class KiteHistoricalClient:
         from_dt: datetime,
         to_dt: datetime,
     ) -> pd.DataFrame:
-        """Load candles from Kite and normalize to project-wide OHLCV columns."""
+        """Load candles from Kite and normalize to project-wide OHLCV columns.
+
+        For timeframes with known Kite span caps (e.g. 5m/15m), the request
+        window is automatically split and stitched to avoid API limit errors.
+        """
         interval = self._to_kite_interval(timeframe)
-        rows = self.client.historical_data(
-            instrument_token=instrument_token,
-            from_date=from_dt,
-            to_date=to_dt,
-            interval=interval,
-            continuous=False,
-            oi=True,
-        )
+        if to_dt <= from_dt:
+            return pd.DataFrame()
+
+        max_days = self._MAX_DAYS_PER_REQUEST.get(timeframe)
+        rows: list[dict[str, Any]] = []
+        if max_days is None:
+            rows = self.client.historical_data(
+                instrument_token=instrument_token,
+                from_date=from_dt,
+                to_date=to_dt,
+                interval=interval,
+                continuous=False,
+                oi=True,
+            )
+        else:
+            chunk_start = from_dt
+            chunk_delta = timedelta(days=max_days)
+            while chunk_start < to_dt:
+                chunk_end = min(chunk_start + chunk_delta, to_dt)
+                logger.debug(
+                    "Fetching Kite candles token={} timeframe={} chunk=[{} -> {}]",
+                    instrument_token,
+                    timeframe,
+                    chunk_start,
+                    chunk_end,
+                )
+                part = self.client.historical_data(
+                    instrument_token=instrument_token,
+                    from_date=chunk_start,
+                    to_date=chunk_end,
+                    interval=interval,
+                    continuous=False,
+                    oi=True,
+                )
+                if part:
+                    rows.extend(part)
+                if chunk_end >= to_dt:
+                    break
+                # Keep boundary inclusive and de-duplicate on timestamp later.
+                chunk_start = chunk_end
 
         if not rows:
             return pd.DataFrame()
 
         frame = pd.DataFrame(rows)
         frame = frame.rename(columns={"date": "candle_start"})
-        frame["candle_start"] = pd.to_datetime(frame["candle_start"], utc=True)
+        frame["candle_start"] = pd.to_datetime(frame["candle_start"], errors="coerce")
+        frame = frame.sort_values("candle_start").drop_duplicates(subset=["candle_start"], keep="last")
         frame["candle_end"] = frame["candle_start"]
-        return frame[["candle_start", "candle_end", "open", "high", "low", "close", "volume"]]
+        return frame[["candle_start", "candle_end", "open", "high", "low", "close", "volume"]].reset_index(drop=True)
 
     def profile(self) -> dict[str, Any]:
         """Validate session by fetching Kite profile."""

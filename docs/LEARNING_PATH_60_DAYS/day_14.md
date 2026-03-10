@@ -1,0 +1,34 @@
+# Day 14: Week 2 Review Build Task
+
+## Goal
+Use FastAPI knowledge in a tiny extension
+
+## App Flow Focus
+How to safely add a new readonly endpoint
+
+## Read in This Repo
+- api/main.py
+
+## Hands-On Work (90 to 120 mins)
+1. Read the target files and write 5 to 10 bullet notes in your own words.
+2. Complete this task: Add one temporary /debug/ping endpoint locally and test then revert
+3. Capture one blocker and how you resolved it.
+
+## End-of-Day Output
+- Patch notes and lessons learned
+- 5 key things learned.
+- 2 open questions for tomorrow.
+
+## Self-Check
+- I can explain today's flow focus in simple language.
+- I can point to exact files where this behavior lives.
+- I can run at least one command/API call related to today's topic.
+
+## Notes Template
+
+```txt
+What confused me:
+What clicked today:
+What I changed/tested:
+What to revise this weekend:
+```

@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import asyncio
 from dataclasses import asdict
-from datetime import datetime, timedelta
+from datetime import date, datetime, time, timedelta
 from typing import Any
 from zoneinfo import ZoneInfo
 
@@ -16,13 +16,13 @@ from data.candle_aggregator import Candle, CandleAggregator
 from data.kite_client import KiteHistoricalClient, KiteRealtimeClient
 from data.tick_handler import TickHandler
 from database.db_manager import CandleRow, DatabaseManager
-from features.feature_pipeline import FEATURE_COLUMNS, FeaturePipeline
+from features.feature_pipeline import FeaturePipeline, feature_columns_for_timeframe
 from models.model_registry import ModelDescriptor, ModelRegistry
 from models.predict import predict_signal
 
 
 class RealtimePredictionEngine:
-    """End-to-end realtime prediction loop for 15m and daily signals."""
+    """End-to-end realtime prediction loop for configured multi-timeframe signals."""
 
     def __init__(self) -> None:
         self.settings = get_settings()
@@ -46,7 +46,8 @@ class RealtimePredictionEngine:
         self.instrument_tokens = self.settings.instrument_tokens or sorted(token_symbol_map.keys())
         self.tick_handler = TickHandler(token_symbol_map=token_symbol_map)
         self.aggregator = CandleAggregator(history_size=1000)
-        self.features = FeaturePipeline(minimum_rows=50)
+        # Keep inference warmup low enough for intraday frames while still requiring stable lookback.
+        self.features = FeaturePipeline(minimum_rows=30)
         self.risk = RiskManager()
 
         self.kite_client: KiteRealtimeClient | None = None
@@ -54,6 +55,9 @@ class RealtimePredictionEngine:
         self._tasks: list[asyncio.Task[Any]] = []
         self._model_by_timeframe: dict[str, ModelDescriptor] = {}
         self.latest_signal_cache: dict[tuple[str, str], dict[str, Any]] = {}
+        self.latest_price_cache: dict[str, dict[str, Any]] = {}
+        self._last_model_refresh_ts: datetime | None = None
+        self._last_bootstrap_ts: datetime | None = None
 
     async def start(self) -> None:
         """Initialize dependencies, start websocket, and launch worker loops."""
@@ -65,6 +69,8 @@ class RealtimePredictionEngine:
         self.db.init_schema()
         self._load_models()
         self._warm_from_db()
+        await self._bootstrap_predictions_from_history()
+        self._last_bootstrap_ts = datetime.utcnow()
 
         if not self.instrument_tokens:
             raise RuntimeError("No instrument tokens configured. Add config/instruments.json or INSTRUMENT_TOKENS env.")
@@ -116,7 +122,9 @@ class RealtimePredictionEngine:
     def _load_models(self) -> None:
         """Load active model descriptors for configured prediction timeframes."""
         self._model_by_timeframe.clear()
-        for timeframe in self.settings.model_timeframes:
+        # Use union so stale env vars don't silently exclude trained timeframes.
+        candidate_timeframes = sorted(set(self.settings.model_timeframes + self.settings.candle_timeframes))
+        for timeframe in candidate_timeframes:
             descriptor = self.registry.get_active(timeframe)
             if descriptor is None:
                 logger.warning("No active model found for timeframe {}", timeframe)
@@ -128,6 +136,7 @@ class RealtimePredictionEngine:
                 descriptor.model_name,
                 descriptor.version,
             )
+        self._last_model_refresh_ts = datetime.utcnow()
 
     def _warm_from_db(self) -> None:
         """Preload recent candles so indicators/prediction can start immediately."""
@@ -175,6 +184,12 @@ class RealtimePredictionEngine:
 
                 closed_candles: list[Candle] = []
                 for tick in batch:
+                    self.latest_price_cache[tick.symbol] = {
+                        "symbol": tick.symbol,
+                        "last_price": float(tick.last_price),
+                        "price_ts": tick.ts,
+                        "source": "engine_tick",
+                    }
                     closed_candles.extend(self.aggregator.process_tick(tick))
 
                 for candle in closed_candles:
@@ -209,32 +224,20 @@ class RealtimePredictionEngine:
         if descriptor is None:
             return
 
-        # Feature calculation always uses most recent rolling history for stability.
-        history = self.aggregator.recent_candles(candle.symbol, candle.timeframe, limit=500)
-        frame = pd.DataFrame(
-            [
-                {
-                    "symbol": c.symbol,
-                    "timeframe": c.timeframe,
-                    "candle_start": c.candle_start,
-                    "candle_end": c.candle_end,
-                    "open": c.open,
-                    "high": c.high,
-                    "low": c.low,
-                    "close": c.close,
-                    "volume": c.volume,
-                }
-                for c in history
-            ]
-        )
+        # Build cross-sectional context for the timeframe so relative features stay meaningful.
+        frame = self._build_feature_context_frame(candle.timeframe, limit_per_symbol=260)
         if frame.empty:
             return
 
-        latest = self.features.latest_feature_row(frame)
+        latest = self.features.latest_feature_row(
+            frame,
+            symbol=candle.symbol,
+            timeframe=candle.timeframe,
+        )
         if latest is None:
             return
 
-        feature_columns = descriptor.feature_list or FEATURE_COLUMNS
+        feature_columns = descriptor.feature_list or feature_columns_for_timeframe(candle.timeframe)
         result = await asyncio.to_thread(
             predict_signal,
             descriptor,
@@ -251,11 +254,13 @@ class RealtimePredictionEngine:
             last_price=candle.close,
             realized_return=float(latest.features.get("ret_1", 0.0)),
         )
+        risk_snapshot = self.risk.to_payload(risk_decision)
+        risk_snapshot["timeframe_rules"] = self.settings.timeframe_rule_profile(candle.timeframe)
 
         payload = {
             "symbol": candle.symbol,
             "timeframe": candle.timeframe,
-            "prediction_ts": candle.candle_end,
+            "prediction_ts": self._prediction_ts_from_candle(candle),
             "target_ts": target_ts,
             "signal": risk_decision.approved_signal,
             "confidence": result.confidence,
@@ -265,7 +270,7 @@ class RealtimePredictionEngine:
             "model_version": descriptor.version,
             "feature_snapshot": self.settings.serialize_features(latest.features),
             "explainability": result.explainability,
-            "risk_snapshot": self.risk.to_payload(risk_decision),
+            "risk_snapshot": risk_snapshot,
             "compliance_note": "Research signal only. No trade execution.",
             "is_simulated": True,
         }
@@ -296,16 +301,200 @@ class RealtimePredictionEngine:
 
         self.latest_signal_cache[(candle.symbol, candle.timeframe)] = payload
 
+    async def _bootstrap_predictions_from_history(self) -> None:
+        """Generate latest predictions from existing candle history at startup."""
+        attempts = 0
+        generated = 0
+        skipped_no_features = 0
+        skipped_not_newer = 0
+        for timeframe, descriptor in self._model_by_timeframe.items():
+            context = self._build_feature_context_frame(timeframe, limit_per_symbol=400)
+            if context.empty:
+                continue
+            symbols = sorted(set(context["symbol"].astype(str)))
+            for symbol in symbols:
+                attempts += 1
+                status = await self._generate_prediction_from_context(
+                    symbol=symbol,
+                    timeframe=timeframe,
+                    descriptor=descriptor,
+                    context_frame=context,
+                    source_event="bootstrap_history",
+                )
+                if status == "created":
+                    generated += 1
+                elif status == "skip_no_features":
+                    skipped_no_features += 1
+                elif status == "skip_not_newer":
+                    skipped_not_newer += 1
+
+        if generated > 0:
+            logger.info("Bootstrapped {} latest predictions from historical candles", generated)
+        elif attempts > 0:
+            logger.debug(
+                "Bootstrap checked {} symbol/timeframe pairs with no new inserts (no_features={} not_newer={})",
+                attempts,
+                skipped_no_features,
+                skipped_not_newer,
+            )
+
+    async def _generate_prediction_from_context(
+        self,
+        *,
+        symbol: str,
+        timeframe: str,
+        descriptor: ModelDescriptor,
+        context_frame: pd.DataFrame,
+        source_event: str,
+    ) -> str:
+        """Build and persist one prediction using latest available context frame."""
+        latest = self.features.latest_feature_row(
+            context_frame,
+            symbol=symbol,
+            timeframe=timeframe,
+        )
+        if latest is None:
+            return "skip_no_features"
+
+        latest_candle_end = pd.to_datetime(latest.latest_candle["candle_end"]).to_pydatetime()
+
+        feature_columns = descriptor.feature_list or feature_columns_for_timeframe(timeframe)
+        result = await asyncio.to_thread(
+            predict_signal,
+            descriptor,
+            latest.features,
+            feature_columns,
+        )
+
+        synthetic_candle = Candle(
+            symbol=symbol,
+            timeframe=timeframe,
+            candle_start=pd.to_datetime(latest.latest_candle["candle_start"]).to_pydatetime(),
+            candle_end=latest_candle_end,
+            open=float(latest.latest_candle["open"]),
+            high=float(latest.latest_candle["high"]),
+            low=float(latest.latest_candle["low"]),
+            close=float(latest.latest_candle["close"]),
+            volume=int(latest.latest_candle["volume"]),
+            tick_count=0,
+            is_partial=False,
+        )
+        prediction_ts = self._prediction_ts_from_candle(synthetic_candle)
+        recent = await asyncio.to_thread(self.db.list_recent_predictions, symbol, timeframe, 1)
+        if recent:
+            last_prediction_ts = pd.to_datetime(recent[0].get("prediction_ts"), errors="coerce")
+            if pd.notna(last_prediction_ts):
+                last_prediction_dt = last_prediction_ts.to_pydatetime()
+                if last_prediction_dt.tzinfo is None and prediction_ts.tzinfo is not None:
+                    last_prediction_dt = last_prediction_dt.replace(tzinfo=prediction_ts.tzinfo)
+                if last_prediction_dt >= prediction_ts:
+                    return "skip_not_newer"
+
+        target_ts = self._target_ts_from_candle(synthetic_candle)
+        risk_decision = self.risk.evaluate(
+            symbol=symbol,
+            timeframe=timeframe,
+            signal=result.signal,
+            confidence=result.confidence,
+            last_price=float(latest.latest_candle["close"]),
+            realized_return=float(latest.features.get("ret_1", 0.0)),
+        )
+        risk_snapshot = self.risk.to_payload(risk_decision)
+        risk_snapshot["timeframe_rules"] = self.settings.timeframe_rule_profile(timeframe)
+        payload = {
+            "symbol": symbol,
+            "timeframe": timeframe,
+            "prediction_ts": prediction_ts,
+            "target_ts": target_ts,
+            "signal": risk_decision.approved_signal,
+            "confidence": result.confidence,
+            "prob_up": result.prob_up,
+            "prob_down": result.prob_down,
+            "model_name": descriptor.model_name,
+            "model_version": descriptor.version,
+            "feature_snapshot": self.settings.serialize_features(latest.features),
+            "explainability": result.explainability,
+            "risk_snapshot": risk_snapshot,
+            "compliance_note": "Research signal only. No trade execution.",
+            "is_simulated": True,
+        }
+        await asyncio.to_thread(self.db.insert_prediction, payload)
+        await asyncio.to_thread(
+            self.db.insert_compliance_audit,
+            "prediction_generated_bootstrap",
+            {
+                "model": descriptor.model_name,
+                "version": descriptor.version,
+                "signal": payload["signal"],
+                "confidence": payload["confidence"],
+                "source_event": source_event,
+            },
+            symbol,
+            timeframe,
+            "realtime_engine",
+        )
+        self.latest_signal_cache[(symbol, timeframe)] = payload
+        return "created"
+
+    def _build_feature_context_frame(self, timeframe: str, limit_per_symbol: int = 260) -> pd.DataFrame:
+        """Assemble multi-symbol recent candles for cross-sectional feature computation."""
+        rows: list[dict[str, Any]] = []
+        for symbol in self.symbol_token_map.keys():
+            history = self.aggregator.recent_candles(symbol=symbol, timeframe=timeframe, limit=limit_per_symbol)
+            if not history:
+                continue
+            for c in history:
+                rows.append(
+                    {
+                        "symbol": c.symbol,
+                        "timeframe": c.timeframe,
+                        "candle_start": c.candle_start,
+                        "candle_end": c.candle_end,
+                        "open": c.open,
+                        "high": c.high,
+                        "low": c.low,
+                        "close": c.close,
+                        "volume": c.volume,
+                    }
+                )
+        if not rows:
+            return pd.DataFrame()
+        return pd.DataFrame(rows)
+
+    def _to_market_dt(self, value: datetime) -> datetime:
+        """Normalize timestamps into configured market timezone."""
+        if value.tzinfo is None:
+            return value.replace(tzinfo=self.market_tz)
+        return value.astimezone(self.market_tz)
+
+    def _market_close_for_day(self, day: date) -> datetime:
+        """Return configured market-close timestamp for a trading day."""
+        override = self.settings.partial_market_closes.get(day.isoformat())
+        if override:
+            hour, minute = [int(part) for part in override.split(":", 1)]
+            close_time = time(hour=hour, minute=minute)
+        else:
+            close_time = self.settings.market_close
+        return datetime.combine(day, close_time, self.market_tz)
+
+    def _prediction_ts_from_candle(self, candle: Candle) -> datetime:
+        """Use session-close timestamps for daily predictions."""
+        if candle.timeframe != "1d":
+            return candle.candle_end
+        anchor_day = self._to_market_dt(candle.candle_start).date()
+        return self._market_close_for_day(anchor_day)
+
     def _target_ts_from_candle(self, candle: Candle) -> datetime:
         """Compute forecast target timestamp, skipping weekends/holidays for daily bars."""
         timeframe_minutes = self.settings.timeframe_minutes
         if candle.timeframe in timeframe_minutes and candle.timeframe != "1d":
             return candle.candle_end + timedelta(minutes=timeframe_minutes[candle.timeframe])
-        next_day = candle.candle_end + timedelta(days=1)
+        anchor_day = self._to_market_dt(candle.candle_start).date()
+        next_day = anchor_day + timedelta(days=1)
         holidays = self.settings.load_market_holidays()
-        while next_day.date().weekday() >= 5 or next_day.date() in holidays:
+        while next_day.weekday() >= 5 or next_day in holidays:
             next_day += timedelta(days=1)
-        return next_day
+        return self._market_close_for_day(next_day)
 
     def _timeframe_delta(self, timeframe: str) -> timedelta:
         """Convert timeframe label into timedelta for backfilled candle_end computation."""
@@ -313,6 +502,13 @@ class RealtimePredictionEngine:
         if minutes is None:
             raise ValueError(f"Unsupported timeframe: {timeframe}")
         return timedelta(minutes=minutes)
+
+    def _fastest_timeframe(self) -> str:
+        """Return shortest configured candle timeframe for live-price fallback."""
+        timeframe_minutes = self.settings.timeframe_minutes
+        if not timeframe_minutes:
+            return "1m"
+        return min(timeframe_minutes, key=lambda tf: timeframe_minutes[tf])
 
     async def backfill_historical(self, symbol: str, timeframe: str, days: int = 30) -> dict[str, Any]:
         """Backfill historical candles from Kite, persist, and warm in-memory history."""
@@ -352,11 +548,12 @@ class RealtimePredictionEngine:
         delta = self._timeframe_delta(timeframe)
         for row in frame.to_dict("records"):
             candle_start = pd.to_datetime(row["candle_start"]).to_pydatetime()
-            if candle_start.tzinfo is None:
-                candle_start = candle_start.replace(tzinfo=self.market_tz)
+            candle_start = self._to_market_dt(candle_start)
+            if timeframe == "1d":
+                trading_day = candle_start.date()
+                candle_end = self._market_close_for_day(trading_day)
             else:
-                candle_start = candle_start.astimezone(self.market_tz)
-            candle_end = candle_start + delta
+                candle_end = candle_start + delta
             volume = int(row.get("volume") or 0)
             open_price = float(row.get("open") or 0.0)
             high_price = float(row.get("high") or 0.0)
@@ -396,10 +593,31 @@ class RealtimePredictionEngine:
 
         inserted = await asyncio.to_thread(self.db.upsert_candles_bulk, candle_rows)
         self.aggregator.append_history(warm_candles)
+        descriptor = self._model_by_timeframe.get(timeframe)
+        if descriptor is not None:
+            context = self._build_feature_context_frame(timeframe, limit_per_symbol=400)
+            if not context.empty:
+                pred_status = await self._generate_prediction_from_context(
+                    symbol=symbol,
+                    timeframe=timeframe,
+                    descriptor=descriptor,
+                    context_frame=context,
+                    source_event="historical_backfill",
+                )
+            else:
+                pred_status = "skip_no_context"
+        else:
+            pred_status = "skip_no_model"
         await asyncio.to_thread(
             self.db.insert_compliance_audit,
             "historical_backfill",
-            {"symbol": symbol, "timeframe": timeframe, "days": days, "inserted": inserted},
+            {
+                "symbol": symbol,
+                "timeframe": timeframe,
+                "days": days,
+                "inserted": inserted,
+                "prediction_status": pred_status,
+            },
             symbol,
             timeframe,
             "realtime_engine",
@@ -409,6 +627,7 @@ class RealtimePredictionEngine:
             "timeframe": timeframe,
             "days": days,
             "inserted": inserted,
+            "prediction_status": pred_status,
             "from": start_dt.isoformat(),
             "to": end_dt.isoformat(),
         }
@@ -417,6 +636,21 @@ class RealtimePredictionEngine:
         """Periodic liveness and health telemetry writer."""
         while not self._stop.is_set():
             try:
+                # Periodic model refresh enables hot-pickup of newly trained artifacts.
+                if (
+                    self._last_model_refresh_ts is None
+                    or (datetime.utcnow() - self._last_model_refresh_ts).total_seconds() >= 60
+                ):
+                    self._load_models()
+
+                # Opportunistically fill missing predictions from already available candles.
+                if (
+                    self._last_bootstrap_ts is None
+                    or (datetime.utcnow() - self._last_bootstrap_ts).total_seconds() >= 60
+                ):
+                    await self._bootstrap_predictions_from_history()
+                    self._last_bootstrap_ts = datetime.utcnow()
+
                 details = {
                     "queue_dropped_ticks": self.tick_handler.dropped_ticks,
                     "ws_connected": bool(self.kite_client and self.kite_client.connected),
@@ -429,3 +663,59 @@ class RealtimePredictionEngine:
             except Exception as exc:
                 logger.exception("Heartbeat loop error: {}", exc)
                 await asyncio.sleep(5)
+
+    def status_snapshot(self) -> dict[str, Any]:
+        """Return runtime status useful for diagnostics and dashboard checks."""
+        return {
+            "ws_connected": bool(self.kite_client and self.kite_client.connected),
+            "loaded_model_timeframes": sorted(self._model_by_timeframe.keys()),
+            "configured_model_timeframes": list(self.settings.model_timeframes),
+            "configured_candle_timeframes": list(self.settings.candle_timeframes),
+            "dropped_ticks": self.tick_handler.dropped_ticks,
+            "last_bootstrap_ts": self._last_bootstrap_ts.isoformat() if self._last_bootstrap_ts else None,
+        }
+
+    def latest_price_snapshot(self, symbol: str, timeframe: str | None = None) -> dict[str, Any] | None:
+        """Return best-effort latest price snapshot from engine tick/candle caches."""
+        resolved_symbol = symbol.upper().strip()
+        tick_cached = self.latest_price_cache.get(resolved_symbol)
+        if tick_cached:
+            return {
+                "symbol": resolved_symbol,
+                "last_price": float(tick_cached["last_price"]),
+                "price_ts": pd.to_datetime(tick_cached["price_ts"]).isoformat(),
+                "source": str(tick_cached.get("source", "engine_tick")),
+            }
+
+        preferred_tf = timeframe if timeframe in self.settings.candle_timeframes else self._fastest_timeframe()
+        recent = self.aggregator.recent_candles(symbol=resolved_symbol, timeframe=preferred_tf, limit=1)
+        if not recent:
+            return None
+        candle = recent[-1]
+        return {
+            "symbol": resolved_symbol,
+            "last_price": float(candle.close),
+            "price_ts": candle.candle_end.isoformat(),
+            "source": "engine_partial_candle" if candle.is_partial else "engine_candle_close",
+        }
+
+    def recent_candles_snapshot(self, symbol: str, timeframe: str, limit: int = 300) -> list[dict[str, Any]]:
+        """Return in-memory candle history including the current partial candle."""
+        rows: list[dict[str, Any]] = []
+        for candle in self.aggregator.recent_candles(symbol=symbol.upper().strip(), timeframe=timeframe, limit=limit):
+            rows.append(
+                {
+                    "symbol": candle.symbol,
+                    "timeframe": candle.timeframe,
+                    "candle_start": candle.candle_start.isoformat(),
+                    "candle_end": candle.candle_end.isoformat(),
+                    "open": candle.open,
+                    "high": candle.high,
+                    "low": candle.low,
+                    "close": candle.close,
+                    "volume": candle.volume,
+                    "tick_count": candle.tick_count,
+                    "is_partial": candle.is_partial,
+                }
+            )
+        return rows

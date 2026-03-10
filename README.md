@@ -6,7 +6,6 @@ It now runs as:
 - backend: FastAPI + realtime prediction engine
 - frontend: React (Vite + TypeScript) interactive web app
 
-`dashboard/streamlit_app.py` is now legacy and no longer the primary UI.
 
 ## 1. What This Project Does
 

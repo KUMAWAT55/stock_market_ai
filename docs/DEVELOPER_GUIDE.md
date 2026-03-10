@@ -99,6 +99,5 @@ export VITE_API_BASE_URL='http://127.0.0.1:8000'
 
 ## 6. Migration Notes
 
-- Streamlit dashboard is now legacy (`dashboard/streamlit_app.py`).
 - Primary UX surface is `webapp/` + FastAPI APIs.
 - Keep API contracts stable; frontend relies on consolidated `/dashboard/snapshot` for speed.

@@ -1,4 +1,4 @@
-export type Signal = "BUY" | "SELL" | "HOLD" | "N/A";
+export type Signal = "BULLISH" | "BEARISH" | "HOLD" | "N/A";
 
 export interface CandleRow {
   candle_start: string;
@@ -92,6 +92,46 @@ export interface SnapshotPayload {
     };
   };
   indicator_heatmap: {
+    timeframes: string[];
+    heatmap_rows: Array<{
+      indicator: string;
+      label: string;
+      [timeframe: string]: string;
+    }>;
+    score_rows: Array<{
+      indicator: string;
+      label: string;
+      [timeframe: string]: number | string | null;
+    }>;
+    summary: Array<{
+      timeframe: string;
+      composite_score: number | null;
+      bias: string;
+      bullish_indicators: number;
+      bearish_indicators: number;
+    }>;
+  };
+  indicator_heatmap_lag?: {
+    timeframes: string[];
+    heatmap_rows: Array<{
+      indicator: string;
+      label: string;
+      [timeframe: string]: string;
+    }>;
+    score_rows: Array<{
+      indicator: string;
+      label: string;
+      [timeframe: string]: number | string | null;
+    }>;
+    summary: Array<{
+      timeframe: string;
+      composite_score: number | null;
+      bias: string;
+      bullish_indicators: number;
+      bearish_indicators: number;
+    }>;
+  };
+  indicator_heatmap_lead?: {
     timeframes: string[];
     heatmap_rows: Array<{
       indicator: string;

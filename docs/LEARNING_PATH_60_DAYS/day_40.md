@@ -4,7 +4,7 @@
 Model loading and signal generation
 
 ## App Flow Focus
-How live features become BUY/SELL/HOLD outputs
+How live features become BULLISH/BEARISH/HOLD outputs
 
 ## Read in This Repo
 - models/predict.py, models/model_registry.py

@@ -21,7 +21,7 @@ def get_disclaimer() -> ComplianceDisclaimer:
     return ComplianceDisclaimer(
         title="SEBI Compliance Notice",
         body=(
-            "This dashboard generates research signals (BUY/SELL/HOLD) for analytics only. "
+            "This dashboard generates research signals (BULLISH/BEARISH/HOLD) for analytics only. "
             "It does not place or automate trade execution. Past or simulated performance does not guarantee future returns."
         ),
         risk_disclosure=(

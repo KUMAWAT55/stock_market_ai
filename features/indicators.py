@@ -48,11 +48,15 @@ def add_indicators(candles: pd.DataFrame) -> pd.DataFrame:
 
     df["ema_12"] = df["close"].ewm(span=12, adjust=False).mean()
     df["ema_26"] = df["close"].ewm(span=26, adjust=False).mean()
+    df["ema_50"] = df["close"].ewm(span=50, adjust=False).mean()
+    df["ema_200"] = df["close"].ewm(span=200, adjust=False).mean()
     df["macd"] = df["ema_12"] - df["ema_26"]
     df["macd_signal"] = df["macd"].ewm(span=9, adjust=False).mean()
     df["macd_hist"] = df["macd"] - df["macd_signal"]
 
     df["rsi_14"] = _rsi(df["close"], period=14)
+    df["rsi_7"] = _rsi(df["close"], period=7)
+    df["rsi_21"] = _rsi(df["close"], period=21)
     df["atr_14"] = _atr(df, period=14)
     df["atr_pct"] = df["atr_14"] / df["close"].replace(0.0, np.nan)
 
@@ -63,10 +67,25 @@ def add_indicators(candles: pd.DataFrame) -> pd.DataFrame:
     )
 
     df["sma_20"] = df["close"].rolling(20).mean()
+    df["sma_50"] = df["close"].rolling(50).mean()
+    df["sma_200"] = df["close"].rolling(200).mean()
     bb_std = df["close"].rolling(20).std()
     df["bb_upper"] = df["sma_20"] + 2.0 * bb_std
     df["bb_lower"] = df["sma_20"] - 2.0 * bb_std
     df["bb_width"] = (df["bb_upper"] - df["bb_lower"]) / df["close"].replace(0.0, np.nan)
+
+    high_14 = df["high"].rolling(14).max()
+    low_14 = df["low"].rolling(14).min()
+    stoch_range = (high_14 - low_14).replace(0.0, np.nan)
+    df["stoch_k_14"] = (df["close"] - low_14) / stoch_range * 100.0
+    df["stoch_d_14"] = df["stoch_k_14"].rolling(3).mean()
+
+    typical = (df["high"] + df["low"] + df["close"]) / 3.0
+    tp_sma = typical.rolling(20).mean()
+    mean_dev = (typical - tp_sma).abs().rolling(20).mean()
+    df["cci_20"] = (typical - tp_sma) / (0.015 * mean_dev.replace(0.0, np.nan))
+
+    df["roc_10"] = df["close"].pct_change(10) * 100.0
 
     # Session progress features encode intraday seasonality into cyclical terms.
     ts = pd.to_datetime(df["candle_end"])
@@ -90,11 +109,21 @@ def add_indicators(candles: pd.DataFrame) -> pd.DataFrame:
         "macd",
         "macd_signal",
         "macd_hist",
+        "ema_50",
+        "ema_200",
+        "rsi_7",
+        "rsi_21",
         "rsi_14",
         "atr_pct",
         "volatility_20",
         "volume_zscore_20",
         "bb_width",
+        "sma_50",
+        "sma_200",
+        "stoch_k_14",
+        "stoch_d_14",
+        "cci_20",
+        "roc_10",
         "session_progress",
         "minute_sin",
         "minute_cos",

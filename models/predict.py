@@ -93,11 +93,11 @@ def _predict_proba(model: Any, features: pd.DataFrame) -> tuple[float, float]:
 
 
 def _signal_from_prob(prob_up: float, buy_threshold: float, sell_threshold: float) -> str:
-    """Apply configured probability thresholds to map into BUY/SELL/HOLD."""
+    """Apply configured probability thresholds to map into BULLISH/BEARISH/HOLD."""
     if prob_up >= buy_threshold:
-        return "BUY"
+        return "BULLISH"
     if prob_up <= sell_threshold:
-        return "SELL"
+        return "BEARISH"
     return "HOLD"
 
 

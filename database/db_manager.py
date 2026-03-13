@@ -37,12 +37,51 @@ class CandleRow:
 class DatabaseManager:
     """Thin data-access layer for realtime and compliance-safe persistence."""
 
+    _SIGNAL_ALIASES = {
+        "BUY": "BULLISH",
+        "LONG": "BULLISH",
+        "SELL": "BEARISH",
+        "SHORT": "BEARISH",
+        "NEUTRAL": "HOLD",
+    }
+
     def __init__(self, db_url: str | None = None) -> None:
         settings = get_settings()
         self._db_url = db_url or settings.database_url
         self._engine: Engine = create_engine(self._db_url, pool_pre_ping=True, future=True)
         self._session_factory = sessionmaker(bind=self._engine, autocommit=False, autoflush=False)
         self._schema_path = Path(__file__).with_name("schema.sql")
+
+    def _normalize_signal_value(self, value: Any) -> Any:
+        if value is None:
+            return None
+        text = str(value).strip().upper()
+        return self._SIGNAL_ALIASES.get(text, text)
+
+    def _normalize_risk_snapshot(self, value: Any) -> Any:
+        if value is None:
+            return None
+        payload: Any = value
+        if isinstance(value, str):
+            try:
+                payload = json.loads(value)
+            except json.JSONDecodeError:
+                return value
+        if isinstance(payload, dict):
+            approved = payload.get("approved_signal")
+            if approved is not None:
+                payload = dict(payload)
+                payload["approved_signal"] = self._normalize_signal_value(approved)
+            return payload
+        return value
+
+    def _normalize_prediction_row(self, row: dict[str, Any]) -> dict[str, Any]:
+        out = dict(row)
+        if "signal" in out:
+            out["signal"] = self._normalize_signal_value(out.get("signal"))
+        if "risk_snapshot" in out:
+            out["risk_snapshot"] = self._normalize_risk_snapshot(out.get("risk_snapshot"))
+        return out
 
     @contextmanager
     def session_scope(self) -> Iterator[Session]:
@@ -208,6 +247,38 @@ class DatabaseManager:
         if df.empty:
             return df
         return df.sort_values("candle_start").reset_index(drop=True)
+
+    def get_candles_in_range(
+        self,
+        symbol: str,
+        timeframe: str,
+        start_dt: datetime,
+        end_dt: datetime,
+    ) -> pd.DataFrame:
+        """Fetch candles between start/end timestamps ordered ascending."""
+        query = text(
+            """
+            SELECT symbol, timeframe, candle_start, candle_end, open, high, low, close, volume, tick_count, is_partial
+            FROM ohlcv_candles
+            WHERE symbol = :symbol
+              AND timeframe = :timeframe
+              AND candle_start >= :start_dt
+              AND candle_end <= :end_dt
+            ORDER BY candle_start ASC
+            """
+        )
+        with self._engine.begin() as conn:
+            df = pd.read_sql_query(
+                query,
+                conn,
+                params={
+                    "symbol": symbol,
+                    "timeframe": timeframe,
+                    "start_dt": start_dt,
+                    "end_dt": end_dt,
+                },
+            )
+        return df
 
     def get_candle_stats(self, symbol: str, timeframe: str) -> dict[str, Any]:
         """Return count and latest timestamps for one symbol/timeframe candle stream."""
@@ -401,6 +472,27 @@ class DatabaseManager:
                 },
             )
 
+    def deactivate_model_versions(self, model_name: str, timeframe: str, keep_version: str) -> None:
+        """Deactivate older versions for a model/timeframe, keeping history."""
+        query = text(
+            """
+            UPDATE model_registry
+            SET is_active = FALSE
+            WHERE model_name = :model_name
+              AND timeframe = :timeframe
+              AND version <> :keep_version
+            """
+        )
+        with self._engine.begin() as conn:
+            conn.execute(
+                query,
+                {
+                    "model_name": model_name,
+                    "timeframe": timeframe,
+                    "keep_version": keep_version,
+                },
+            )
+
     def get_active_model(self, timeframe: str) -> dict[str, Any] | None:
         """Return latest active model metadata for a timeframe."""
         query = text(
@@ -445,7 +537,7 @@ class DatabaseManager:
         )
         with self._engine.begin() as conn:
             rows = conn.execute(query, {"symbol": symbol, "timeframe": timeframe, "limit": limit}).mappings().all()
-        return [dict(row) for row in rows]
+        return [self._normalize_prediction_row(dict(row)) for row in rows]
 
     def get_latest_predictions(self, limit: int = 200) -> list[dict[str, Any]]:
         """Return latest prediction per (symbol, timeframe)."""
@@ -470,7 +562,7 @@ class DatabaseManager:
         )
         with self._engine.begin() as conn:
             rows = conn.execute(query, {"limit": limit}).mappings().all()
-        return [dict(row) for row in rows]
+        return [self._normalize_prediction_row(dict(row)) for row in rows]
 
     def get_probability_vector(self, symbol: str, timeframes: list[str]) -> dict[str, dict[str, Any]]:
         """Return latest probability snapshot per requested timeframe for one symbol."""
@@ -491,7 +583,9 @@ class DatabaseManager:
             tf = str(row["timeframe"])
             if tf not in allowed or tf in out:
                 continue
-            out[tf] = dict(row)
+            payload = dict(row)
+            payload["signal"] = self._normalize_signal_value(payload.get("signal"))
+            out[tf] = payload
         return out
 
     def get_latest_predictions_by_timeframe(
@@ -549,7 +643,7 @@ class DatabaseManager:
         for row in rows:
             timeframe = str(row["timeframe"])
             if timeframe not in latest_by_tf:
-                latest_by_tf[timeframe] = dict(row)
+                latest_by_tf[timeframe] = self._normalize_prediction_row(dict(row))
         return list(latest_by_tf.values())
 
     def insert_backtest_metrics(

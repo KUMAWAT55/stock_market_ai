@@ -20,7 +20,15 @@ function formatTs(value?: string | null): string {
   if (!value) return "N/A";
   const dt = new Date(value);
   if (Number.isNaN(dt.getTime())) return "N/A";
-  return dt.toLocaleString("en-IN", { hour12: false });
+  return `${dt.toLocaleString("en-IN", { hour12: false, timeZone: "Asia/Kolkata" })} IST`;
+}
+
+function formatPredictionWindow(timeframe?: string | null, targetTs?: string | null): string {
+  if (!timeframe && !targetTs) return "N/A";
+  const targetLabel = formatTs(targetTs);
+  if (!timeframe) return targetLabel;
+  if (targetLabel === "N/A") return timeframe;
+  return `${timeframe} → ${targetLabel}`;
 }
 
 function ema(values: number[], period: number): number[] {
@@ -38,6 +46,14 @@ function heatClass(bias: string): string {
   if (bias === "bearish") return "heat-cell heat-bear";
   if (bias === "neutral") return "heat-cell heat-neutral";
   return "heat-cell heat-empty";
+}
+
+function signalClass(value?: string | null): string {
+  const normalized = String(value ?? "").toUpperCase();
+  if (normalized === "BEARISH") return "signal signal-bearish";
+  if (normalized === "BULLISH") return "signal signal-bullish";
+  if (normalized === "HOLD" || normalized === "NEUTRAL") return "signal signal-neutral";
+  return "signal";
 }
 
 export default function DashboardPage() {
@@ -164,22 +180,90 @@ export default function DashboardPage() {
     return { x, open, high, low, close, ema12, ema26 };
   }, [snapshot]);
   const chartLayout = useMemo(
-    () => ({
+    () => {
+      const isIntraday = timeframe !== "1d";
+      const rangebreaks = [
+        { bounds: ["sat", "mon"] },
+        ...(isIntraday ? [{ bounds: [15.5, 9.25], pattern: "hour" as const }] : []),
+      ];
+      return {
       margin: { l: 30, r: 20, t: 10, b: 30 },
       plot_bgcolor: "#0f1219",
       paper_bgcolor: "#0f1219",
-      xaxis: { rangeslider: { visible: false }, color: "#b4bac8" },
+      xaxis: {
+        type: "date",
+        rangeslider: { visible: false },
+        color: "#b4bac8",
+        rangebreaks,
+        tickformat: "%H:%M\n%b %d",
+        hoverformat: "%Y-%m-%d %H:%M",
+      },
       yaxis: { color: "#b4bac8", fixedrange: false },
       legend: { orientation: "h", y: 1.12, x: 0 },
       // Keep user zoom/pan when candles refresh for same symbol+timeframe.
       uirevision: `${symbol}:${timeframe}`,
-    }),
+      };
+    },
     [symbol, timeframe],
   );
 
   const latestSignal = snapshot?.signal_history?.rows?.[0] ?? null;
+  const latestSignalValue = latestSignal?.risk_snapshot?.approved_signal ?? latestSignal?.signal ?? "N/A";
   const lastPrice = snapshot?.live_price?.last_price ?? null;
   const ruleProfile = snapshot?.rules?.rules ?? {};
+  const lagHeatmap = snapshot?.indicator_heatmap_lag ?? snapshot?.indicator_heatmap;
+  const leadHeatmap = snapshot?.indicator_heatmap_lead ?? snapshot?.indicator_heatmap;
+
+  const renderHeatmap = (
+    title: string,
+    payload: SnapshotPayload["indicator_heatmap"] | undefined,
+    tooltip: string,
+  ) => {
+    if (!payload) {
+      return (
+        <section className="panel tooltip-target" data-tooltip={tooltip}>
+          <div className="panel-head">
+            <h3>{title}</h3>
+            <span>No data</span>
+          </div>
+          <div className="empty-state">No indicator data available.</div>
+        </section>
+      );
+    }
+
+    return (
+      <section className="panel tooltip-target" data-tooltip={tooltip}>
+        <div className="panel-head">
+          <h3>{title}</h3>
+          <span>Bullish/Bearish map for each timeframe</span>
+        </div>
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Indicator</th>
+                {payload.timeframes.map((tf) => (
+                  <th key={tf}>{tf}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {payload.heatmap_rows.map((row) => (
+                <tr key={row.indicator}>
+                  <td>{row.label}</td>
+                  {payload.timeframes.map((tf) => (
+                    <td key={`${row.indicator}-${tf}`} className={heatClass(String(row[tf] ?? "no_data"))}>
+                      {String(row[tf] ?? "no_data")}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    );
+  };
 
   return (
     <div className="app-shell">
@@ -197,7 +281,10 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      <section className="controls">
+      <section
+        className="controls tooltip-target"
+        data-tooltip="Core filters that drive all panels: symbol, timeframe, refresh cadence, and row limits."
+      >
         <label>
           Symbol
           <select value={symbol} onChange={(event) => setSymbol(event.target.value)}>
@@ -253,22 +340,41 @@ export default function DashboardPage() {
       {error && <div className="error-banner">{error}</div>}
 
       <section className="metric-grid">
-        <article className="metric-card">
+        <article
+          className="metric-card tooltip-target"
+          data-tooltip="Latest price snapshot from the live engine or recent candle. Useful for verifying feed health."
+        >
           <p>Live Price</p>
           <h2>{lastPrice ? `₹ ${lastPrice.toFixed(2)}` : "N/A"}</h2>
           <small>{snapshot?.live_price?.source ?? "No source"}</small>
         </article>
-        <article className="metric-card">
+        <article
+          className="metric-card tooltip-target"
+          data-tooltip="Most recent model output for this symbol/timeframe after risk gating. Helps track the latest stance."
+        >
           <p>Primary Signal</p>
-          <h2>{latestSignal?.risk_snapshot?.approved_signal ?? latestSignal?.signal ?? "N/A"}</h2>
+          <h2 className={signalClass(latestSignalValue)}>{latestSignalValue}</h2>
           <small>{latestSignal ? `Confidence ${formatPercent(latestSignal.confidence)}` : "No prediction yet"}</small>
+          <small>
+            {latestSignal
+              ? `Period ${snapshot?.timeframe ?? "N/A"} · Target ${formatTs(latestSignal.target_ts)}`
+              : "Period N/A"}
+          </small>
         </article>
-        <article className="metric-card">
+        <article
+          className="metric-card tooltip-target"
+          data-tooltip="Aggregated consensus across timeframes. Useful for checking multi-timeframe alignment."
+        >
           <p>Matrix Consensus</p>
-          <h2>{snapshot?.model_matrix?.consensus?.signal ?? "N/A"}</h2>
+          <h2 className={signalClass(snapshot?.model_matrix?.consensus?.signal ?? "N/A")}>
+            {snapshot?.model_matrix?.consensus?.signal ?? "N/A"}
+          </h2>
           <small>{formatPercent(snapshot?.model_matrix?.consensus?.avg_confidence)}</small>
         </article>
-        <article className="metric-card">
+        <article
+          className="metric-card tooltip-target"
+          data-tooltip="Live engine status and tick health. Dropped ticks indicate feed pressure or backpressure."
+        >
           <p>Engine Stream</p>
           <h2>{snapshot?.engine?.details?.ws_connected ? "Connected" : "Disconnected"}</h2>
           <small>Dropped ticks: {snapshot?.engine?.details?.dropped_ticks ?? 0}</small>
@@ -276,7 +382,10 @@ export default function DashboardPage() {
       </section>
 
       <section className="layout-main">
-        <article className="panel">
+        <article
+          className="panel tooltip-target"
+          data-tooltip="Recent OHLC candles with EMA overlays. Use this to visually validate trend and price action."
+        >
           <div className="panel-head">
             <h3>{symbol} {timeframe} Live Candles</h3>
             <span>{snapshot?.candles?.source ?? "N/A"}</span>
@@ -324,13 +433,16 @@ export default function DashboardPage() {
           </div>
         </article>
 
-        <article className="panel">
+        <article
+          className="panel tooltip-target"
+          data-tooltip="Risk and threshold settings for this timeframe plus a runtime backtest summary."
+        >
           <div className="panel-head">
             <h3>Timeframe Rules</h3>
           </div>
           <div className="kv-list">
-            <div><span>Buy Threshold</span><b>{formatPercent(ruleProfile.signal_buy_threshold)}</b></div>
-            <div><span>Sell Threshold</span><b>{formatPercent(ruleProfile.signal_sell_threshold)}</b></div>
+            <div><span>Bullish Threshold</span><b>{formatPercent(ruleProfile.signal_bullish_threshold)}</b></div>
+            <div><span>Bearish Threshold</span><b>{formatPercent(ruleProfile.signal_bearish_threshold)}</b></div>
             <div><span>Min Confidence</span><b>{formatPercent(ruleProfile.min_confidence)}</b></div>
             <div><span>Cooldown</span><b>{Math.round(ruleProfile.cooldown_seconds ?? 0)} sec</b></div>
             <div><span>Stop Loss</span><b>{formatPercent(ruleProfile.stop_loss_pct)}</b></div>
@@ -349,10 +461,18 @@ export default function DashboardPage() {
         </article>
       </section>
 
-      <section className="panel">
+      <section
+        className="panel tooltip-target"
+        data-tooltip="Latest model outputs across all timeframes for this symbol. Helps compare alignment and confidence."
+      >
         <div className="panel-head">
           <h3>Model Matrix Across Timeframes</h3>
-          <span>Consensus: {snapshot?.model_matrix?.consensus?.signal ?? "N/A"}</span>
+          <span>
+            Consensus:{" "}
+            <span className={signalClass(snapshot?.model_matrix?.consensus?.signal ?? "N/A")}>
+              {snapshot?.model_matrix?.consensus?.signal ?? "N/A"}
+            </span>
+          </span>
         </div>
         <div className="table-wrap">
           <table>
@@ -363,6 +483,7 @@ export default function DashboardPage() {
                 <th>Approved</th>
                 <th>Confidence</th>
                 <th>Prob Up</th>
+                <th>Target</th>
                 <th>Model</th>
                 <th>Version</th>
                 <th>Risk Note</th>
@@ -372,10 +493,15 @@ export default function DashboardPage() {
               {(snapshot?.model_matrix?.rows ?? []).map((row) => (
                 <tr key={row.timeframe}>
                   <td>{row.timeframe}</td>
-                  <td>{row.signal ?? "N/A"}</td>
-                  <td>{row.approved_signal ?? "N/A"}</td>
+                  <td>
+                    <span className={signalClass(row.signal)}>{row.signal ?? "N/A"}</span>
+                  </td>
+                  <td>
+                    <span className={signalClass(row.approved_signal)}>{row.approved_signal ?? "N/A"}</span>
+                  </td>
                   <td>{formatPercent(row.confidence)}</td>
                   <td>{formatPercent(row.prob_up)}</td>
+                  <td>{formatTs(row.target_ts)}</td>
                   <td>{row.model_name ?? "N/A"}</td>
                   <td>{row.model_version ?? "N/A"}</td>
                   <td>{row.risk_reason ?? "-"}</td>
@@ -386,39 +512,22 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      <section className="panel">
-        <div className="panel-head">
-          <h3>Indicator Heatmap</h3>
-          <span>Bullish/Bearish map for each timeframe</span>
-        </div>
-        <div className="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Indicator</th>
-                {(snapshot?.indicator_heatmap?.timeframes ?? []).map((tf) => (
-                  <th key={tf}>{tf}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {(snapshot?.indicator_heatmap?.heatmap_rows ?? []).map((row) => (
-                <tr key={row.indicator}>
-                  <td>{row.label}</td>
-                  {(snapshot?.indicator_heatmap?.timeframes ?? []).map((tf) => (
-                    <td key={`${row.indicator}-${tf}`} className={heatClass(String(row[tf] ?? "no_data"))}>
-                      {String(row[tf] ?? "no_data")}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
+      {renderHeatmap(
+        "Lag Indicator Heatmap",
+        lagHeatmap,
+        "Lagging indicator bias by timeframe. Useful for confirming trend-following alignment.",
+      )}
+      {renderHeatmap(
+        "Lead Indicator Heatmap",
+        leadHeatmap,
+        "Leading indicator bias by timeframe. Useful for spotting early momentum shifts.",
+      )}
 
       <section className="layout-split">
-        <article className="panel">
+        <article
+          className="panel tooltip-target"
+          data-tooltip="Quick strategy backtest on recent candles. Useful for testing indicator logic before deployment."
+        >
           <div className="panel-head">
             <h3>Strategy Lab (Streak-style)</h3>
           </div>
@@ -435,17 +544,26 @@ export default function DashboardPage() {
             </label>
           </div>
           <div className="kv-list">
-            <div><span>Latest Signal</span><b>{strategyBacktest?.latest_signal ?? "N/A"}</b></div>
+            <div>
+              <span>Latest Signal</span>
+              <b className={signalClass(strategyBacktest?.latest_signal ?? "N/A")}>
+                {strategyBacktest?.latest_signal ?? "N/A"}
+              </b>
+            </div>
             <div><span>Trades</span><b>{strategyBacktest?.trade_count ?? 0}</b></div>
             <div><span>Win Rate</span><b>{formatPercent(strategyBacktest?.win_rate)}</b></div>
             <div><span>Total Return</span><b>{formatPercent(strategyBacktest?.total_return)}</b></div>
             <div><span>Max DD</span><b>{formatPercent(strategyBacktest?.max_drawdown)}</b></div>
             <div><span>Sharpe-like</span><b>{(strategyBacktest?.sharpe_like ?? 0).toFixed(2)}</b></div>
+            <div><span>Period</span><b>{timeframe}</b></div>
           </div>
           <p className="note">{strategyBacktest?.strategy_note ?? ""}</p>
         </article>
 
-        <article className="panel">
+        <article
+          className="panel tooltip-target"
+          data-tooltip="Ranked intraday opportunities by signal confidence. Use to spot high-conviction candidates."
+        >
           <div className="panel-head">
             <h3>Intraday Scanner</h3>
             <span>{scanner?.count ?? 0} candidates</span>
@@ -464,7 +582,7 @@ export default function DashboardPage() {
             <label>
               Signal
               <select value={scannerSignal} onChange={(event) => setScannerSignal(event.target.value)}>
-                {["ALL", "BUY", "SELL", "HOLD"].map((item) => (
+                {["ALL", "BULLISH", "BEARISH", "HOLD"].map((item) => (
                   <option key={item} value={item}>
                     {item}
                   </option>
@@ -488,9 +606,11 @@ export default function DashboardPage() {
               <thead>
                 <tr>
                   <th>Symbol</th>
+                  <th>TF</th>
                   <th>Signal</th>
                   <th>Confidence</th>
                   <th>Prob Up</th>
+                  <th>Target</th>
                   <th>Model</th>
                 </tr>
               </thead>
@@ -498,9 +618,13 @@ export default function DashboardPage() {
                 {(scanner?.rows ?? []).map((row) => (
                   <tr key={`${row.symbol}-${row.timeframe}`}>
                     <td>{row.symbol}</td>
-                    <td>{row.approved_signal}</td>
+                    <td>{row.timeframe}</td>
+                    <td>
+                      <span className={signalClass(row.approved_signal)}>{row.approved_signal}</span>
+                    </td>
                     <td>{formatPercent(row.confidence)}</td>
                     <td>{formatPercent(row.prob_up)}</td>
+                    <td>{formatTs(row.target_ts)}</td>
                     <td>{row.model_name}</td>
                   </tr>
                 ))}
@@ -513,6 +637,7 @@ export default function DashboardPage() {
       <footer className="footer">
         <span>Prediction time: {latestSignal ? formatTs(latestSignal.prediction_ts) : "N/A"}</span>
         <span>Target time: {latestSignal ? formatTs(latestSignal.target_ts) : "N/A"}</span>
+        <span>Prediction period: {formatPredictionWindow(snapshot?.timeframe ?? null, latestSignal?.target_ts)}</span>
       </footer>
     </div>
   );

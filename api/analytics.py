@@ -14,13 +14,44 @@ TIMEFRAME_ORDER = ["1m", "5m", "15m", "1h", "1d"]
 
 INDICATOR_META: dict[str, str] = {
     "ema_trend": "EMA Trend",
+    "ema_50_trend": "EMA 50 Trend",
+    "ema_200_trend": "EMA 200 Trend",
+    "sma_50_trend": "SMA 50 Trend",
+    "sma_200_trend": "SMA 200 Trend",
     "rsi_regime": "RSI Regime",
+    "rsi_7": "RSI 7",
+    "rsi_21": "RSI 21",
     "macd_impulse": "MACD Impulse",
     "bb_position": "Bollinger Position",
+    "stoch_k_14": "Stoch %K 14",
+    "stoch_d_14": "Stoch %D 14",
+    "cci_20": "CCI 20",
+    "roc_10": "ROC 10",
     "volume_impulse": "Volume Impulse",
     "candle_pressure": "Candle Pressure",
 }
 
+LAG_INDICATORS = [
+    "ema_trend",
+    "ema_50_trend",
+    "ema_200_trend",
+    "sma_50_trend",
+    "sma_200_trend",
+    "macd_impulse",
+    "bb_position",
+]
+
+LEAD_INDICATORS = [
+    "rsi_regime",
+    "rsi_7",
+    "rsi_21",
+    "stoch_k_14",
+    "stoch_d_14",
+    "cci_20",
+    "roc_10",
+    "volume_impulse",
+    "candle_pressure",
+]
 
 def ordered_timeframes(requested: list[str]) -> list[str]:
     """Return unique timeframes sorted by canonical intraday order."""
@@ -31,7 +62,10 @@ def ordered_timeframes(requested: list[str]) -> list[str]:
 
 def _safe_float(value: Any, default: float = 0.0) -> float:
     try:
-        return float(value)
+        out = float(value)
+        if pd.isna(out):
+            return default
+        return out
     except Exception:
         return default
 
@@ -113,8 +147,26 @@ def build_indicator_heatmap(
         ema_26 = _safe_float(latest.get("ema_26"), close)
         ema_score = _clamp((close - ema_26) / max(abs(close), 1e-9) * 40.0)
 
+        ema_50 = _safe_float(latest.get("ema_50"), close)
+        ema_50_score = _clamp((close - ema_50) / max(abs(close), 1e-9) * 40.0)
+
+        ema_200 = _safe_float(latest.get("ema_200"), close)
+        ema_200_score = _clamp((close - ema_200) / max(abs(close), 1e-9) * 40.0)
+
+        sma_50 = _safe_float(latest.get("sma_50"), close)
+        sma_50_score = _clamp((close - sma_50) / max(abs(close), 1e-9) * 40.0)
+
+        sma_200 = _safe_float(latest.get("sma_200"), close)
+        sma_200_score = _clamp((close - sma_200) / max(abs(close), 1e-9) * 40.0)
+
         rsi_14 = _safe_float(latest.get("rsi_14"), 50.0)
         rsi_score = _clamp((rsi_14 - 50.0) / 20.0)
+
+        rsi_7 = _safe_float(latest.get("rsi_7"), 50.0)
+        rsi_7_score = _clamp((rsi_7 - 50.0) / 20.0)
+
+        rsi_21 = _safe_float(latest.get("rsi_21"), 50.0)
+        rsi_21_score = _clamp((rsi_21 - 50.0) / 20.0)
 
         macd_hist = _safe_float(latest.get("macd_hist"), 0.0)
         atr_pct = max(abs(_safe_float(latest.get("atr_pct"), 0.01)), 0.0005)
@@ -131,11 +183,33 @@ def build_indicator_heatmap(
 
         pressure = _clamp((close - open_price) / candle_range)
 
+        stoch_k = _safe_float(latest.get("stoch_k_14"), 50.0)
+        stoch_k_score = _clamp((stoch_k - 50.0) / 25.0)
+
+        stoch_d = _safe_float(latest.get("stoch_d_14"), 50.0)
+        stoch_d_score = _clamp((stoch_d - 50.0) / 25.0)
+
+        cci_20 = _safe_float(latest.get("cci_20"), 0.0)
+        cci_score = _clamp(cci_20 / 100.0)
+
+        roc_10 = _safe_float(latest.get("roc_10"), 0.0)
+        roc_score = _clamp(roc_10 / 5.0)
+
         indicator_scores = {
             "ema_trend": ema_score,
+            "ema_50_trend": ema_50_score,
+            "ema_200_trend": ema_200_score,
+            "sma_50_trend": sma_50_score,
+            "sma_200_trend": sma_200_score,
             "rsi_regime": rsi_score,
+            "rsi_7": rsi_7_score,
+            "rsi_21": rsi_21_score,
             "macd_impulse": macd_score,
             "bb_position": bb_pos,
+            "stoch_k_14": stoch_k_score,
+            "stoch_d_14": stoch_d_score,
+            "cci_20": cci_score,
+            "roc_10": roc_score,
             "volume_impulse": vol_impulse,
             "candle_pressure": pressure,
         }
@@ -263,9 +337,9 @@ def build_model_matrix(
     consensus_score = sum(directional_scores) / max(len(directional_scores), 1) if directional_scores else 0.0
     avg_confidence = sum(confidence_scores) / max(len(confidence_scores), 1) if confidence_scores else 0.0
     if consensus_score >= 0.07:
-        consensus_signal = "BUY"
+        consensus_signal = "BULLISH"
     elif consensus_score <= -0.07:
-        consensus_signal = "SELL"
+        consensus_signal = "BEARISH"
     else:
         consensus_signal = "HOLD"
 
@@ -330,9 +404,9 @@ def backtest_prediction_signals(
     for row in sorted(predictions, key=lambda item: _iso_key(item.get("prediction_ts"))):
         risk = row.get("risk_snapshot") if isinstance(row.get("risk_snapshot"), dict) else {}
         signal = str(risk.get("approved_signal") or row.get("signal") or "HOLD").upper()
-        if signal not in {"BUY", "SELL"}:
+        if signal not in {"BULLISH", "BEARISH"}:
             continue
-        side = 1.0 if signal == "BUY" else -1.0
+        side = 1.0 if signal == "BULLISH" else -1.0
         realized = returns_by_target.get(_iso_key(row.get("target_ts")))
         if realized is None:
             continue
@@ -478,11 +552,11 @@ def backtest_indicator_strategy(
     sharpe = 0.0 if std <= 1e-12 else float(pnl.mean() / std * sqrt(len(pnl)))
 
     trades = active[["candle_end", "signal", "next_ret", "gross_pnl", "net_pnl"]].tail(200).copy()
-    trades["signal"] = trades["signal"].map({1: "BUY", -1: "SELL", 0: "HOLD"})
+    trades["signal"] = trades["signal"].map({1: "BULLISH", -1: "BEARISH", 0: "HOLD"})
     trades = trades.rename(columns={"candle_end": "target_ts"})
 
     latest_signal = active.iloc[-1]["signal"]
-    latest_label = "BUY" if latest_signal > 0 else "SELL" if latest_signal < 0 else "HOLD"
+    latest_label = "BULLISH" if latest_signal > 0 else "BEARISH" if latest_signal < 0 else "HOLD"
 
     return {
         "symbol": symbol,

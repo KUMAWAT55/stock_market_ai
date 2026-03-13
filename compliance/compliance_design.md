@@ -2,7 +2,7 @@
 
 ## Scope and Positioning
 - System purpose: **research and analytics signal generation** for NSE instruments.
-- Output type: BUY/SELL/HOLD signals with confidence and explainability.
+- Output type: BULLISH/BEARISH/HOLD signals with confidence and explainability.
 - Explicitly excluded: auto-order placement, broker execution, unattended algo trading.
 
 ## Core SEBI-Safe Controls

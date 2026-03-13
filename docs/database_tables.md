@@ -166,7 +166,7 @@ This document explains each PostgreSQL table used by the project, with:
 | `timeframe` | `VARCHAR(8)` | No | Prediction horizon bucket. |
 | `prediction_ts` | `TIMESTAMP` | No | Timestamp when prediction was generated. |
 | `target_ts` | `TIMESTAMP` | No | Target candle timestamp prediction refers to. |
-| `signal` | `VARCHAR(8)` | No | Final signal (`BUY`/`SELL`/`HOLD`). |
+| `signal` | `VARCHAR(8)` | No | Final signal (`BULLISH`/`BEARISH`/`HOLD`). |
 | `confidence` | `DOUBLE PRECISION` | No | Usually `max(prob_up, prob_down)`. |
 | `prob_up` | `DOUBLE PRECISION` | No | Estimated probability of upward move. |
 | `prob_down` | `DOUBLE PRECISION` | No | Estimated probability of downward/non-up move. |
@@ -197,7 +197,7 @@ This document explains each PostgreSQL table used by the project, with:
   "timeframe": "15m",
   "prediction_ts": "2026-02-23T10:30:00",
   "target_ts": "2026-02-23T10:45:00",
-  "signal": "BUY",
+  "signal": "BULLISH",
   "confidence": 0.72,
   "prob_up": 0.72,
   "prob_down": 0.28,
@@ -262,7 +262,7 @@ This document explains each PostgreSQL table used by the project, with:
   "payload": {
     "cooldown_seconds": 120,
     "seconds_since_last_signal": 49,
-    "blocked_signal": "BUY",
+    "blocked_signal": "BULLISH",
     "final_signal": "HOLD"
   },
   "created_at": "2026-02-23T10:45:00.020"

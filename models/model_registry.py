@@ -82,6 +82,11 @@ class ModelRegistry:
             metrics=metrics,
             feature_list=feature_list,
         )
+        self.db_manager.deactivate_model_versions(
+            model_name=model_name,
+            timeframe=timeframe,
+            keep_version=version,
+        )
         logger.info("Registered model {} {} {}", model_name, timeframe, version)
         return descriptor
 

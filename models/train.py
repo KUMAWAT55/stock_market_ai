@@ -381,6 +381,36 @@ def _build_global_dataset(
     return pd.concat(chunks, axis=0, ignore_index=True)
 
 
+def _build_global_dataset_from_db(
+    timeframe: str,
+    lookback_days: int,
+    symbols: list[str],
+) -> pd.DataFrame:
+    settings = get_settings()
+    db_manager = DatabaseManager()
+    end_dt = datetime.utcnow()
+    start_dt = end_dt - timedelta(days=max(1, int(lookback_days)))
+
+    chunks: list[pd.DataFrame] = []
+    for symbol in symbols:
+        frame = db_manager.get_candles_in_range(
+            symbol=symbol.upper(),
+            timeframe=timeframe,
+            start_dt=start_dt,
+            end_dt=end_dt,
+        )
+        if frame.empty:
+            logger.warning("No candles in DB for {} {}", symbol, timeframe)
+            continue
+        frame["symbol"] = symbol.upper()
+        frame["timeframe"] = timeframe
+        chunks.append(frame)
+
+    if not chunks:
+        raise ValueError(f"No historical candles found in DB for timeframe {timeframe}")
+    return pd.concat(chunks, axis=0, ignore_index=True)
+
+
 def train_global_from_candles(
     timeframe: str,
     candles: pd.DataFrame,
@@ -613,9 +643,33 @@ def train_global_from_kite(
     )
 
 
+def train_global_from_db(
+    timeframe: str,
+    lookback_days: int,
+    symbols: list[str],
+    model_config_path: str | None = None,
+    min_rows: int | None = None,
+    target_threshold: float | None = None,
+) -> TrainOutput:
+    """Read multi-symbol candles from DB and train timeframe ensemble."""
+    settings = get_settings()
+    candles = _build_global_dataset_from_db(
+        timeframe=timeframe,
+        lookback_days=lookback_days,
+        symbols=symbols,
+    )
+    return train_global_from_candles(
+        timeframe=timeframe,
+        candles=candles,
+        settings=settings,
+        model_config_path=model_config_path,
+        min_rows_override=min_rows,
+        target_threshold_override=target_threshold,
+    )
+
+
 def _resolve_symbols(settings: Settings, symbols_csv: str, all_symbols: bool) -> list[str]:
-    mapping = settings.load_symbol_token_map()
-    available = sorted(set(symbol.upper() for symbol in mapping.values()))
+    available = settings.load_symbol_universe()
     if all_symbols:
         return available
     if symbols_csv.strip():
@@ -644,6 +698,11 @@ def _parse_args() -> argparse.Namespace:
         default=float("nan"),
         help="Optional override for forward-return target threshold.",
     )
+    parser.add_argument(
+        "--use-db",
+        action="store_true",
+        help="Train using ohlcv_candles in the database instead of Kite API.",
+    )
     return parser.parse_args()
 
 
@@ -654,7 +713,7 @@ def main() -> None:
     if not symbols:
         raise ValueError("No symbols resolved from configuration")
 
-    out = train_global_from_kite(
+    train_kwargs = dict(
         timeframe=args.timeframe,
         lookback_days=int(args.lookback_days),
         symbols=symbols,
@@ -662,6 +721,10 @@ def main() -> None:
         min_rows=(int(args.min_rows) if int(args.min_rows) > 0 else None),
         target_threshold=(float(args.target_threshold) if not np.isnan(args.target_threshold) else None),
     )
+    if args.use_db:
+        out = train_global_from_db(**train_kwargs)
+    else:
+        out = train_global_from_kite(**train_kwargs)
     logger.info(
         "Saved global ensemble {} version {} at {}",
         out.model_name,

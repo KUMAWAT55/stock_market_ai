@@ -85,18 +85,18 @@ class Settings:
         default_factory=lambda: json.loads(os.getenv("PARTIAL_MARKET_CLOSES_JSON", "{}"))
     )
 
-    signal_buy_threshold: float = float(os.getenv("SIGNAL_BUY_THRESHOLD", "0.6"))
-    signal_sell_threshold: float = float(os.getenv("SIGNAL_SELL_THRESHOLD", "0.4"))
+    signal_bullish_threshold: float = float(os.getenv("SIGNAL_BULLISH_THRESHOLD", "0.6"))
+    signal_bearish_threshold: float = float(os.getenv("SIGNAL_BEARISH_THRESHOLD", "0.4"))
     signal_cooldown_seconds: int = int(os.getenv("SIGNAL_COOLDOWN_SECONDS", "120"))
     signal_thresholds_by_timeframe: dict[str, dict[str, float]] = field(
         default_factory=lambda: _parse_json_env(
             os.getenv("SIGNAL_THRESHOLDS_BY_TIMEFRAME_JSON"),
             {
-                "1m": {"buy": 0.62, "sell": 0.38},
-                "5m": {"buy": 0.60, "sell": 0.40},
-                "15m": {"buy": 0.58, "sell": 0.42},
-                "1h": {"buy": 0.56, "sell": 0.44},
-                "1d": {"buy": 0.54, "sell": 0.46},
+                "1m": {"bullish": 0.62, "bearish": 0.38},
+                "5m": {"bullish": 0.60, "bearish": 0.40},
+                "15m": {"bullish": 0.58, "bearish": 0.42},
+                "1h": {"bullish": 0.56, "bearish": 0.44},
+                "1d": {"bullish": 0.54, "bearish": 0.46},
             },
         )
     )
@@ -259,6 +259,11 @@ class Settings:
                 out[str(symbol).upper()] = str(sector).upper()
         return out
 
+    def load_symbol_universe(self) -> list[str]:
+        """Return canonical symbol universe from instruments.json."""
+        token_map = self.load_symbol_token_map()
+        return sorted({str(symbol).upper() for symbol in token_map.values() if symbol})
+
     def forward_return_threshold(self, timeframe: str) -> float:
         """Return configured forward-return threshold used to define binary target."""
         raw = self.forward_return_thresholds.get(timeframe)
@@ -268,17 +273,17 @@ class Settings:
 
     def signal_thresholds_for_timeframe(self, timeframe: str) -> tuple[float, float]:
         """Return validated (buy, sell) thresholds for one timeframe."""
-        fallback_buy = float(self.signal_buy_threshold)
-        fallback_sell = float(self.signal_sell_threshold)
+        fallback_bullish = float(self.signal_bullish_threshold)
+        fallback_bearish = float(self.signal_bearish_threshold)
         profile = self.signal_thresholds_by_timeframe.get(timeframe, {})
 
-        buy = float(profile.get("buy", fallback_buy))
-        sell = float(profile.get("sell", fallback_sell))
-        buy = min(1.0, max(0.0, buy))
-        sell = min(1.0, max(0.0, sell))
-        if sell >= buy:
-            return fallback_buy, fallback_sell
-        return buy, sell
+        bullish = float(profile.get("bullish", fallback_bullish))
+        bearish = float(profile.get("bearish", fallback_bearish))
+        bullish = min(1.0, max(0.0, bullish))
+        bearish = min(1.0, max(0.0, bearish))
+        if bearish >= bullish:
+            return fallback_bullish, fallback_bearish
+        return bullish, bearish
 
     def risk_rules_for_timeframe(self, timeframe: str) -> dict[str, float]:
         """Return validated risk control profile for one timeframe."""
@@ -329,11 +334,11 @@ class Settings:
 
     def timeframe_rule_profile(self, timeframe: str) -> dict[str, float]:
         """Return merged signal+risk+sync profile used by inference and dashboard."""
-        buy, sell = self.signal_thresholds_for_timeframe(timeframe)
+        bullish, bearish = self.signal_thresholds_for_timeframe(timeframe)
         risk = self.risk_rules_for_timeframe(timeframe)
         return {
-            "signal_buy_threshold": buy,
-            "signal_sell_threshold": sell,
+            "signal_bullish_threshold": bullish,
+            "signal_bearish_threshold": bearish,
             "min_confidence": risk["min_confidence"],
             "cooldown_seconds": risk["cooldown_seconds"],
             "max_capital_allocation_pct": risk["max_capital_allocation_pct"],

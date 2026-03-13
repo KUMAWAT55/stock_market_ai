@@ -102,7 +102,7 @@ class RiskManager:
             )
             stop_loss = (
                 last_price * (1.0 - stop_loss_pct)
-                if signal == "BUY"
+                if signal == "BULLISH"
                 else last_price * (1.0 + stop_loss_pct)
             )
             self._last_signal_time[key] = now

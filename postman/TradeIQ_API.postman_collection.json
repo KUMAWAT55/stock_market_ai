@@ -5,57 +5,6 @@
     "description": "Collection for validating all TradeIQ FastAPI endpoints.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
-  "event": [
-    {
-      "listen": "test",
-      "script": {
-        "type": "text/javascript",
-        "exec": [
-          "pm.test('Status is not 5xx', function () {",
-          "  pm.expect(pm.response.code).to.be.below(500);",
-          "});"
-        ]
-      }
-    }
-  ],
-  "variable": [
-    {
-      "key": "baseUrl",
-      "value": "http://127.0.0.1:8000"
-    },
-    {
-      "key": "symbol",
-      "value": "RELIANCE"
-    },
-    {
-      "key": "timeframe",
-      "value": "15m"
-    },
-    {
-      "key": "timeframes",
-      "value": "1m,5m,15m,1h,1d"
-    },
-    {
-      "key": "limit",
-      "value": "100"
-    },
-    {
-      "key": "historyLimit",
-      "value": "200"
-    },
-    {
-      "key": "candleLimit",
-      "value": "300"
-    },
-    {
-      "key": "days",
-      "value": "30"
-    },
-    {
-      "key": "ensureWait",
-      "value": "false"
-    }
-  ],
   "item": [
     {
       "name": "Health",
@@ -70,9 +19,87 @@
           "path": [
             "health"
           ]
-        },
-        "description": "Service health check"
+        }
       }
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{registerUsername}}\",\n  \"email\": \"{{registerEmail}}\",\n  \"password\": \"{{registerPassword}}\",\n  \"full_name\": \"{{registerFullName}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identifier\": \"{{loginIdentifier}}\",\n  \"password\": \"{{loginPassword}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Me",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            }
+          }
+        }
+      ]
     },
     {
       "name": "Kite Auth Check",
@@ -88,8 +115,38 @@
             "kite",
             "auth-check"
           ]
-        },
-        "description": "Checks Kite credentials and session validity"
+        }
+      }
+    },
+    {
+      "name": "Kite Instruments",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/kite/instruments?exchange={{kiteExchange}}&symbol={{kiteSymbol}}&limit={{kiteLimit}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "kite",
+            "instruments"
+          ],
+          "query": [
+            {
+              "key": "exchange",
+              "value": "{{kiteExchange}}"
+            },
+            {
+              "key": "symbol",
+              "value": "{{kiteSymbol}}"
+            },
+            {
+              "key": "limit",
+              "value": "{{kiteLimit}}"
+            }
+          ]
+        }
       }
     },
     {
@@ -108,6 +165,37 @@
           ]
         }
       }
+    },
+    {
+      "name": "Public",
+      "item": [
+        {
+          "name": "Contact",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/public/contact",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "public",
+                "contact"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_name\": \"{{contactFullName}}\",\n  \"email\": \"{{contactEmail}}\",\n  \"subject\": \"{{contactSubject}}\",\n  \"message\": \"{{contactMessage}}\"\n}"
+            }
+          }
+        }
+      ]
     },
     {
       "name": "Engine",
@@ -283,6 +371,23 @@
       "name": "Market Data",
       "item": [
         {
+          "name": "Symbols",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/market/symbols",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "market",
+                "symbols"
+              ]
+            }
+          }
+        },
+        {
           "name": "Candles",
           "request": {
             "method": "GET",
@@ -342,101 +447,6 @@
       ]
     },
     {
-      "name": "Historical",
-      "item": [
-        {
-          "name": "Ensure Historical Coverage",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/historical/ensure?symbol={{symbol}}&timeframe={{timeframe}}&wait={{ensureWait}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "historical",
-                "ensure"
-              ],
-              "query": [
-                {
-                  "key": "symbol",
-                  "value": "{{symbol}}"
-                },
-                {
-                  "key": "timeframe",
-                  "value": "{{timeframe}}"
-                },
-                {
-                  "key": "wait",
-                  "value": "{{ensureWait}}"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Ensure Status",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/historical/ensure/status?symbol={{symbol}}&timeframe={{timeframe}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "historical",
-                "ensure",
-                "status"
-              ],
-              "query": [
-                {
-                  "key": "symbol",
-                  "value": "{{symbol}}"
-                },
-                {
-                  "key": "timeframe",
-                  "value": "{{timeframe}}"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Backfill Historical",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/historical/backfill?symbol={{symbol}}&timeframe={{timeframe}}&days={{days}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "historical",
-                "backfill"
-              ],
-              "query": [
-                {
-                  "key": "symbol",
-                  "value": "{{symbol}}"
-                },
-                {
-                  "key": "timeframe",
-                  "value": "{{timeframe}}"
-                },
-                {
-                  "key": "days",
-                  "value": "{{days}}"
-                }
-              ]
-            }
-          }
-        }
-      ]
-    },
-    {
       "name": "Backtest",
       "item": [
         {
@@ -467,6 +477,387 @@
           }
         }
       ]
+    },
+    {
+      "name": "Analytics",
+      "item": [
+        {
+          "name": "Indicator Heatmap",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/analytics/indicator-heatmap?symbol={{symbol}}&timeframes={{timeframes}}&indicators={{heatmapIndicators}}&group={{indicatorGroup}}&candle_limit={{heatmapCandleLimit}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "analytics",
+                "indicator-heatmap"
+              ],
+              "query": [
+                {
+                  "key": "symbol",
+                  "value": "{{symbol}}"
+                },
+                {
+                  "key": "timeframes",
+                  "value": "{{timeframes}}"
+                },
+                {
+                  "key": "indicators",
+                  "value": "{{heatmapIndicators}}"
+                },
+                {
+                  "key": "group",
+                  "value": "{{indicatorGroup}}"
+                },
+                {
+                  "key": "candle_limit",
+                  "value": "{{heatmapCandleLimit}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Model Matrix",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/analytics/model-matrix?symbol={{symbol}}&timeframes={{timeframes}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "analytics",
+                "model-matrix"
+              ],
+              "query": [
+                {
+                  "key": "symbol",
+                  "value": "{{symbol}}"
+                },
+                {
+                  "key": "timeframes",
+                  "value": "{{timeframes}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Model Backtest",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/analytics/backtest/model?symbol={{symbol}}&timeframe={{timeframe}}&limit={{modelBacktestLimit}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "analytics",
+                "backtest",
+                "model"
+              ],
+              "query": [
+                {
+                  "key": "symbol",
+                  "value": "{{symbol}}"
+                },
+                {
+                  "key": "timeframe",
+                  "value": "{{timeframe}}"
+                },
+                {
+                  "key": "limit",
+                  "value": "{{modelBacktestLimit}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Strategy Backtest",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/analytics/backtest/strategy?symbol={{symbol}}&timeframe={{timeframe}}&strategy={{strategy}}&candle_limit={{strategyCandleLimit}}&cost_bps={{strategyCostBps}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "analytics",
+                "backtest",
+                "strategy"
+              ],
+              "query": [
+                {
+                  "key": "symbol",
+                  "value": "{{symbol}}"
+                },
+                {
+                  "key": "timeframe",
+                  "value": "{{timeframe}}"
+                },
+                {
+                  "key": "strategy",
+                  "value": "{{strategy}}"
+                },
+                {
+                  "key": "candle_limit",
+                  "value": "{{strategyCandleLimit}}"
+                },
+                {
+                  "key": "cost_bps",
+                  "value": "{{strategyCostBps}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Scanner",
+      "item": [
+        {
+          "name": "Intraday Scanner",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/scanner/intraday?timeframe={{scannerTimeframe}}&signal={{scannerSignal}}&min_confidence={{scannerMinConfidence}}&limit={{scannerLimit}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "scanner",
+                "intraday"
+              ],
+              "query": [
+                {
+                  "key": "timeframe",
+                  "value": "{{scannerTimeframe}}"
+                },
+                {
+                  "key": "signal",
+                  "value": "{{scannerSignal}}"
+                },
+                {
+                  "key": "min_confidence",
+                  "value": "{{scannerMinConfidence}}"
+                },
+                {
+                  "key": "limit",
+                  "value": "{{scannerLimit}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Snapshot",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/dashboard/snapshot?symbol={{symbol}}&timeframe={{dashboardTimeframe}}&candle_limit={{dashboardCandleLimit}}&history_limit={{dashboardHistoryLimit}}&matrix_timeframes={{dashboardMatrixTimeframes}}&heatmap_indicators={{dashboardHeatmapIndicators}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "dashboard",
+                "snapshot"
+              ],
+              "query": [
+                {
+                  "key": "symbol",
+                  "value": "{{symbol}}"
+                },
+                {
+                  "key": "timeframe",
+                  "value": "{{dashboardTimeframe}}"
+                },
+                {
+                  "key": "candle_limit",
+                  "value": "{{dashboardCandleLimit}}"
+                },
+                {
+                  "key": "history_limit",
+                  "value": "{{dashboardHistoryLimit}}"
+                },
+                {
+                  "key": "matrix_timeframes",
+                  "value": "{{dashboardMatrixTimeframes}}"
+                },
+                {
+                  "key": "heatmap_indicators",
+                  "value": "{{dashboardHeatmapIndicators}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:8000"
+    },
+    {
+      "key": "kiteExchange",
+      "value": "NSE"
+    },
+    {
+      "key": "kiteSymbol",
+      "value": "RELIANCE"
+    },
+    {
+      "key": "kiteLimit",
+      "value": "50"
+    },
+    {
+      "key": "symbol",
+      "value": "RELIANCE"
+    },
+    {
+      "key": "timeframe",
+      "value": "15m"
+    },
+    {
+      "key": "timeframes",
+      "value": "1m,5m,15m,1h,1d"
+    },
+    {
+      "key": "limit",
+      "value": "100"
+    },
+    {
+      "key": "historyLimit",
+      "value": "200"
+    },
+    {
+      "key": "candleLimit",
+      "value": "300"
+    },
+    {
+      "key": "authToken",
+      "value": ""
+    },
+    {
+      "key": "registerUsername",
+      "value": "demo_user"
+    },
+    {
+      "key": "registerEmail",
+      "value": "demo@example.com"
+    },
+    {
+      "key": "registerPassword",
+      "value": "password123"
+    },
+    {
+      "key": "registerFullName",
+      "value": "Demo User"
+    },
+    {
+      "key": "loginIdentifier",
+      "value": "demo@example.com"
+    },
+    {
+      "key": "loginPassword",
+      "value": "password123"
+    },
+    {
+      "key": "contactFullName",
+      "value": "Demo User"
+    },
+    {
+      "key": "contactEmail",
+      "value": "demo@example.com"
+    },
+    {
+      "key": "contactSubject",
+      "value": "Feedback"
+    },
+    {
+      "key": "contactMessage",
+      "value": "Hello, this is a Postman test message."
+    },
+    {
+      "key": "heatmapIndicators",
+      "value": "rsi,macd,ema_fast,ema_slow"
+    },
+    {
+      "key": "indicatorGroup",
+      "value": "all"
+    },
+    {
+      "key": "heatmapCandleLimit",
+      "value": "260"
+    },
+    {
+      "key": "modelBacktestLimit",
+      "value": "500"
+    },
+    {
+      "key": "strategy",
+      "value": "ema_trend"
+    },
+    {
+      "key": "strategyCandleLimit",
+      "value": "700"
+    },
+    {
+      "key": "strategyCostBps",
+      "value": "2"
+    },
+    {
+      "key": "scannerTimeframe",
+      "value": "5m"
+    },
+    {
+      "key": "scannerSignal",
+      "value": "ALL"
+    },
+    {
+      "key": "scannerMinConfidence",
+      "value": "0.6"
+    },
+    {
+      "key": "scannerLimit",
+      "value": "50"
+    },
+    {
+      "key": "dashboardTimeframe",
+      "value": "15m"
+    },
+    {
+      "key": "dashboardCandleLimit",
+      "value": "300"
+    },
+    {
+      "key": "dashboardHistoryLimit",
+      "value": "200"
+    },
+    {
+      "key": "dashboardMatrixTimeframes",
+      "value": "1m,5m,15m,1h,1d"
+    },
+    {
+      "key": "dashboardHeatmapIndicators",
+      "value": "rsi,macd,ema_fast,ema_slow"
     }
   ]
 }

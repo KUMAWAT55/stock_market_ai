@@ -58,6 +58,7 @@ class RealtimePredictionEngine:
         self.latest_price_cache: dict[str, dict[str, Any]] = {}
         self._last_model_refresh_ts: datetime | None = None
         self._last_bootstrap_ts: datetime | None = None
+        self._startup_task: asyncio.Task[Any] | None = None
 
     async def start(self) -> None:
         """Initialize dependencies, start websocket, and launch worker loops."""
@@ -68,9 +69,7 @@ class RealtimePredictionEngine:
         self._stop.clear()
         self.db.init_schema()
         self._load_models()
-        self._warm_from_db()
-        await self._bootstrap_predictions_from_history()
-        self._last_bootstrap_ts = datetime.utcnow()
+        self._startup_task = asyncio.create_task(self._warm_and_bootstrap(), name="warm_bootstrap")
 
         if not self.instrument_tokens:
             raise RuntimeError("No instrument tokens configured. Add config/instruments.json or INSTRUMENT_TOKENS env.")
@@ -97,6 +96,17 @@ class RealtimePredictionEngine:
         ]
 
         logger.info("Realtime engine started")
+
+    async def _warm_and_bootstrap(self) -> None:
+        """Warm candle cache and bootstrap predictions without blocking startup."""
+        try:
+            await asyncio.to_thread(self._warm_from_db)
+            await self._bootstrap_predictions_from_history()
+            self._last_bootstrap_ts = datetime.utcnow()
+        except asyncio.CancelledError:
+            raise
+        except Exception as exc:
+            logger.exception("Warm/bootstrap failed: {}", exc)
 
     async def stop(self) -> None:
         """Stop worker loops and websocket connection cleanly."""
@@ -477,6 +487,10 @@ class RealtimePredictionEngine:
             close_time = self.settings.market_close
         return datetime.combine(day, close_time, self.market_tz)
 
+    def _market_open_for_day(self, day: date) -> datetime:
+        """Return configured market-open timestamp for a trading day."""
+        return datetime.combine(day, self.settings.market_open, self.market_tz)
+
     def _prediction_ts_from_candle(self, candle: Candle) -> datetime:
         """Use session-close timestamps for daily predictions."""
         if candle.timeframe != "1d":
@@ -488,7 +502,17 @@ class RealtimePredictionEngine:
         """Compute forecast target timestamp, skipping weekends/holidays for daily bars."""
         timeframe_minutes = self.settings.timeframe_minutes
         if candle.timeframe in timeframe_minutes and candle.timeframe != "1d":
-            return candle.candle_end + timedelta(minutes=timeframe_minutes[candle.timeframe])
+            delta = timedelta(minutes=timeframe_minutes[candle.timeframe])
+            candidate = candle.candle_end + delta
+            market_day = self._to_market_dt(candle.candle_end).date()
+            market_close = self._market_close_for_day(market_day)
+            if self._to_market_dt(candidate) > market_close:
+                next_day = market_day + timedelta(days=1)
+                holidays = self.settings.load_market_holidays()
+                while next_day.weekday() >= 5 or next_day in holidays:
+                    next_day += timedelta(days=1)
+                return self._market_open_for_day(next_day) + delta
+            return candidate
         anchor_day = self._to_market_dt(candle.candle_start).date()
         next_day = anchor_day + timedelta(days=1)
         holidays = self.settings.load_market_holidays()
@@ -666,6 +690,7 @@ class RealtimePredictionEngine:
 
     def status_snapshot(self) -> dict[str, Any]:
         """Return runtime status useful for diagnostics and dashboard checks."""
+        warm_task = self._startup_task
         return {
             "ws_connected": bool(self.kite_client and self.kite_client.connected),
             "loaded_model_timeframes": sorted(self._model_by_timeframe.keys()),
@@ -673,6 +698,7 @@ class RealtimePredictionEngine:
             "configured_candle_timeframes": list(self.settings.candle_timeframes),
             "dropped_ticks": self.tick_handler.dropped_ticks,
             "last_bootstrap_ts": self._last_bootstrap_ts.isoformat() if self._last_bootstrap_ts else None,
+            "warmup_in_progress": bool(warm_task and not warm_task.done()),
         }
 
     def latest_price_snapshot(self, symbol: str, timeframe: str | None = None) -> dict[str, Any] | None:

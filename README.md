@@ -1,5 +1,5 @@
 # TradeIQ Intraday Research Platform (FastAPI + React)
-
+xxxxx
 TradeIQ is a local-first, SEBI-aware intraday research platform for Indian markets.
 
 It now runs as:
